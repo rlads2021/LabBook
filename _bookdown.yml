@@ -1,0 +1,8 @@
+book_filename: "rlads2021LabSession"
+language:
+  ui:
+    chapter_name: "Chapter "
+delete_merged_file: true
+rmd_subdir: true
+output_dir: "docs"
+#edit: "https://github.com/rlads2021/LabBook/edit/main/%s"

@@ -1,0 +1,499 @@
+Base R (I) & 輔助工具 {#lab02}
+==================================
+
+[
+([投影片](https://docs.google.com/presentation/d/1b01Vx-uTr2DQ1t2FKFFDiPzw7LlI-srYMqXIPWKQC_Q) /
+[影片](https://youtu.be/WV18389Op8s))
+]{.course-resource}
+
+## R Studio
+
+### 自訂樣式
+
+- RStudio 預設有 4 個區塊 (Pane)。你可以自行決定這 4 個區塊的位置
+    - `Tools` --> `Global Options...` --> (在左欄選擇) `Pane Layout`
+    - Source, Console, 及 2 個自訂區塊
+
+- 除了區塊的相對位置，也可以設定 RStudio 整體的風格以及程式碼 Syntax Highlighting 的樣式:
+    - `Tools` --> `Global Options...` --> (在左欄選擇) `Appearance`
+
+
+### 編輯器設定
+
+- Source Pane 是撰寫程式碼的地方 (文字編輯器)
+    - 縮排間距：建議使用 space (而非 tab) 作為縮排字元
+    
+        - `Tools` --> `Global Options...` --> (在左欄選擇) `Code` --> (在上方選擇) `Editing` --> 勾選 `Insert spaces for tab`
+
+    - 文字編碼：由於中文字在各作業系統上會有編碼不一致的問題，請**務必**將編碼設定為 `UTF-8`
+    
+        - `Tools` --> `Global Options...` --> (在左欄選擇) `Code` --> (在上方選擇) `Saving` --> `Default text encoding`
+
+
+### 工作目錄
+
+- 使用 RStudio 時，最好養成要馬上設置「工作目錄」的習慣。
+- RStudio 所在的「工作目錄」顯示於 Console Pane 的標籤下方 (e.g. `~/`)
+
+- 工作目錄的設置方式
+  - RStudio 功能選單: `Sessions` > `Set Working Directory...`  
+  - Console
+  
+      ```r
+      setwd('~/Desktop/week2')
+      # setwd('<path/to/new_working_dir>')
+      getwd()  # show current directory
+      ```
+
+
+
+## 函數
+
+```{r}
+get_area <- function() {
+    area <- 3.14 * 1 * 1
+    return(area)
+}
+get_area()
+# Function with a argument
+get_area <- function(r) {
+    area <- 3.14 * r * r
+    return(area)
+}
+get_area(2)
+# Function with a argument that has default value
+get_area <- function(r = 1) {
+    area <- 3.14 * r * r
+    return(area)
+}
+get_area()
+```
+
+```{r results='hold'}
+get_area <- function(r) {
+    area <- 3.14 * r * r
+    return(area)
+}
+area <- 100
+area
+get_area(1)
+area
+```
+
+
+## Function Arguments
+
+```{r multiple-arguments, error=TRUE}
+vol <- function(r, height = 1) {
+    volumn <- 3.14 * r * r * height
+    return(volumn)
+}
+vol(1, 2)
+vol(r = 1, height = 2)  # Be explicit
+# If all args are named, order doesn't matter
+vol(height = 2, r = 1)
+# Mix named and unnamed args:
+# named args will be assigned first, then
+# unnamed args will be assigned 
+# based on their positions
+vol(height = 2, 1)
+```
+
+
+## vector
+
+- 上週實習課使用 R 時，指令的回傳值多半只有「一個」。但 R 其實是一種以**向量**作為基本單位的程式語言，所以對於「一個回傳值」更精確的描述應該是「一個**長度為 1** 的向量」。
+
+  ```{r}
+  x <- 2
+  x
+  is.vector(x)
+  length(x)
+  ```
+
+
+- 我們上週簡短提過以 `:` 製造數列的方式 (e.g. `1:10`)。事實上，這個回傳的數列即是一個 vector。另外，由於這個 vector 的每個元素皆是整數，因此這個 vector 屬於 integer vector。我們可以使用 `typeof()` 確認 vector 的類別
+
+  ```{r}
+  typeof(1:10)
+  ```
+
+- R 裡面的 vector 可以被分成 6 種類別，其中常見的 4 種分別為 `integer`, `double`, , `character`, `logical`
+
+### integer vector
+
+- integer vector 的元素由整數組成，它可以是零、正或負的。除了使用 `:` 製造數列，也可以使用 `c()` (稱為 concatenate) 組出任意序列的 vector。
+    - 使用 `c()` 製造 integer vector 時，每個整數數字後面必須接 `L`，若沒有加上 `L`， R 會將製造出來的 vector 視為 double vector。
+
+```{r}
+int_vec <- c(-1L, 5L, 2L)
+dbl_vec <- c(-1, 5, 2)
+int_vec
+dbl_vec
+
+typeof(int_vec)
+typeof(dbl_vec)
+```
+
+### double vector
+
+- double vector 儲存的是[浮點數](https://zh.wikipedia.org/wiki/%E6%B5%AE%E7%82%B9%E6%95%B0)，亦即含有小數點的數字 (e.g `1.2`, `-0.75`)
+
+- 在 R 裡面，integer vector 與 double vector 合稱為 numeric vector，兩者之間的區隔通常也不太重要，因為 R 在運算時，通常會將這兩種資料類型自動轉換成合適的類型
+
+  ```{r}
+  typeof(2L)
+  typeof(2.0)
+  
+  is.numeric(2L)
+  is.numeric(2.0)
+  ```
+
+  ```{r}
+  typeof(1L + 1.0)
+  typeof(1L / 2L)
+  ```
+
+- Special values: 
+    - `Inf`: 代表無限大
+    - `NaN`: "Not a Number"，常見於數字運算不符數學定義時，例如：
+        
+      ```{r}
+      0 / 0
+      Inf / Inf
+      log(-1)
+      ```
+
+
+
+### character vector
+
+- 除了數字以外，R 也可以儲存**字串 (string)**。character vector 的每個元素皆由一個字串所組成。在 R 裡面，只要是被引號 (quote, `'` 或 `"` 皆可) 包裹的東西就是字串，放在引號內的可以是任何字元 (e.g. 空白、數字、中文字、英文字母)
+
+  ```{r}
+  "1.1"  # This is a string (character vector of length 1), not double
+  "你好！"
+  c("1.1", "你好！")
+  ```
+
+
+- 如果字串內含有引號 `"`，需在字串內的引號前使用跳脫字元 `\`，以表示此引號是字串的一部分而非字串的開頭或結尾
+
+  - 或是，你可以使用「不同的」引號。例如以「單引號」表示字串的開頭與結尾時，字串內就可以直接使用「雙引號」，反之亦然
+  
+  ```{r results='hold'}
+  "\""  # escape a double quote
+  '\''  # escape a single quote
+  '"'   # a double quote as string without escaping
+  "'"   # a single quote as string without escaping
+  ```
+
+
+### logical vector
+
+- logical vector 的每個元素由 `TRUE` 或 `FALSE` 組成。
+
+- 可以使用 `c()` 一項項手動輸入製造 logical vector
+
+- logical vector 的另一個來源則是 logical test 的回傳值：
+  - logical operators: `==`, `!=`, `>`, `<`, `%in%`
+
+  ```{r echo=F}
+  img("https://img.yongfu.name/rlads/logical-operators.png")
+  ```
+
+  ```{r}
+  vec1 <- c(1, 1, 1)
+  vec2 <- c(2, 0, 2)
+  ```
+
+  ```{r}
+  # logical tests
+  vec1 > vec2
+  vec1 < vec2
+  vec1 == vec2
+  ```
+
+- boolean operators (`&`, `|`, `!`, `any()`, `all()`) 可以整合**多個** logical tests
+
+
+  ```{r echo=F}
+  img("https://img.yongfu.name/rlads/boolean-operators.png")
+  ```
+
+  ```{r}
+  TRUE & TRUE
+  TRUE & FALSE
+  TRUE | FALSE
+  !TRUE
+  ```
+
+  ```{r}
+  (1 == 1) & (2 == 2)
+  ```
+
+### NA
+
+- `NA` 代表的是「缺失值」，可以作為任何一種 vector 裡面的元素。當 `NA` 出現在 vector 中，函數對於 vector 的運算常會出現令人意外的結果:
+
+  ```{r}
+  10 > NA
+  NA == NA
+
+  vec <- c(1, NA, 2, 3)
+  mean(vec)
+  mean(vec, na.rm = TRUE)
+  ```
+
+## Recycling
+
+- 兩個或兩個以上的 vector 進行運算時，通常是以 **element-wise** 的方式進行。此時，若進行運算的 vector 長度不相同，例如，`c(1, 2, 3) + 2`， R 會自動將長度較短 vector (`2`) 「回收 (recycle)」，亦即，重複此向量內的元素使其「拉長」到與另一個 vector 等長；接著再將兩個一樣長的 vector 進行 element-wise 的向量運算。
+
+```{r}
+x <- c(1, 1, 2, 2)
+
+# Arithmetic operation
+x + 2  # equivalent to...
+x + c(2, 2, 2, 2)
+```
+
+```{r}
+x <- c(1, 1, 2, 2)
+
+# Logical operation
+x == 2  # equivalent to...
+x == c(2, 2, 2, 2)
+```
+
+```{r}
+# String operation
+long <- c("a", "b", "c")
+short <- "1"
+paste0("a", "1")
+paste0(long, short)
+```
+
+## Coercion
+
+- vector 內的每個元素，其資料類型 (data type) 必須相同。資料類型即是前面提到的 `integer`, `double`, `character`, `logical`。
+
+- 若發生資料類型不一致的情形 (e.g. 將不同資料類型的元素放入 `c()`)，R 會根據某些**規則**，**自動**進行資料類型的轉換。這個過程在 R 裡面稱為 Coercion
+
+  ```{r}
+  c(TRUE, FALSE, 3)      # logical & numeric
+  c(-1, "aa")            # numeric & character
+  c(FALSE, TRUE, "hi!")  # logical & character
+  c(TRUE, 0, "hi!")      # logical & numeric & character
+  ```
+
+```{r echo=F, fig.cap="Rules of Coercion"}
+img("https://img.yongfu.name/rlads/coercion.png")
+```
+
+- if coercion failed, throw error
+
+- manual coercion: `as.character()`, `as.logical()`, `as.numeric()`
+
+```{r}
+sum(c(T, T, T, F))
+
+gender <- c("male", "female", "male", "female")
+sum(gender == "male")  # num of male
+mean(gender == "male")  # proportion of male
+```
+
+
+## Subsetting a vector
+
+- 有 3 種方法可用於取出 vector 裡面的元素 (回傳一個新的 vector)
+    1. 透過提供 vector 中元素的位置次序 (index)
+    2. 透過一個與此 vector 等長的 logical vector。在 logical vector 中的相對應位置，以 `TRUE` 或 `FALSE` 表示是否保留該位置的元素
+    3. 透過提供元素的「名字」(i.e. `names` 屬性)
+
+
+### index subsetting
+
+```{r}
+# z[<integer_vector>]
+LETTERS  # R 內建變數: 包含所有大寫英文字母的 character vector
+LETTERS[1]
+LETTERS[1:5]
+LETTERS[c(1, 3, 5)]
+LETTERS[-(1:5)]  # Exclude the first 5 elements
+```
+
+### Logical subsetting
+
+```{r}
+# z[<logical_vector of length(z)>]
+age <- c(21, 20, 18, 19)
+age[c(FALSE, TRUE, FALSE, TRUE)]
+
+## Creating logical vectors
+age[1] < 20  # returns a logical vector of length 1
+age < 20     # returns a logical vector of length(x)
+
+# Subset a vector using a logical test
+age[age < 20]
+```
+
+
+### Subsetting with names
+
+```{r}
+age <- c(40, 20, 18, 19)
+names(age) <- c("kai", "pooh", "tiger", "piglet")
+# age <- c(kai = 40, pooh = 20, tiger = 18, piglet = 19)  # another way of setting names
+
+age
+age['kai'] + 9
+
+age[c('pooh', 'kai')]
+```
+
+### Modifying Values in vector
+
+
+```{r}
+a2z <- LETTERS
+a2z[1:3] <- c("a", "b", "c")
+a2z
+
+gender <- c("m", "m", "f", "f")
+gender[gender == "m"] <- "male"
+gender
+gender[gender == "f"] <- "female"
+gender
+
+names(gender) <- c("john", "jenny", "jane", "kate")
+gender
+gender["john"] <- "male"
+gender
+gender[c("jenny", "jane", "kate")] <- "female"
+gender
+```
+
+
+<!-- 
+Conceptually new topic:
+Add if-else concept and then wrap up
+-->
+
+## if else
+
+- 一般而言，R 是**由上至下一行一行地執行程式碼**。有時候我們會希望能**跳過某些程式碼**或是**依據不同的狀況執行不同的程式碼**，這時候我們就需要使用**條件式**。
+
+```{r}
+x <- 1
+
+if (x > 0) {
+    print('x is positive')
+} else {
+    print('x is not positive')
+}
+```
+      
+```{r results='hold'}
+x <- -1
+
+if (x > 0) {
+    print('x is positive')
+} else if (x < 0) {
+    print('x is negative')
+} else {
+    print('x is zero')
+}
+
+print('This is always printed')
+```
+
+- 在 `if`-`else if`-`else` 的結構中，只有**其中一個**區塊 (被大括弧 `{}` 包裹的程式碼) 會被執行。執行完該區塊後，就會忽略剩下的條件控制區塊，執行條件式之後的程式碼。
+
+- 可以在 `if` 之後使用多個 `else if`.
+
+- 條件式的結構：
+
+  ```r
+  # 只有 if
+  if (<條件>) {
+      <Some Code>  # 條件成立時執行
+  }
+  
+  # if, else
+  if (<條件>) {
+      <Some Code>  # <條件>成立時執行
+  } else {
+      <Some Code>  # <條件>不成立時執行
+  }
+  
+  # if, else if, else
+  if (<條件1>) {
+      <Some Code>          # <條件1>成立時執行
+  } else if ( <條件2> ) {
+      <Some Code>          # <條件1>不成立、<條件2>成立時執行
+  } else {
+      <Some Code>          # <條件1>、<條件2>皆不成立時執行
+  }
+  ```
+
+
+## Wrap up: 句子產生器 {#wrap-up}
+
+
+```{r construct-a-comparitive-sentence}
+# Data
+name <- c("kai", "pooh", "tiger", "piglet")
+age <- c(40, 20, 18, 19)
+
+# Randomly draw 2 subjects
+who <- sample(1:4, size = 2)
+
+# Find out who is older
+age1 <- age[who[1]]
+age2 <- age[who[2]]
+if (age1 > age2) {
+    comparitive <- ' is older than '
+} else if (age1 < age2) {
+    comparitive <- ' is younger than '
+} else {
+    comparitive <- ' is as old as '
+}
+
+# Construct sentence
+paste0(name[who[1]], comparitive, name[who[2]])
+```
+
+
+
+## R Markdown
+
+- 使用前需先安裝 `rmarkdown`:
+
+    ```r
+    install.packages('rmarkdown')
+    ```
+
+- R Markdown (`.Rmd`) 就像之前同學用來寫自我介紹的 Markdown 文件 (`.md`) 一樣是一種**純文字格式**。R Markdown 的語法其實只是 Markdown 的一種擴充：它新增了一些特殊的語法，讓使用者可以直接在 R Markdown 裡面撰寫程式碼，並透過 R 將這些程式碼的**運算結果插入 R Markdown 的輸出文件**當中。
+
+- knitr Code Chunk
+    - 執行：由上至下執行
+    - 後面的 chunk 可以讀取之前的 chunks 產生的變數
+
+(在 RStudio 使用 R Markdown)
+
+- 使用 RStudio 開啟 R Markdown (`.Rmd`) 時，Rmd 檔會出現在 Source Pane 讓使用者編輯
+
+- 將 R Markdown (`.Rmd`) 輸出 (`knit` )成 HTML 檔 (`.html`):
+
+```{r echo=F, fig.cap="R Markdown document in RStudio^[Figure from https://bookdown.org/yihui/rmarkdown/images/hello-rmd.png]."}
+img("https://bookdown.org/yihui/rmarkdown/images/hello-rmd.png")
+```
+
+
+## 參考資源 {.appendix}
+
+1. Grolemund, G. (2014). [***Hands-on programming with R***](https://rstudio-education.github.io/hopr/)  
+R Objects (https://rstudio-education.github.io/hopr/r-objects)  
+Modifying Values (https://rstudio-education.github.io/hopr/modify)
+
+2. Xie, Y., Allaire, J., & Grolemund, G. (2019). [***R Markdown: The Definitive Guide***](https://bookdown.org/yihui/rmarkdown)

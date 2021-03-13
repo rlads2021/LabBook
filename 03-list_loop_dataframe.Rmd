@@ -1,0 +1,357 @@
+Base R (II) {#lab03}
+========================================
+
+[([投影片](https://docs.google.com/presentation/d/14naJhj_PYydPoyy9zvafk1TWQIbsqmIEsHeGgcYbkag) /
+[程式碼](https://rlads2021.github.io/lab/src/04.zip) /
+[影片](https://youtu.be/vuffe_EhTk0))
+]{.course-resource} 
+
+
+## list
+
+- vector 是 R 裡面最「簡單」的資料結構。有時候我們需要比較更複雜的資料結構處理我們遇到的資料，例如，我們或許需要儲存**不同資料類型**或是**具有階層結構**的資料。面對這兩種需求，vector 無能為力，因此需要用到 R 的 list。
+
+- R 可以透過 `list()` 去製造出 list。`list()` 的使用方式很類似用來製造 vector 的 `c()`，但與 `c()` 不同的是，`list()`
+
+  1. 能使用**不同的資料類型**
+  
+      ```{r}
+      list(TRUE, 1:3, "Hello")
+      list('kai' = TRUE, 'pooh' = 1:3, 'tiger' = "Hello")
+      ```
+  
+  2. 具有階層結構，亦即，`list()` 裡面可以放入另一個 `list()`
+  
+      ```{r}
+      list(1.1, list(2.1, "Hello"))
+      ```
+
+### Subsetting
+
+- 通常我們會習慣為 list 加上名字 (`names`)，幫助我們更容易處理這種比較複雜的資料結構
+
+- `[]`: 與 vector 一樣，我們可以透過 `lst[<char vector of names>]`、`lst[<integer vector>]` 或 `lst[<logical vector>]` 去 subset list
+
+  ```{r}
+  pooh <- list(age = 20, single = FALSE, tags = c("ig", "selfie"))
+  pooh['single']
+  pooh[2:3]
+  pooh[c(TRUE, FALSE, TRUE)]
+  ```
+
+- 就像 `vec[<some vector>]` 會回傳**一部分的 vector (sub-vector)**；`lst[<some vector>]` 也會回傳**一部分的 list (sub-list)**。換言之，使用 `[]` 時，回傳值的**資料結構不會改變**。
+
+- 我們可以將 list 想像成一列火車，每節車廂是一個長度為 1 的 sub-list，車廂**裡面**是這個 sub-list 儲存的值。欲取得 sub-list，使用的是 `[]`；欲取得 sub-list **裡面的值** (i.e. 脫去外層的 list)，需使用 `[[]]`
+
+  ```{r results='hold'}
+  # 回傳 sub-list
+  typeof(pooh["tags"])
+  pooh["tags"]
+  
+  # 回傳 list 之內的「值」，在此為一個 char vector
+  typeof(pooh[["tags"]])
+  pooh[["tags"]]
+  ```
+  
+  - `lst[["<name>"]]` 有另一種更簡便的寫法：`lst$<name>`, e.g. `pooh[["tags"]]` 可改寫成 `pooh$tags`
+
+
+```{r list-as-train, echo=F, fig.cap="List as a train", out.width="100%"}
+img("./list_as_train.png")
+```
+
+
+### Nested Structure
+
+```{r results='hold'}
+a_lst <- list(name = "pooh",
+              info = list(age = 20,
+                          tags = c("ig", "selfie")))
+
+# Get "selfie"  
+a_lst[['info']]
+a_lst[['info']][['tags']]
+a_lst[['info']][['tags']][2]
+```
+
+```{r results='hold'}
+# Another way to get "selfie"
+a_lst['info'][[1]]
+a_lst['info'][[1]]['tags'][[1]]
+a_lst['info'][[1]]['tags'][[1]][2]
+```
+
+```{r results='hold'}
+# Yet another way to get "selfie"
+a_lst[[2]]
+a_lst[[2]][[2]]
+a_lst[[2]][[2]][2]
+```
+
+```{r results='hold'}
+# The most 'readable' way to get "selfie"
+a_lst$info
+a_lst$info$tags
+a_lst$info$tags[2]
+```
+
+
+## for loop
+
+- 上週介紹的條件式 (if-else) 讓我們可以依據不同狀況執行不同的程式碼，藉此能幫助我們寫出更有彈性的程式。迴圈讓我們能重複執行某一區塊的程式碼，如此就不需要重複寫出相同的程式碼。
+
+- R 有 for 與 while 迴圈。一般而言，在資料分析時非常少會用到 while 迴圈，因此實習課不作介紹，有興趣的同學可自行參考線上教材或教科書。
+
+- for loop 的結構如下
+
+  ```r
+  for (<變數> in <vector>) {
+      <some code>
+  }
+  ```
+    
+- for loop 會使 `{}` 內的程式碼重複執行數次，其次數等於 `<vector>` 的長度；並且，在第 n 次開始執行 `{}` 內的程式碼前，會將 `<vector>` 裡的第 n 個元素指派給 `<變數>`。所以在第一次迴圈時，可透過 `<變數>` 取得 `<vector>` 中的第一個元素；在第二次迴圈時，可取得 `<vector>` 中的第二個元素；依此類推，最後一次迴圈則可以透過 `<變數>` 取得 `<vector>` 中的最後一個元素。
+
+```{r}
+vec <- c("謝", "老師", "好", "帥")
+  
+for (word in vec) {
+    # Will execute 4 times, 
+    # each time a new value from `vec` will be assigned to `word`
+    print(word)
+}
+```
+
+### for loop 的各種型態
+
+- R 的 for 只有一種結構：每次疊代將 vector (或 list) 中的一個元素指派給變數 (`<var> in <vector>`)。但因為 R 向量式程式語言的特性，R 的 for 迴圈很容易改寫成其它更方便的型態。
+
+1. 有時候我們需要知道**迴圈進行到 `<vector>` 的第幾個元素**，這時候通常會使用 `seq_along(<vector>)` 去製造出與 `<vector>` 等長的整數序列 (e.g. `seq_along(c('a', 'b', 'c'))` 會回傳 `1 2 3`)，如此我們便可知道進行到第幾次迴圈，也可透過 `<vector>[i]` 取得與該次迴圈對應的元素。
+
+   ```{r}
+   vec <- c("謝", "老師", "好", "帥")
+   for (i in seq_along(vec)) {
+       print(paste(i, vec[i]))
+   }
+   ```
+  
+   ```{r}
+   vec <- c("謝", "老師", "好", "帥")
+   for (i in seq_along(vec)) {
+       print(vec[i])
+      
+       # Print `?` in the last loop
+       if (i == length(vec)) {
+           print('?')
+       }
+   }
+   ```
+
+2. 我們也可以透過 `names()` 在 for loop 裡使用 `<vector>` 的 names 屬性：
+
+   ```{r}
+   vec <- c(Monday = "rainy", Tuesday = "cloudy", Wednesday = "sunny")
+   for (name in names(vec)) {
+       print(paste0(name, ' was ', vec[name], '.'))
+   }
+   ```
+
+::: {.hands-on data-title="進階迴圈控制：break & next"}
+
+常常我們會需要對 for loop 有「更多的控制」。前面在 for loop 中使用到條件式即是一個例子。但常常條件式本身的功能並不足夠：執行迴圈時，在符合特定條件下，
+
+- 有時候我們會希望能**忽略一次迴圈中「所有尚未被執行的程式碼」**，這時就會使用到 `next`:
+
+  ```{r}
+  # 使用 next '忽略一次' 迴圈
+  for (i in 1:10) {
+      if (i == 5) {
+          print("Skipping print(i) if i == 5")
+          next
+      }
+      print(i)
+  }
+  ```
+
+- 有時我們需要**跳出整個迴圈**，亦即不再執行 for loop 裡面的程式碼。這時就會使用到 `break`:
+
+  ```{r}
+  # 使用 break 跳出整個迴圈
+  for (i in 1:10) {
+      if (i == 5) {
+          print("Breaking out the for loop")
+          break
+      }
+      print(i)
+  }
+  ```
+
+### 實際應用：修改檔案名稱 
+
+下方的程式碼能將多個檔案 (圖片) 重新命名 (並透過 `next` 忽略某些檔案)。有興趣者請下載[原始碼](https://rlads2019.github.io/lab/src/04.zip)，裡面有一個資料夾 `dice/`。執行此程式碼前，需將**工作目錄設至 `dice/` 資料夾**。
+
+```r
+for (file in list.files()) {
+    # 忽略 `00_not_an_img.txt` 這個檔案
+    if (file == '00_not_an_img.txt') {
+        next
+    }
+    
+    file.rename(from = file, to = paste0('dice-', file))
+}
+```
+
+:::
+
+
+## Wrap up：for loop 與 list
+
+- [上週][03_notes]我們使用過 3 個長度為 4 的 vector 來儲存關於 4 個人
+("kai", "pooh", "tiger", "piglet")
+的資料。但使用這種方式儲存資料似乎有些違反直覺，因為它將關於一個人的資訊 (`name` 與 `age`) 分開來儲存在獨立的 vector。
+
+  ```{r}
+  # Data
+  name <- c("kai", "pooh", "tiger", "piglet")
+  age <- c(40, 20, 18, 19)
+  ```
+
+- 對於這種彼此之間具有關聯的資料，一種更好的方式是將它們**儲存在一起**，因為這不只幫助我們在「程式上」更容易去操弄這筆資料，更讓我們能以「階層組織」去「想像」我們的資料。這裡我們使用 `list` 去改寫上週的資料：
+
+  ```{r}
+  member <- list(
+      list(name = "kai", age = 40),
+      list(name = "pooh", age = 20),
+      list(name = "tiger", age = 18),
+      list(name = "piglet", age = 19)
+  )
+  
+  member
+  ```
+
+  ```{r}
+  for (person in member) {
+      name <- person$name
+      age <- person$age
+      
+      # 將組成句子的片語儲存於 char vector `phrases`
+      phrases <- c(name, " is ", age)
+      if (age < 35) {
+          phrases[4] <- ", which is quite young"
+      }
+      
+      # 將各片語連接起來成為一個句子
+      sentence <- paste0(phrases,  collapse = '')
+      
+      print(sentence)
+  }
+  ```
+
+
+## data frame
+
+- data frame 是 R 語言非常重要的資料結構，它造就了 R 強大的**表格式資料**處理能力
+
+- data frame 是一種二維的資料結構。這種資料結構基本上與我們熟悉的 Excel (或 google 試算表) 非常類似：
+    
+    ```{r echo=F, fig.cap="A data frame looks like an Excel Spreadsheet"}
+    img("https://img.yongfu.name/rlads/spreadsheet.png")
+    ```
+    
+    - data frame 的每一橫列 (row) 皆是一筆資料 (e.g. 一位受訪者所填的問卷)
+    
+    - data frame 的每一 (直) 欄 (column) 代表一個變項 (e.g. 問卷上的某個題目)
+
+
+```{r fig.cap="A Data Frame", echo=F}
+img("./tibble.png")
+```
+
+
+- 我們可以使用 `tibble` 套件的 `tibble()`[^whytibble] 建立 data frame。上圖中的 data frame 例子即可由下方的程式碼所建立:
+
+  ```{r}
+  library(tibble)
+  
+  df <- tibble(name = c("kai", "pooh", "tiger", "piglet"),
+               age  = c(40, 20, 18, 19), 
+               grad = c(FALSE, TRUE, FALSE, TRUE))
+  df
+  ```
+    - `tibble()` 裡的每個 vector 對映到 data frame 中的一欄 (column)。因此 data frame 中不同欄的資料類型可能不同，但**每一欄 (變項) 內的資料類型必須相同** (因為 vector 只能儲存相同的資料類型)。
+
+- 下方的指令可用於檢視 data frame 的資訊
+
+  ```{r results='hold'}
+  nrow(df)   # number of rows
+  ncol(df)   # number of columns
+  dim(df)    # 形狀 (num of rows, num of columns)
+  names(df)  # name of each column
+  ```
+  
+  ```{r}
+  tibble::glimpse(df)  # 關於 df 的各種資訊
+  str(df)              # 也可用 Base R 內建函數: str()
+  ```
+  
+  ```r
+  View(df)   # View data frame in RStudio source pane
+  ```
+
+### Subsetting: returning a data frame
+
+- data frame 的篩選 (subsetting) 與 vector 和 list 類似，差別只在於 data frame 屬於二維的資料結構，因此需要提供 2 個 vector 進行資料的篩選：
+
+  ```null
+  df[<vector 1>, <vector 2>]
+  ```
+    
+    - 在這裡，`<vector 1>` 篩選的是「列 (row)」，亦即，`<vector 1>` 決定要篩選出哪幾個觀察值 (observations)。`<vector 2>` 篩選的則是「欄 (column)」，亦即，`<vector 2>` 決定要篩選出哪些變項 (variables)。
+    
+    - 以這種語法進行篩選，回傳的**一定是 data frame**[^must-be-df]，即使只有篩選出一個值 (e.g. df[1, 1])
+
+```{r}
+df[2, 1]
+df[2, 1:2]  # df[2, c("name", "age")]
+df[2, ]
+```
+
+### Subsetting: returning a vector
+
+- 若想要從 data frame 裡面篩選出 vector (取得「火車車廂」**內**的值)，則要使用[之前提過](#fig:list-as-train)的 `$` 或 `[[]]`:
+
+  ```{r results='hold'}
+  df[[2]]      # df[[<column_index>]]
+  df[["age"]]  # df[["<column_name>"]]
+  df$age       # df$<column_name>, 最常見
+  ```
+
+- 篩選 data frame 而回傳 vector 是個很實用的技巧，因為我們可以使用這個回傳的 vector 當作我們進一步篩選 data frame 的依據，例如：
+
+  ```{r}
+  over19 <- df$age > 19  
+  over19
+  
+  # subset df with obs. over 19
+  df[over19, ]
+  
+  # subset df with obs. below or equal 19
+  df[!over19, ]
+  
+  # 合併起來寫 (最常見的寫法，但比較難讀懂)
+  df[df$age > 19, ]
+  ```
+
+- 透過這個技巧，R 能幫助我們快速篩選出需要的資料，例如，我們可以結合 `age` 與 `grad` 兩個變項，篩選出「小於 20 歲且為研究所學生」的 data frame:
+
+  ```{r}
+  df[(df$age < 20) & (df$grad), ]
+  ```
+
+
+[^whytibble]: R 的內建函數 `data.frame()` 是最常被用於建立 data frame 的函數。`tibble` 套件裡的 `tibble()` 則與 `data.frame()` 的功能幾乎一樣，只是 `tibble()` 更改了 `data.frame()` 裡面常令使用者感到困惑的一些預設行為。<br>  
+`tibble` 套件為 [Tidyverse](https://www.tidyverse.org) 套件群的一員，目的是為了解決 base R 眾多函數紛亂不一致的問題 (e.g. 命名不一致、預設行為不一致、類似的函數回傳值不一致等)。
+
+[^must-be-df]: 這只有使用 `tibble` 套件的 `tibble()` 所回傳的 data frame (class 為 `tbl_df`, `tbl` 與 `data.frame`) 才有這種特性。使用 R 的內建函數 `data.frame()` 所建立的 data frame 或是 R 的內建資料集 (class 只有 `data.frame`) 則會根據所篩選出之資料的形狀的不同而回傳不同的資料結構 (有可能是 `data.frame` 或是 `vector`)
+
+[03_notes]: https://rlads2021.github.io/lab/notes/03.html#wrap-up

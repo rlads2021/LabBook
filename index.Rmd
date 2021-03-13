@@ -1,0 +1,34 @@
+--- 
+title: "RLads Lab"
+author: "Yongfu Liao"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+#bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook."
+---
+
+
+```{r setup}
+knitr::opts_chunk$set(
+    echo = TRUE,comment = '#>',message = F,
+    out.width = "80%")
+library(knitr)
+img <- function(...) {
+    items = unlist(list(...))
+    paths = items
+    for (i in seq_along(items)) {
+        if (startsWith(items[i], "http://") | startsWith(items[i], "https://")) paths[i] = items[i]
+        else 
+          paths[i] = paste0("assets/img/", items[i])
+    }
+    knitr::include_graphics(paths)
+}
+```
+
+# 關於 {-}
+
+[程式設計與資料科學導論](https://lopentu.github.io/rlads2021)實習課講義

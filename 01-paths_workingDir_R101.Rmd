@@ -1,0 +1,325 @@
+掌握你的電腦 {#lab01}
+=====================
+
+[
+([投影片](https://docs.google.com/presentation/d/1oghUoCCDI9FWYKEjI9GlwKhevjqIu5FHi5cNWeEtFh0) /
+[影片](https://youtu.be/MIuexkT2V4Q))
+]{.course-resource}
+
+
+## 路徑 & 工作目錄
+
+
+- 電腦透過**資料夾 (directory)** 與**檔案 (file)** 將資訊組織起來，方便與使用者互動。資料夾裡面可以是另一個資料夾，也可以是檔案。換言之，資料夾是有**階層結構**的，可以一層層的包覆起來
+
+- 在使用電腦時，我們通常是透過**圖形使用者界面 (GUI)** 與電腦互動。在操作檔案與資料夾時，我們通常會透過**檔案管理員**這類的程式 (Figure \@ref(fig:foldergui))
+
+```{r foldergui, echo=FALSE, layout="l-body", out.width="70%", fig.cap="Windows 與 Mac 的檔案管理界面^[MacOS's figure source: <https://www.dummies.com/computers/macs/mac-operating-systems/basics-of-the-os-x-folder-structure/>]"}
+img("folder_gui.png")
+```
+
+- 對於初次接觸程式的同學，需要逐步習慣使用 **Text-based user interfaces (TUI)** (下圖)。透過 TUI 與電腦互動意謂著使用者(幾乎)只能使用鍵盤，也意謂著使用者需了解**更多的程式指令**以及**電腦組織檔案與資料夾的方式**。但與此同時，使用者將能**更好地掌握自己的電腦**^[電腦真的不便宜，學好程式讓你能更徹底地使用你的電腦（值回票價？）]
+  
+  ```{r echo=FALSE}
+  img("console.png")
+  ```
+
+
+
+### 目錄結構 (Directory structure)
+
+- 為方便理解電腦裡面的資料夾與檔案結構 (簡稱目錄結構)，我們通常會以**樹狀結構**去表示目錄結構。Figure \@ref(fig:dirstruct) 是 Windows 以及 Mac 上的目錄結構圖
+
+- 在樹狀圖中，越上方的資料夾階層越高。最上方的資料夾稱為**根目錄 (root)**，電腦中的**所有其它資料夾與檔案**皆位於**根目錄**之內^[這對 Windows 系統不全然精確。比較新的 Windows 通常只有一個根目錄 (亦即 `C:`, aka C 槽)，但 Windows 可以有多個根目錄，例如 `D:`, `E:`, `F:`, ...。插入隨身碟時，Windows 通常也會建立一個新的槽 (e.g., `E:`)，但在類 Unix 系統 (e.g., Mac) 上，則會將隨身碟接在根目錄 (只有一個) 之下的某個資料夾內。]
+
+```{r dirstruct, echo=FALSE, out.width="100%", fig.cap="目錄結構"}
+img("directory_structure.png")
+```
+
+- 以 Figure \@ref(fig:dirstruct) 為例，
+  - Windows 的根目錄 `C:` 裡有 3 個資料夾 `temp`, `Users`, 以及 `Windows`，其中的 `Users` 之下又有 3 個資料夾 `Tiger`, `Pooh` 與 `Piglet`
+  - Mac 的根目錄以 `/` 表示，裡面有 3 個資料夾 `Library`, `Users` 以及 `System`。`Users` 之下有 `Tiger`, `Pooh` 與 `Piglet` 3 個資料夾
+
+
+### 路徑 (Path)
+
+使用 **Text-based user interfaces (TUI)** 與電腦互動時，需要一套用來描述**路徑 (Path)** (亦即, 某個資料夾或檔案位於電腦上的哪個位置) 的語法。這套語法基本上就是在告訴電腦「如何從 **A 資料夾**『走到』目標資料夾 (或檔案)」
+
+#### 絕對路徑 
+
+**絕對路徑**就是在告訴電腦「如何從**根目錄 (root)**走到目標資料夾 (或檔案)」
+
+- `/` 在描述路徑時具有 **2 種**語意：
+  1. 若 `/` 出現在**路徑的起始** (e.g., `/Users`)，則其代表的是**根目錄** (Windows 的 `C:` 以及 Mac 的 `/`)
+  2. 若 `/` 出現在 **路徑的中間** (e.g., `C:/Users/Pooh`)，則是作為**母 (Parent) 子 (Child) 資料夾**之間的分隔符號
+
+- 舉例來說，
+  1. 若要告訴電腦**根目錄**的位置，只須輸入根目錄的名稱：
+     - `C:` (Windows)  
+       `/` (Mac)
+  2. 若要告訴電腦 `Tiger` 的位置，則可以在根目錄後面依序輸入 `Users` 與 `Tiger`，並使用 `/` 作為資料夾間的分隔線：
+     - `C:/Users/Tiger` (Windows)  
+       `/Users/Tiger` (Mac)
+
+```{r echo=F, fig.show='hold', out.width=c("47%", "52%")}
+img("abs_path.png", "abs_path2.png")
+```
+
+::: {.hands-on data-title="Terminal 101"}
+現在是時候打開**終端機 (Terminal)** 玩玩看了 (解鎖你電腦的 1 號隱藏功能)。
+
+### Windows {-}
+
+1. 按下 Windows 鍵 `⊞` 搜尋：`cmd` 打開「命令提示字元」
+2. 在跳出來的黑黑的視窗輸入 `cd`，此時應會印出一個絕對路徑^[注意：與前述不同的是，Windows 系統的路徑是以**反斜線 (`\`)** 而非 **`/`** 作為資料夾的分隔，但使用者在輸入路徑時，**可以使用 `/`**。]：
+
+   ```txt
+   C:\Users\{username}
+   ```
+
+   這個路徑包含 3 個資料夾 `C:`, `Users` 以及 `{username}`，其中 `{username}` 是你登入電腦的使用者名稱
+
+### Mac {-}
+
+1. 在 Finder 搜尋 `Terminal` 或 `終端機`
+2. 在跳出來的黑黑的視窗輸入 `pwd`，此時應會印出一個絕對路徑
+
+   ```sh
+   /Users/{username}
+   ```
+   
+   這個路徑包含 3 個資料夾 `/`, `Users` 以及 `{username}`，其中 `{username}` 是你登入電腦的使用者名稱
+
+### 工作目錄 (Working Directory) {-}
+
+這個出現在終端機上的絕對路徑即是**目前終端機程式的工作目錄**。所以到底什麼是工作目錄？
+
+由於程式 (e.g., 終端機, R, Python, Chrome, ...) 運行時需要與電腦進行互動，換言之，它們經常需要讀取、修改、刪除與寫入檔案與資料夾，但同時又**不需要知道電腦上完整的目錄結構**，因此它們需要有一個參照用的資料夾，以此資料夾作為**描述路徑的基準**。這個參照的資料夾就如同執行中的程式**工作的地方**，因此稱為工作目錄；而用來描述**相對於工作目錄的路徑**則稱為**相對路徑**。
+
+而上面 `C:\Users\{username}` (Windows) 與 `/Users/{username}` (Mac) 這兩個路徑， 即是終端機開啟時**預設的工作目錄**。下方介紹完相對路徑後，接著會告訴大家**如何更改工作目錄**。
+:::
+
+
+#### 相對路徑
+
+**相對路徑**就是在告訴電腦「如何從**工作目錄 (working directory)** 走到目標資料夾 (或檔案)」。以下方的目錄結構為例 (工作目錄設在 `/Users/Pooh`)，
+
+```{r relativepath, echo=F, fig.align="center", fig.cap="範例目錄結構。在此例中，工作目錄設置在 \`Pooh\`", out.width="33%"}
+img("relative_path.png")
+```
+
+- `.` 表示的是「當前」的目錄，所以若其出現在路徑的**開頭**，即是指工作目錄^[若 `.` 出現在路徑之中 (不常使用，但為合法的語法，例如 `/Users/./Pooh`)，即是指 `.` 出現之前的路徑 (在此例中是 `/Users`)。所以 `/Users/Pooh`, `/Users/./Pooh`, `/Users/././Pooh` 和 `/Users/./././Pooh` 全都是指涉相同的資料夾。]。所以透過相對路徑表示工作目錄非常簡短：
+
+  ```sh
+  .
+  ```
+
+- 若要表示工作目錄之下的檔案或資料夾，例如 `Desktop`，其相對路徑即為其名稱：
+
+  ```sh
+  Desktop
+  ```
+
+  或是，也可以在透過 `.` 表示當前目錄之後，再於後方加入檔案或資料夾的名稱：
+
+  ```sh
+  ./Desktop
+  ```
+
+- 依此類推，工作目錄下面**兩個階層**的檔案或資料夾 (例如，`i.txt`) 的相對路徑為：
+
+  ```sh
+  Desktop/i.txt
+  ./Desktop/i.txt
+  ```
+
+- `..` 則讓我們可以**往上**走。例如，若想表示工作目錄的母資料夾 `Users`，可以使用 `..`：
+  
+  ```sh
+  ..
+  ./..
+  ```
+
+- 這讓我們可以很方便地表示工作目錄的「**姊妹**」資料夾 `Tiger` (它們共同的母資料夾是 `Users`)：
+
+  ```sh
+  ../Tiger
+  ./../Tiger
+  ```
+  ```{r relativepath2, echo=F, fig.align="center", fig.cap="透過相對路徑表示「姊妹」的資料夾", out.width="33%"}
+  img("relative_path2.png")
+  ```
+
+- 同理，若要表達 `Tiger` 之下的 `he.txt`，只需在原本的路徑之後加入檔名：
+  
+  ```sh
+  ../Tiger/he.txt
+  ./../Tiger/he.txt
+  ```
+
+
+::: {.hands-on data-title="Terminal 202"}
+
+透過終端機更改工作目錄的指令很簡單：`cd` ("change directory") + 絕對/相對路徑[^cd-win]。所以假設想將 Figure \@ref(fig:relativepath2) 中的工作目錄 `Pooh` 更改成 `Tiger`，只要輸入：
+
+```sh
+cd ../Tiger
+```
+或
+```sh
+cd /Users/Tiger
+```
+
+### Windows 路徑中的反斜線 (`\`) {-}
+
+Windows 系統上的路徑使用的是反斜線 `\` 作為分隔符號，與其它系統 (Mac, Linux 等) 以及各種程式語言 (R, Python 等) 使用的 `/` 不同。但近年的 Windows 系統已讓使用者能輸入 `/` 作為路徑中的分隔[^backnor]。由於反斜線 `\` 在許多程式語言中常具有特殊的功能，這邊強烈建議大家**路徑中不要使用反斜線 `\`**，請使用 `/`。這麼做的好處之一，是讓你撰寫的程式可以同時在 Windows 以及其它系統上運行[^cross-platform]。
+
+[^cd-win]: 在 Windows 上，若直接輸入 `cd` 指令 (後方沒有接路徑)，會直接印出當前的工作目錄。此時，`cd` 等同於類 Unix 系統的 `pwd` 指令。
+[^backnor]: 所以在 Windows 上 `cd ../Tiger` 與 `cd ..\Tiger` 皆可使用。
+[^cross-platform]: 但若路徑使用反斜線，只有 Windows 上可以運行，因為反斜線在其它系統上不代表路徑內的分隔符號。
+
+:::
+
+
+## R 101
+
+現在我們已經知道如何操作終端機了。接下來，我們就可以透過終端機執行我們的第一支 R 程式：
+
+1. 透過文字編輯器^[例如，[VScode](https://code.visualstudio.com)、[notepad++](https://notepad-plus-plus.org/downloads/)、[Atom](https://atom.io) 等。若電腦上沒有文字編輯器，強烈建議選擇一個進行安裝。若不知道安裝哪一個，建議安裝 VScode (助教們比較熟悉)。]新增一份純文字檔，將檔案命名為 `hello.R`。`hello.R` 內請寫下：
+   
+   ```r
+   print("Hello World!")
+   ```
+2. 打開終端機，`cd` 到 `hello.R` 所在的資料夾 (e.g., `C:/Users/Tiger/Desktop`)，再執行 `Rscript hello.R`:
+   
+   ```sh
+   cd ./Desktop
+   Rscript hello.R
+   ```
+3. 這時，你應該會看到終端機裡印出：
+
+   ```txt
+   [1] "Hello World!"
+   ```
+
+
+::: {.hands-on data-title="R 101"}
+
+試著修改 `hello.R` 的內容，然後重複執行 `Rscript hello.R`，看看輸出指令如何改變。你可以嘗試以下的指令：
+
+- `print("Hi")`
+- `(2 + 7) / 10`
+- `2 ^ 3`
+- `1:4`
+
+在 `hello.R` 裡面，你可以輸入不只一條指令，但注意，每一條指令需佔**獨立的一行**。例如，若要輸入三條指令，`hello.R` 的樣子會類似：
+
+```r
+print("Hello world")
+print("Hi")
+(2 + 7) / 10
+```
+:::
+
+
+### R Script
+
+`hello.R` 這類用來撰寫程式的純文字檔稱為 **R script** (而執行 R Script 裡程式的指令為 `Rscript`)。在 R script 中，程式碼是由上至下執行，所以上面的例子
+
+```r
+print("Hello world")
+print("Hi")
+(2 + 7) / 10
+```
+
+執行後會依序印出這三行的執行結果：
+
+```txt
+[1] "Hello World!"
+[1] "Hi"
+[1] 0.9
+```
+
+### 回傳值
+
+- 在上方的例子中，印出的執行結果前面皆有一個 `[1]`。這個 `[1]` 的目的是為了方便使用者知道指令執行的結果 (回傳值) 的「位置」。事實上，R 印出回傳值的形式是：`[<num>] <value(s)>`：
+    - `<value(s)>` 是指令所傳回來的值 (可有一個以上)，e.g. `1` or `1 2 3 4` or `"a" "b" "c" "d"`
+    - 而 `[<num>]` 則是一個指標 (位於每橫列的開頭)，用來指示其**右邊第一個值**在所有的值之中的排序，e.g. `[1] 11 12 13` 代表 `11` 是第 1 個數值、`12` 是第 2 個數值；若第一行不足以印出所有的值，則會接著印出第二行: 例如 `[16] 26 27 28` 代表 `26` 是第 16 個。
+
+- 例如，執行 `1:50` 會回傳 50 個值 (1~50)。因為終端機一行無法顯示全部的值，它便會將結果用多行 (行數每台電腦可能不同) 顯示，並透過 `[<num>]` 方便使用者知道目前印到哪一個值：
+
+   ```{r}
+   1:50
+   ```
+
+### 變數指派 (Assignment)
+
+要將指令的回傳值儲存起來，需要使用 `<-` (assignment operator)，將 `<-` 右邊的程式碼**執行後所回傳的數值**儲存於 `<-` 左邊的變數
+
+例如，我可以先將 `2 * 3 + 4` 的運算結果儲存在 `x` 內：
+   
+```{r}
+x <- 2 * 3 + 4
+```
+
+之後，我可以輸入 `x` 直接取用上次運算的結果：
+
+```{r}
+x
+x + 1  # 用 x 內的值進一步運算
+```
+
+### R 內建函數
+
+- R 裡面的函數就像是我們國高中數學課學到的「函數」。
+    - R 的函數 (通常) 會有一個或多個「輸入值」，稱為「引數 (argument)」；並且在運算完成後，一定會丟出一個「回傳值」
+
+- `sqrt()` 是一個函數，它會將輸入值 (在圓括號內) 開根號後回傳
+   
+   ```{r}
+   sqrt(16)
+   ```
+
+- 函數裡面可以放入另一個函數 (e.g. `sqrt(sqrt(16))`)，其運算的次序是**由內而外**，先執行最內部的函數，取得回傳值後，再將此回傳值作為外面的函數的輸入值
+
+   ```{r buitin-functions}
+   sqrt(sqrt(16))
+   ```
+
+   概念上等同於：
+   
+   ```{r}
+   inner <- sqrt(16)
+   sqrt(inner)
+   ```
+
+
+### R Console
+
+- 寫程式時，每次修改都要透過 `Rscript` 指令檢視執行結果有點麻煩，特別是當你只是在**測試**或是只想看**某一行指令的輸出結果**時。因此在撰寫程式時，我們通常會
+  1. 先將指令**寫在 R Console** 測試
+  2. 確認執行結果沒問題後再**將指令複製到 R Script**
+  3. 寫完完整的一段程式碼再透過終端機**執行整個 R Script**
+- 在終端機裡面輸入 `R` 即可打開 R Console。
+- R Console 是互動式的，意思是輸入一行指令後，可以馬上看到指令執行的結果，並且還可以繼續執行其它指令 (過程中若有指派變數，結果也會記錄下來)。
+
+```{r fig.cap="寫 R 必備的 3 樣工具", echo=F}
+img("3-tools.png")
+```
+
+
+### 說明文件 (R Help Page)
+
+- 不確定如何使用函數時，可以閱讀該函數的說明文件：
+
+    ```r
+    # ?<function_name>
+    ?log
+    
+    # ?`<function_name>`: for special functions (e.g. binary operators)
+    ?`+`
+    ```
+
+```{r fig.cap="說明文件結構。建議閱讀步驟：`Description` > `Usage` > `Arguments` > `Value` > `Examples` > `Details`", echo=F, out.width="100%"}
+img("help-page.png")
+```
