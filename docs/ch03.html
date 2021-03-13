@@ -32,9 +32,9 @@
       <nav aria-label="Table of contents"><h2>Table of contents</h2>
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">關於</a></li>
-<li><a class="" href="lab01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
-<li><a class="" href="lab02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
-<li><a class="active" href="lab03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="active" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
 </ul>
 
         <div class="book-extra">
@@ -42,9 +42,9 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="lab03" class="section level1" number="3">
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch03" class="section level1" number="3">
 <h1>
-<span class="header-section-number">3</span> Base R (II)<a class="anchor" aria-label="anchor" href="#lab03"><i class="fas fa-link"></i></a>
+<span class="header-section-number">3</span> Base R (II)<a class="anchor" aria-label="anchor" href="#ch03"><i class="fas fa-link"></i></a>
 </h1>
 <p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/14naJhj_PYydPoyy9zvafk1TWQIbsqmIEsHeGgcYbkag">投影片</a> /
 <a href="https://rlads2021.github.io/lab/src/04.zip">程式碼</a> /
@@ -229,9 +229,9 @@ Figure 3.1: List as a train
 <li><p>R 有 for 與 while 迴圈。一般而言，在資料分析時非常少會用到 while 迴圈，因此實習課不作介紹，有興趣的同學可自行參考線上教材或教科書。</p></li>
 <li>
 <p>for loop 的結構如下</p>
-<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="lab03.html#cb210-1" aria-hidden="true"></a><span class="cf">for</span> (<span class="op">&lt;</span>變數<span class="op">&gt;</span><span class="st"> </span><span class="cf">in</span> <span class="op">&lt;</span>vector<span class="op">&gt;</span>) {</span>
-<span id="cb210-2"><a href="lab03.html#cb210-2" aria-hidden="true"></a>    <span class="op">&lt;</span>some code<span class="op">&gt;</span></span>
-<span id="cb210-3"><a href="lab03.html#cb210-3" aria-hidden="true"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="ch03.html#cb210-1" aria-hidden="true"></a><span class="cf">for</span> (<span class="op">&lt;</span>變數<span class="op">&gt;</span><span class="st"> </span><span class="cf">in</span> <span class="op">&lt;</span>vector<span class="op">&gt;</span>) {</span>
+<span id="cb210-2"><a href="ch03.html#cb210-2" aria-hidden="true"></a>    <span class="op">&lt;</span>some code<span class="op">&gt;</span></span>
+<span id="cb210-3"><a href="ch03.html#cb210-3" aria-hidden="true"></a>}</span></code></pre></div>
 </li>
 <li><p>for loop 會使 <code>{}</code> 內的程式碼重複執行數次，其次數等於 <code>&lt;vector&gt;</code> 的長度；並且，在第 n 次開始執行 <code>{}</code> 內的程式碼前，會將 <code>&lt;vector&gt;</code> 裡的第 n 個元素指派給 <code>&lt;變數&gt;</code>。所以在第一次迴圈時，可透過 <code>&lt;變數&gt;</code> 取得 <code>&lt;vector&gt;</code> 中的第一個元素；在第二次迴圈時，可取得 <code>&lt;vector&gt;</code> 中的第二個元素；依此類推，最後一次迴圈則可以透過 <code>&lt;變數&gt;</code> 取得 <code>&lt;vector&gt;</code> 中的最後一個元素。</p></li>
 </ul>
@@ -548,7 +548,7 @@ Figure 3.3: A Data Frame
 </h3>
 <ul>
 <li>
-<p>若想要從 data frame 裡面篩選出 vector (取得「火車車廂」<strong>內</strong>的值)，則要使用<a href="lab03.html#fig:list-as-train">之前提過</a>的 <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> 或 <code>[[]]</code>:</p>
+<p>若想要從 data frame 裡面篩選出 vector (取得「火車車廂」<strong>內</strong>的值)，則要使用<a href="ch03.html#fig:list-as-train">之前提過</a>的 <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> 或 <code>[[]]</code>:</p>
 <div class="sourceCode" id="cb245"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>      <span class="co"># df[[&lt;column_index&gt;]]</span>
 <span class="va">df</span><span class="op">[[</span><span class="st">"age"</span><span class="op">]</span><span class="op">]</span>  <span class="co"># df[["&lt;column_name&gt;"]]</span>
@@ -621,12 +621,12 @@ Figure 3.3: A Data Frame
 
 
   <div class="chapter-nav">
-<div class="prev"><a href="lab02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></div>
+<div class="prev"><a href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></div>
 <div class="empty"></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav">
-<li><a class="nav-link" href="#lab03"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="nav-link" href="#ch03"><span class="header-section-number">3</span> Base R (II)</a></li>
 <li>
 <a class="nav-link" href="#list"><span class="header-section-number">3.1</span> list</a><ul class="nav navbar-nav">
 <li><a class="nav-link" href="#subsetting"><span class="header-section-number">3.1.1</span> Subsetting</a></li>

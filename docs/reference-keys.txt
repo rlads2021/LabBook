@@ -9,7 +9,7 @@ fig:unnamed-chunk-39
 fig:list-as-train
 fig:unnamed-chunk-57
 fig:unnamed-chunk-58
-lab01
+ch01
 路徑-工作目錄
 目錄結構-directory-structure
 路徑-path
@@ -22,7 +22,7 @@ r-script
 r-內建函數
 r-console
 說明文件-r-help-page
-lab02
+ch02
 r-studio
 自訂樣式
 編輯器設定
@@ -45,7 +45,7 @@ modifying-values-in-vector
 if-else
 wrap-up
 r-markdown
-lab03
+ch03
 list
 subsetting
 nested-structure

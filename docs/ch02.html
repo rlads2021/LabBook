@@ -32,9 +32,9 @@
       <nav aria-label="Table of contents"><h2>Table of contents</h2>
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">關於</a></li>
-<li><a class="" href="lab01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
-<li><a class="active" href="lab02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
-<li><a class="" href="lab03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="active" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
 </ul>
 
         <div class="book-extra">
@@ -42,9 +42,9 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="lab02" class="section level1" number="2">
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch02" class="section level1" number="2">
 <h1>
-<span class="header-section-number">2</span> Base R (I) &amp; 輔助工具<a class="anchor" aria-label="anchor" href="#lab02"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2</span> Base R (I) &amp; 輔助工具<a class="anchor" aria-label="anchor" href="#ch02"><i class="fas fa-link"></i></a>
 </h1>
 <p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1b01Vx-uTr2DQ1t2FKFFDiPzw7LlI-srYMqXIPWKQC_Q">投影片</a> /
 <a href="https://youtu.be/WV18389Op8s">影片</a>)</span></p>
@@ -628,26 +628,26 @@ Add if-else concept and then wrap up
 <li><p>可以在 <code>if</code> 之後使用多個 <code>else if</code>.</p></li>
 <li>
 <p>條件式的結構：</p>
-<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="lab02.html#cb184-1" aria-hidden="true"></a><span class="co"># 只有 if</span></span>
-<span id="cb184-2"><a href="lab02.html#cb184-2" aria-hidden="true"></a><span class="cf">if</span> (<span class="op">&lt;</span>條件<span class="op">&gt;</span>) {</span>
-<span id="cb184-3"><a href="lab02.html#cb184-3" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">  </span><span class="co"># 條件成立時執行</span></span>
-<span id="cb184-4"><a href="lab02.html#cb184-4" aria-hidden="true"></a>}</span>
-<span id="cb184-5"><a href="lab02.html#cb184-5" aria-hidden="true"></a></span>
-<span id="cb184-6"><a href="lab02.html#cb184-6" aria-hidden="true"></a><span class="co"># if, else</span></span>
-<span id="cb184-7"><a href="lab02.html#cb184-7" aria-hidden="true"></a><span class="cf">if</span> (<span class="op">&lt;</span>條件<span class="op">&gt;</span>) {</span>
-<span id="cb184-8"><a href="lab02.html#cb184-8" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">  </span><span class="co"># &lt;條件&gt;成立時執行</span></span>
-<span id="cb184-9"><a href="lab02.html#cb184-9" aria-hidden="true"></a>} <span class="cf">else</span> {</span>
-<span id="cb184-10"><a href="lab02.html#cb184-10" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">  </span><span class="co"># &lt;條件&gt;不成立時執行</span></span>
-<span id="cb184-11"><a href="lab02.html#cb184-11" aria-hidden="true"></a>}</span>
-<span id="cb184-12"><a href="lab02.html#cb184-12" aria-hidden="true"></a></span>
-<span id="cb184-13"><a href="lab02.html#cb184-13" aria-hidden="true"></a><span class="co"># if, else if, else</span></span>
-<span id="cb184-14"><a href="lab02.html#cb184-14" aria-hidden="true"></a><span class="cf">if</span> (<span class="op">&lt;</span>條件1<span class="op">&gt;</span>) {</span>
-<span id="cb184-15"><a href="lab02.html#cb184-15" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">          </span><span class="co"># &lt;條件1&gt;成立時執行</span></span>
-<span id="cb184-16"><a href="lab02.html#cb184-16" aria-hidden="true"></a>} <span class="cf">else</span> <span class="cf">if</span> ( <span class="op">&lt;</span>條件2<span class="op">&gt;</span><span class="st"> </span>) {</span>
-<span id="cb184-17"><a href="lab02.html#cb184-17" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">          </span><span class="co"># &lt;條件1&gt;不成立、&lt;條件2&gt;成立時執行</span></span>
-<span id="cb184-18"><a href="lab02.html#cb184-18" aria-hidden="true"></a>} <span class="cf">else</span> {</span>
-<span id="cb184-19"><a href="lab02.html#cb184-19" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">          </span><span class="co"># &lt;條件1&gt;、&lt;條件2&gt;皆不成立時執行</span></span>
-<span id="cb184-20"><a href="lab02.html#cb184-20" aria-hidden="true"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="ch02.html#cb184-1" aria-hidden="true"></a><span class="co"># 只有 if</span></span>
+<span id="cb184-2"><a href="ch02.html#cb184-2" aria-hidden="true"></a><span class="cf">if</span> (<span class="op">&lt;</span>條件<span class="op">&gt;</span>) {</span>
+<span id="cb184-3"><a href="ch02.html#cb184-3" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">  </span><span class="co"># 條件成立時執行</span></span>
+<span id="cb184-4"><a href="ch02.html#cb184-4" aria-hidden="true"></a>}</span>
+<span id="cb184-5"><a href="ch02.html#cb184-5" aria-hidden="true"></a></span>
+<span id="cb184-6"><a href="ch02.html#cb184-6" aria-hidden="true"></a><span class="co"># if, else</span></span>
+<span id="cb184-7"><a href="ch02.html#cb184-7" aria-hidden="true"></a><span class="cf">if</span> (<span class="op">&lt;</span>條件<span class="op">&gt;</span>) {</span>
+<span id="cb184-8"><a href="ch02.html#cb184-8" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">  </span><span class="co"># &lt;條件&gt;成立時執行</span></span>
+<span id="cb184-9"><a href="ch02.html#cb184-9" aria-hidden="true"></a>} <span class="cf">else</span> {</span>
+<span id="cb184-10"><a href="ch02.html#cb184-10" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">  </span><span class="co"># &lt;條件&gt;不成立時執行</span></span>
+<span id="cb184-11"><a href="ch02.html#cb184-11" aria-hidden="true"></a>}</span>
+<span id="cb184-12"><a href="ch02.html#cb184-12" aria-hidden="true"></a></span>
+<span id="cb184-13"><a href="ch02.html#cb184-13" aria-hidden="true"></a><span class="co"># if, else if, else</span></span>
+<span id="cb184-14"><a href="ch02.html#cb184-14" aria-hidden="true"></a><span class="cf">if</span> (<span class="op">&lt;</span>條件1<span class="op">&gt;</span>) {</span>
+<span id="cb184-15"><a href="ch02.html#cb184-15" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">          </span><span class="co"># &lt;條件1&gt;成立時執行</span></span>
+<span id="cb184-16"><a href="ch02.html#cb184-16" aria-hidden="true"></a>} <span class="cf">else</span> <span class="cf">if</span> ( <span class="op">&lt;</span>條件2<span class="op">&gt;</span><span class="st"> </span>) {</span>
+<span id="cb184-17"><a href="ch02.html#cb184-17" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">          </span><span class="co"># &lt;條件1&gt;不成立、&lt;條件2&gt;成立時執行</span></span>
+<span id="cb184-18"><a href="ch02.html#cb184-18" aria-hidden="true"></a>} <span class="cf">else</span> {</span>
+<span id="cb184-19"><a href="ch02.html#cb184-19" aria-hidden="true"></a>    <span class="op">&lt;</span>Some Code<span class="op">&gt;</span><span class="st">          </span><span class="co"># &lt;條件1&gt;、&lt;條件2&gt;皆不成立時執行</span></span>
+<span id="cb184-20"><a href="ch02.html#cb184-20" aria-hidden="true"></a>}</span></code></pre></div>
 </li>
 </ul>
 </div>
@@ -676,7 +676,7 @@ Add if-else concept and then wrap up
 
 <span class="co"># Construct sentence</span>
 <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">name</span><span class="op">[</span><span class="va">who</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">comparitive</span>, <span class="va">name</span><span class="op">[</span><span class="va">who</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] "tiger is younger than kai"</code></pre>
+<pre><code>#&gt; [1] "kai is older than pooh"</code></pre>
 </div>
 <div id="r-markdown" class="section level2" number="2.10">
 <h2>
@@ -722,12 +722,12 @@ Modifying Values (<a href="https://rstudio-education.github.io/hopr/modify" clas
 </div>
 
   <div class="chapter-nav">
-<div class="prev"><a href="lab01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></div>
-<div class="next"><a href="lab03.html"><span class="header-section-number">3</span> Base R (II)</a></div>
+<div class="prev"><a href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></div>
+<div class="next"><a href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav">
-<li><a class="nav-link" href="#lab02"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="nav-link" href="#ch02"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
 <li>
 <a class="nav-link" href="#r-studio"><span class="header-section-number">2.1</span> R Studio</a><ul class="nav navbar-nav">
 <li><a class="nav-link" href="#%E8%87%AA%E8%A8%82%E6%A8%A3%E5%BC%8F"><span class="header-section-number">2.1.1</span> 自訂樣式</a></li>
