@@ -490,7 +490,7 @@ img("https://bookdown.org/yihui/rmarkdown/images/hello-rmd.png")
 ```
 
 
-## 參考資源 {.appendix}
+## 參考資源 {-}
 
 1. Grolemund, G. (2014). [***Hands-on programming with R***](https://rstudio-education.github.io/hopr/)  
 R Objects (https://rstudio-education.github.io/hopr/r-objects)  

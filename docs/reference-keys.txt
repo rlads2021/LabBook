@@ -45,7 +45,6 @@ modifying-values-in-vector
 if-else
 wrap-up
 r-markdown
-參考資源
 lab03
 list
 subsetting
