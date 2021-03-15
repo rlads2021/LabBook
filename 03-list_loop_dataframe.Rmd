@@ -3,8 +3,7 @@ Base R (II) {#ch03}
 
 [([投影片](https://docs.google.com/presentation/d/14naJhj_PYydPoyy9zvafk1TWQIbsqmIEsHeGgcYbkag) /
 [程式碼](https://rlads2021.github.io/lab/src/04.zip) /
-[影片](#))
-<!-- https://youtu.be/vuffe_EhTk0 -->
+[影片](https://youtu.be/vuffe_EhTk0))
 ]{.course-resource} 
 
 
