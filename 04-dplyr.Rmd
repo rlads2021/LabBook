@@ -1,0 +1,232 @@
+Data Transformation with dplyr {#ch04}
+======================================
+
+[([投影片](https://docs.google.com/presentation/d/1-rw_0rrLYx-oHtCsAMmvmYfjEvPbVcXiLHtbSra3LNw) /
+[程式碼](https://rlads2021.github.io/lab/src/05.zip) /
+[影片](#))
+]{.course-resource}  
+[This material is largely based on [Garrett Grolemund's introduction to dplyr](https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/03-Transform)]{.additional-notes}
+
+
+## Why dplyr?
+
+- 上週介紹過篩選 data frame 的方法：`df[<vector 1>, <vector 2>]`。但這種方法有一個缺點：隨著篩選條件越來越多，篩選 data frame 的指令會越來越複雜，變得難以閱讀，例如:
+
+  ```{r}
+  library(tibble)
+  df <- as_tibble(iris)
+  
+  # How long does it take to understand the command below?
+  df[(df$Species == "setosa") & (df$Sepal.Length < 5.8), c("Species", "Sepal.Width")]
+  ```
+
+- 套件 `dplyr` 目的就是為了使這個過程變得更加容易：讓處理 data frame 的指令變得直覺易懂。
+
+## 讀取表格式資料 (`.csv`)
+
+- 可使用 RStudio `Environment Pane  >  Import Dataset  >  From Text (readr)...`，或直接使用指令：
+
+  ```{r warning=F, message=F}
+  babynames <- readr::read_csv('babynames.csv')
+  babynames
+  ```
+
+  如此便會將外部檔案讀入成 `tibble` (data frame)
+
+
+## Functions for "isolating data" in dplyr
+
+- `dplyr` 有 2 個重要的函數可以用來取代上週講過得 `[<vector 1> , <vector 2>]`
+  - `select()`: 篩選出 data frame 中的**變項 (variables)** (i.e. columns of a data frame)
+  - `filter()`: 篩選出 data frame 中特定的**觀察值 (observations)** (i.e. rows of a data frame)
+  - `select()` 與 `filter()` 分別取代了 `[<vector 1> , <vector 2>]` 之中的 `vector 2` 與 `vector 1` 的功能。除此之外，dplyr 還有 `arrange()` 可以用來**將觀察值依據某些變項進行排序**。
+
+
+## `select()`: 篩選出特定變項
+
+
+```{r echo=F, fig.cap="篩選出 `babynames` 中的 `name` 與 `prop` 變項。"}
+img("select.png")
+```
+
+
+```{r}
+library(dplyr)
+
+# select(<data frame>, <variable name in df>, <variable name in df>, ...)
+select(babynames, name, prop)  # eqivalent to babynames[, c("name", "prop")]
+```
+
+### helpers
+
+- `dplyr` 額外提供了一些函數，方便使用者依據**變項名稱的特性**去篩選變項：
+
+  ```{r}
+  iris_ <- as_tibble(iris)
+  select(iris_, starts_with('Sepal'))
+  select(iris_, ends_with('Width'))
+  select(iris_, contains('.'))
+
+  df <- tibble(x_1 = 1:10, x_2 = 11:20, x_3 = 21:30, x_4 = 31:40, x_5 = 41:50)
+  select(df, num_range("x_", 2:4))
+  ```
+
+  ```{r}
+  # You can still quote the variable names
+  select(df, "x_1", "x_2", "x_3")
+
+  # So `select()` can be mixed with base R's `paste0()`
+  select(df, paste0("x_", 1:3))
+  ```
+
+## `filter()`: 篩選出特定觀察值
+
+```{r echo=F, fig.cap='篩選出 `babynames` 中的 `name` 為 "Garrett" 的觀察值。'}
+img("filter.png")
+```
+
+
+```{r}
+# filter(<data frame>, <logical test on variable>, <logical test on variable>, ...)
+filter(babynames, name == "Garrett")
+filter(babynames, (name == "Garrett") & (year < 1885))
+filter(babynames, name == "Garrett", year < 1885)  # equivalent to the previous command
+```
+
+
+## `arrange()`: 重新排序觀察值
+
+```{r echo=F, fig.cap="依據變項 `n` 的大小由小至大排序 `babynames` 中的觀察值。"}
+img("arrange.png")
+```
+
+
+```{r}
+#arrange(<data frame>, <variable name in df>, <variable name in df>, ...)
+arrange(babynames, n)
+
+# 由大至小排序 (降冪)
+arrange(babynames, desc(n))
+
+# Order first by `year` then by `name`
+arrange(babynames, year, name)
+
+# Order first by `name` then by `year`
+arrange(babynames, name, year)
+```
+
+<div class='hide' data-tag='pipe'>
+1. Pop quiz 3: answer
+
+  ```r
+  girls2017 <- filter(babynames, year == 2017, sex == "F")
+  girls2017 <- select(girls2017, name, n)
+  girls2017 <- arrange(girls2017, desc(n))
+  girls2017
+  ```
+</div>
+
+
+## `%>%`: Connecting multiple dplyr functions together
+
+- `dplyr` 的函數**一次只能做一件事情**:`select()` 只能用來篩選變項、`filter()` 只能用來篩選觀察值、`arrange()` 只能用來排序資料。但資料整理的過程中往往需要**一次做很多事情**，例如，可能需要在篩選完觀察值之後再進行排序。如果每次呼叫完一個函數就必須將結果儲存在一個變項，會讓整理資料的過程變得很麻煩，例如：
+
+  ```{r}
+  girls2017 <- filter(babynames, year == 2017, sex == "F")
+  girls2017 <- select(girls2017, name, n)
+  girls2017 <- arrange(girls2017, desc(n))
+  girls2017
+  ```
+
+- `dplyr` (精確地說是 `magrittr`) 因此提供了一種特殊的 binary operator `%>%`，讓使用者可以將位在 `%>%` **左側**之表達式的執行結果 (回傳值) 做為位在 `%>%` **右側**之函數的**第一個輸入值 (引數, argument)**：
+
+  ```{r results='hold'}
+  # Two equivalent expressions
+  filter(babynames, year == 2017, sex == "F")
+  
+  cat('\n\n')  # 讓印出結果比較好看
+  
+  babynames %>% filter(year == 2017, sex == "F")
+  ```
+
+  如此便可將整理資料的過程改寫成一條「由一個個函數串成的」指令，如下
+
+  ```{r}
+  babynames %>% 
+      filter(year == 2017, sex == "F") %>% 
+      select(name, n) %>%
+      arrange(desc(n))
+  ```
+
+## Functions for "deriving information" in dplyr
+
+- 上文介紹的內容是關於「如何篩選或排序既有的資料」。但有時候，我們需要從既有的資料去**產出新的資料**，例如根據既有資料的某些變項計算出新的變項，或是對既有資料做出一些摘要統計。面對這些需求，`dplyr` 提供了 2 個重要的函數：
+  1. `mutate()`: 在 data frame 裡建立一個新的變項
+  1. `summarise()`: 對 data frame 裡的變項進行摘要，例如，計算某個變項的**算術平均數**、**最大(小)值**、**變異數**等
+      - `group_by()` 是 `dplyr` 中常與 `summarise()` 搭配使用的函數，其功能是**將觀察值依據某些「類別變項」進行分類**，如此 `summarise()` 就可依據分組後的結果去計算出**各個組別內變項的摘要**。例如，我們可以先使用 `group_by()` 將 `babynames` 的觀察值依據性別 (`sex`) 進行分類，再使用 `summarise()` 計算出這兩個性別的姓名 (`name`) 的數量。
+
+
+## `mutate()`: 建立新變項
+
+```{r echo=F, fig.cap="依據變項 `prop` 製造新變項 `percent`。"}
+img("mutate.png")
+```
+
+- `mutate()` 背後運作的原理是 R 的向量式運算，亦即，它是以一個變項 (i.e. 向量) 當作操作的單元。因此，用於 `mutate()` 內的函數必須是所謂的 "**vectorized function**"：vectorized function 是指可接受一個或多個 vector 當作輸入值，並且會回傳**長度相等的 vector**的函數。
+
+```{r}
+babynames %>% mutate(percent = prop*100)
+babynames %>% mutate(sex2 = if_else(sex == "F", "female", "male"))
+```
+
+
+## `summarise()`: 對變項進行摘要
+
+```{r echo=F, fig.cap="對變項 `n` 進行摘要 (計算總和與最大值)，並將摘要的結果儲存於兩個新變項 `total` 與 `max`。"}
+img("summarise.png")
+```
+
+
+```{r}
+babynames %>% summarise(total = sum(n), max = max(n))
+babynames %>% summarise(num_of_rows = n(), num_of_names = n_distinct(name))
+```
+
+### `group_by()`: 先分類再摘要
+
+```{r}
+pollution <- tibble::tribble(
+     ~city,   ~size, ~amount, 
+  "New York", "large",      23,
+  "New York", "small",      14,
+  "London", "large",      22,
+  "London", "small",      16,
+   "Beijing", "large",      121,
+   "Beijing", "small",      56
+)
+pollution
+
+pollution %>% 
+  group_by(city) %>% 
+ 	summarise(mean = mean(amount), 
+ 	          sum = sum(amount),
+ 	          count = n())
+```
+
+```{r echo=F, fig.cap="先將 `pollution` 的觀察值依據變項 `city` 分成 3 組，再各自對 3 組進行摘要 (計算污染量平均與總和) 求得之摘要表。"}
+img("group_by.png")
+```
+
+```{r}
+pollution %>% 
+  group_by(city, size) %>% 
+  summarise(mean = mean(amount), 
+          sum = sum(amount),
+ 	          count = n())
+```
+
+
+## 參考資源 {.appendix}
+
+1. Wickham, H., & Grolemund, G. (2017). ***R for Data Science***: [Data transformation](https://r4ds.had.co.nz/transform)
+2. Grolemund, G. (2019). [**Transform Data with dplyr**](https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/03-Transform)
