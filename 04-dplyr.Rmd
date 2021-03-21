@@ -3,7 +3,7 @@ Data Transformation with dplyr {#ch04}
 
 [([投影片](https://docs.google.com/presentation/d/1-rw_0rrLYx-oHtCsAMmvmYfjEvPbVcXiLHtbSra3LNw) /
 [程式碼](https://rlads2021.github.io/lab/src/05.zip) /
-[影片](#))
+[影片](https://youtu.be/p6b8Nz8Ob9s))
 ]{.course-resource}  
 [This material is largely based on [Garrett Grolemund's introduction to dplyr](https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/03-Transform)]{.additional-notes}
 
