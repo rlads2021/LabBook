@@ -1,5 +1,6 @@
 fig:foldergui
 fig:dirstruct
+fig:unnamed-chunk-2
 fig:relativepath
 fig:relativepath2
 fig:unnamed-chunk-8
@@ -9,6 +10,12 @@ fig:unnamed-chunk-39
 fig:list-as-train
 fig:unnamed-chunk-57
 fig:unnamed-chunk-58
+fig:unnamed-chunk-68
+fig:unnamed-chunk-72
+fig:unnamed-chunk-74
+fig:unnamed-chunk-79
+fig:unnamed-chunk-81
+fig:unnamed-chunk-84
 ch01
 路徑-工作目錄
 目錄結構-directory-structure
@@ -56,3 +63,17 @@ wrap-upfor-loop-與-list
 data-frame
 subsetting-returning-a-data-frame
 subsetting-returning-a-vector
+ch04
+why-dplyr
+讀取表格式資料-.csv
+functions-for-isolating-data-in-dplyr
+select-篩選出特定變項
+helpers
+filter-篩選出特定觀察值
+arrange-重新排序觀察值
+connecting-multiple-dplyr-functions-together
+functions-for-deriving-information-in-dplyr
+mutate-建立新變項
+summarise-對變項進行摘要
+group_by-先分類再摘要
+參考資源-1

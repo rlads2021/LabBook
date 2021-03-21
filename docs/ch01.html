@@ -35,6 +35,7 @@
 <li><a class="active" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
 <li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
 <li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Transformation with dplyr</a></li>
 </ul>
 
         <div class="book-extra">
@@ -56,7 +57,7 @@
 <li><p>電腦透過<strong>資料夾 (directory)</strong> 與<strong>檔案 (file)</strong> 將資訊組織起來，方便與使用者互動。資料夾裡面可以是另一個資料夾，也可以是檔案。換言之，資料夾是有<strong>階層結構</strong>的，可以一層層的包覆起來</p></li>
 <li><p>在使用電腦時，我們通常是透過<strong>圖形使用者界面 (GUI)</strong> 與電腦互動。在操作檔案與資料夾時，我們通常會透過<strong>檔案管理員</strong>這類的程式 (Figure <a href="ch01.html#fig:foldergui">1.1</a>)</p></li>
 </ul>
-<div class="figure">
+<div class="figure" style="text-align: center">
 <span id="fig:foldergui"></span>
 <img src="assets/img/folder_gui.png" alt="Windows 與 Mac 的檔案管理界面^[MacOS's figure source: &lt;https://www.dummies.com/computers/macs/mac-operating-systems/basics-of-the-os-x-folder-structure/&gt;]" width="70%"><p class="caption">
 Figure 1.1: Windows 與 Mac 的檔案管理界面<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;MacOS’s figure source: &lt;a href="https://www.dummies.com/computers/macs/mac-operating-systems/basics-of-the-os-x-folder-structure/" class="uri"&gt;https://www.dummies.com/computers/macs/mac-operating-systems/basics-of-the-os-x-folder-structure/&lt;/a&gt;&lt;/p&gt;'><sup>1</sup></a>
@@ -65,7 +66,7 @@ Figure 1.1: Windows 與 Mac 的檔案管理界面<a class="footnote-ref" tabinde
 <ul>
 <li>
 <p>對於初次接觸程式的同學，需要逐步習慣使用 <strong>Text-based user interfaces (TUI)</strong> (下圖)。透過 TUI 與電腦互動意謂著使用者(幾乎)只能使用鍵盤，也意謂著使用者需了解<strong>更多的程式指令</strong>以及<strong>電腦組織檔案與資料夾的方式</strong>。但與此同時，使用者將能<strong>更好地掌握自己的電腦</strong><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;電腦真的不便宜，學好程式讓你能更徹底地使用你的電腦（值回票價？）&lt;/p&gt;"><sup>2</sup></a></p>
-<div class="inline-figure"><img src="assets/img/console.png" width="80%"></div>
+<div class="inline-figure"><img src="assets/img/console.png" width="70%" style="display: block; margin: auto;"></div>
 </li>
 </ul>
 <div id="目錄結構-directory-structure" class="section level3" number="1.1.1">
@@ -76,7 +77,7 @@ Figure 1.1: Windows 與 Mac 的檔案管理界面<a class="footnote-ref" tabinde
 <li><p>為方便理解電腦裡面的資料夾與檔案結構 (簡稱目錄結構)，我們通常會以<strong>樹狀結構</strong>去表示目錄結構。Figure <a href="ch01.html#fig:dirstruct">1.2</a> 是 Windows 以及 Mac 上的目錄結構圖</p></li>
 <li><p>在樹狀圖中，越上方的資料夾階層越高。最上方的資料夾稱為<strong>根目錄 (root)</strong>，電腦中的<strong>所有其它資料夾與檔案</strong>皆位於<strong>根目錄</strong>之內<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;這對 Windows 系統不全然精確。比較新的 Windows 通常只有一個根目錄 (亦即 &lt;code&gt;C:&lt;/code&gt;, aka C 槽)，但 Windows 可以有多個根目錄，例如 &lt;code&gt;D:&lt;/code&gt;, &lt;code&gt;E:&lt;/code&gt;, &lt;code&gt;F:&lt;/code&gt;, …。插入隨身碟時，Windows 通常也會建立一個新的槽 (e.g., &lt;code&gt;E:&lt;/code&gt;)，但在類 Unix 系統 (e.g., Mac) 上，則會將隨身碟接在根目錄 (只有一個) 之下的某個資料夾內。&lt;/p&gt;"><sup>3</sup></a></p></li>
 </ul>
-<div class="figure">
+<div class="figure" style="text-align: center">
 <span id="fig:dirstruct"></span>
 <img src="assets/img/directory_structure.png" alt="目錄結構" width="100%"><p class="caption">
 Figure 1.2: 目錄結構
@@ -127,7 +128,12 @@ Figure 1.2: 目錄結構
 </ol>
 </li>
 </ul>
-<p><img src="assets/img/abs_path.png" width="47%"><img src="assets/img/abs_path2.png" width="52%"></p>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-2"></span>
+<img src="assets/img/abs_path.png" alt="絕對路徑" width="42%"><img src="assets/img/abs_path2.png" alt="絕對路徑" width="47%"><p class="caption">
+Figure 1.3: 絕對路徑
+</p>
+</div>
 <div class="hands-on" data-title="Terminal 101">
 <p>現在是時候打開<strong>終端機 (Terminal)</strong> 玩玩看了 (解鎖你電腦的 1 號隱藏功能)。</p>
 <div id="windows" class="section level3 unnumbered">
@@ -171,7 +177,7 @@ Figure 1.2: 目錄結構
 <div class="figure" style="text-align: center">
 <span id="fig:relativepath"></span>
 <img src="assets/img/relative_path.png" alt="範例目錄結構。在此例中，工作目錄設置在 `Pooh`" width="33%"><p class="caption">
-Figure 1.3: 範例目錄結構。在此例中，工作目錄設置在 <code>Pooh</code>
+Figure 1.4: 範例目錄結構。在此例中，工作目錄設置在 <code>Pooh</code>
 </p>
 </div>
 <ul>
@@ -202,7 +208,7 @@ Figure 1.3: 範例目錄結構。在此例中，工作目錄設置在 <code>Pooh
 <div class="figure" style="text-align: center">
 <span id="fig:relativepath2"></span>
 <img src="assets/img/relative_path2.png" alt="透過相對路徑表示「姊妹」的資料夾" width="33%"><p class="caption">
-Figure 1.4: 透過相對路徑表示「姊妹」的資料夾
+Figure 1.5: 透過相對路徑表示「姊妹」的資料夾
 </p>
 </div>
 </li>
@@ -213,7 +219,7 @@ Figure 1.4: 透過相對路徑表示「姊妹」的資料夾
 </li>
 </ul>
 <div class="hands-on" data-title="Terminal 202">
-<p>透過終端機更改工作目錄的指令很簡單：<code>cd</code> (“change directory”) + 絕對/相對路徑<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;在 Windows 上，若直接輸入 &lt;code&gt;cd&lt;/code&gt; 指令 (後方沒有接路徑)，會直接印出當前的工作目錄。此時，&lt;code&gt;cd&lt;/code&gt; 等同於類 Unix 系統的 &lt;code&gt;pwd&lt;/code&gt; 指令。&lt;/p&gt;"><sup>6</sup></a>。所以假設想將 Figure <a href="ch01.html#fig:relativepath2">1.4</a> 中的工作目錄 <code>Pooh</code> 更改成 <code>Tiger</code>，只要輸入：</p>
+<p>透過終端機更改工作目錄的指令很簡單：<code>cd</code> (“change directory”) + 絕對/相對路徑<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;在 Windows 上，若直接輸入 &lt;code&gt;cd&lt;/code&gt; 指令 (後方沒有接路徑)，會直接印出當前的工作目錄。此時，&lt;code&gt;cd&lt;/code&gt; 等同於類 Unix 系統的 &lt;code&gt;pwd&lt;/code&gt; 指令。&lt;/p&gt;"><sup>6</sup></a>。所以假設想將 Figure <a href="ch01.html#fig:relativepath2">1.5</a> 中的工作目錄 <code>Pooh</code> 更改成 <code>Tiger</code>，只要輸入：</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="ch01.html#cb11-1" aria-hidden="true"></a><span class="bu">cd</span> ../Tiger</span></code></pre></div>
 <p>或</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="ch01.html#cb12-1" aria-hidden="true"></a><span class="bu">cd</span> /Users/Tiger</span></code></pre></div>
@@ -361,10 +367,10 @@ Figure 1.4: 透過相對路徑表示「姊妹」的資料夾
 <li>在終端機裡面輸入 <code>R</code> 即可打開 R Console。</li>
 <li>R Console 是互動式的，意思是輸入一行指令後，可以馬上看到指令執行的結果，並且還可以繼續執行其它指令 (過程中若有指派變數，結果也會記錄下來)。</li>
 </ul>
-<div class="figure">
+<div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-8"></span>
-<img src="assets/img/3-tools.png" alt="寫 R 必備的 3 樣工具" width="80%"><p class="caption">
-Figure 1.5: 寫 R 必備的 3 樣工具
+<img src="assets/img/3-tools.png" alt="寫 R 必備的 3 樣工具" width="70%"><p class="caption">
+Figure 1.6: 寫 R 必備的 3 樣工具
 </p>
 </div>
 </div>
@@ -383,10 +389,10 @@ Figure 1.5: 寫 R 必備的 3 樣工具
 <span class="op">?</span><span class="va">`+`</span></code></pre></div>
 </li>
 </ul>
-<div class="figure">
+<div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-9"></span>
 <img src="assets/img/help-page.png" alt="說明文件結構。建議閱讀步驟：`Description` &gt; `Usage` &gt; `Arguments` &gt; `Value` &gt; `Examples` &gt; `Details`" width="100%"><p class="caption">
-Figure 1.6: 說明文件結構。建議閱讀步驟：<code>Description</code> &gt; <code>Usage</code> &gt; <code>Arguments</code> &gt; <code>Value</code> &gt; <code>Examples</code> &gt; <code>Details</code>
+Figure 1.7: 說明文件結構。建議閱讀步驟：<code>Description</code> &gt; <code>Usage</code> &gt; <code>Arguments</code> &gt; <code>Value</code> &gt; <code>Examples</code> &gt; <code>Details</code>
 </p>
 </div>
 
@@ -438,7 +444,7 @@ Figure 1.6: 說明文件結構。建議閱讀步驟：<code>Description</code> &
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">March 15, 2021</span>.</p>
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">March 21, 2021</span>.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

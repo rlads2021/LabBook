@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 4 Data Transformation with dplyr | RLads Lab</title>
+<meta name="author" content="Yongfu Liao">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7.3/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RLads Lab</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">關於</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="active" href="ch04.html"><span class="header-section-number">4</span> Data Transformation with dplyr</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/rlads2021/LabBook">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch04" class="section level1" number="4">
+<h1>
+<span class="header-section-number">4</span> Data Transformation with dplyr<a class="anchor" aria-label="anchor" href="#ch04"><i class="fas fa-link"></i></a>
+</h1>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1-rw_0rrLYx-oHtCsAMmvmYfjEvPbVcXiLHtbSra3LNw">投影片</a> /
+<a href="https://rlads2021.github.io/lab/src/05.zip">程式碼</a> /
+<a href="#">影片</a>)</span><br><span class="additional-notes">This material is largely based on <a href="https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/03-Transform">Garrett Grolemund’s introduction to dplyr</a></span></p>
+<div id="why-dplyr" class="section level2" number="4.1">
+<h2>
+<span class="header-section-number">4.1</span> Why dplyr?<a class="anchor" aria-label="anchor" href="#why-dplyr"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>
+<p>上週介紹過篩選 data frame 的方法：<code>df[&lt;vector 1&gt;, &lt;vector 2&gt;]</code>。但這種方法有一個缺點：隨著篩選條件越來越多，篩選 data frame 的指令會越來越複雜，變得難以閱讀，例如:</p>
+<div class="sourceCode" id="cb257"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/">tibble</a></span><span class="op">)</span>
+<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span>
+
+<span class="co"># How long does it take to understand the command below?</span>
+<span class="va">df</span><span class="op">[</span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">Species</span> <span class="op">==</span> <span class="st">"setosa"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">Sepal.Length</span> <span class="op">&lt;</span> <span class="fl">5.8</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Species"</span>, <span class="st">"Sepal.Width"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 49 x 2
+#&gt;    Species Sepal.Width
+#&gt;    &lt;fct&gt;         &lt;dbl&gt;
+#&gt;  1 setosa          3.5
+#&gt;  2 setosa          3  
+#&gt;  3 setosa          3.2
+#&gt;  4 setosa          3.1
+#&gt;  5 setosa          3.6
+#&gt;  6 setosa          3.9
+#&gt;  7 setosa          3.4
+#&gt;  8 setosa          3.4
+#&gt;  9 setosa          2.9
+#&gt; 10 setosa          3.1
+#&gt; # … with 39 more rows</code></pre>
+</li>
+<li><p>套件 <code>dplyr</code> 目的就是為了使這個過程變得更加容易：讓處理 data frame 的指令變得直覺易懂。</p></li>
+</ul>
+</div>
+<div id="讀取表格式資料-.csv" class="section level2" number="4.2">
+<h2>
+<span class="header-section-number">4.2</span> 讀取表格式資料 (<code>.csv</code>)<a class="anchor" aria-label="anchor" href="#%E8%AE%80%E5%8F%96%E8%A1%A8%E6%A0%BC%E5%BC%8F%E8%B3%87%E6%96%99-.csv"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>
+<p>可使用 RStudio <code>Environment Pane  &gt;  Import Dataset  &gt;  From Text (readr)...</code>，或直接使用指令：</p>
+<div class="sourceCode" id="cb259"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">babynames</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="st">'babynames.csv'</span><span class="op">)</span>
+<span class="va">babynames</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 5
+#&gt;     year sex   name        n   prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1  1880 M     John     9655 0.0815
+#&gt;  2  1880 M     William  9532 0.0805
+#&gt;  3  1880 M     James    5927 0.0501
+#&gt;  4  1880 M     Charles  5348 0.0452
+#&gt;  5  1880 M     George   5126 0.0433
+#&gt;  6  1880 M     Frank    3242 0.0274
+#&gt;  7  1880 M     Joseph   2632 0.0222
+#&gt;  8  1880 M     Thomas   2534 0.0214
+#&gt;  9  1880 M     Henry    2444 0.0206
+#&gt; 10  1880 M     Robert   2415 0.0204
+#&gt; # … with 177,770 more rows</code></pre>
+<p>如此便會將外部檔案讀入成 <code>tibble</code> (data frame)</p>
+</li>
+</ul>
+</div>
+<div id="functions-for-isolating-data-in-dplyr" class="section level2" number="4.3">
+<h2>
+<span class="header-section-number">4.3</span> Functions for “isolating data” in dplyr<a class="anchor" aria-label="anchor" href="#functions-for-isolating-data-in-dplyr"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>
+<code>dplyr</code> 有 2 個重要的函數可以用來取代上週講過得 <code>[&lt;vector 1&gt; , &lt;vector 2&gt;]</code>
+<ul>
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code>: 篩選出 data frame 中的<strong>變項 (variables)</strong> (i.e. columns of a data frame)</li>
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code>: 篩選出 data frame 中特定的<strong>觀察值 (observations)</strong> (i.e. rows of a data frame)</li>
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> 與 <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> 分別取代了 <code>[&lt;vector 1&gt; , &lt;vector 2&gt;]</code> 之中的 <code>vector 2</code> 與 <code>vector 1</code> 的功能。除此之外，dplyr 還有 <code><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange()</a></code> 可以用來<strong>將觀察值依據某些變項進行排序</strong>。</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="select-篩選出特定變項" class="section level2" number="4.4">
+<h2>
+<span class="header-section-number">4.4</span> <code>select()</code>: 篩選出特定變項<a class="anchor" aria-label="anchor" href="#select-%E7%AF%A9%E9%81%B8%E5%87%BA%E7%89%B9%E5%AE%9A%E8%AE%8A%E9%A0%85"><i class="fas fa-link"></i></a>
+</h2>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-68"></span>
+<img src="assets/img/select.png" alt="篩選出 `babynames` 中的 `name` 與 `prop` 變項。" width="70%"><p class="caption">
+Figure 4.1: 篩選出 <code>babynames</code> 中的 <code>name</code> 與 <code>prop</code> 變項。
+</p>
+</div>
+<div class="sourceCode" id="cb261"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+
+<span class="co"># select(&lt;data frame&gt;, &lt;variable name in df&gt;, &lt;variable name in df&gt;, ...)</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">name</span>, <span class="va">prop</span><span class="op">)</span>  <span class="co"># eqivalent to babynames[, c("name", "prop")]</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 2
+#&gt;    name      prop
+#&gt;    &lt;chr&gt;    &lt;dbl&gt;
+#&gt;  1 John    0.0815
+#&gt;  2 William 0.0805
+#&gt;  3 James   0.0501
+#&gt;  4 Charles 0.0452
+#&gt;  5 George  0.0433
+#&gt;  6 Frank   0.0274
+#&gt;  7 Joseph  0.0222
+#&gt;  8 Thomas  0.0214
+#&gt;  9 Henry   0.0206
+#&gt; 10 Robert  0.0204
+#&gt; # … with 177,770 more rows</code></pre>
+<div id="helpers" class="section level3" number="4.4.1">
+<h3>
+<span class="header-section-number">4.4.1</span> helpers<a class="anchor" aria-label="anchor" href="#helpers"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p><code>dplyr</code> 額外提供了一些函數，方便使用者依據<strong>變項名稱的特性</strong>去篩選變項：</p>
+<div class="sourceCode" id="cb263"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">iris_</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">iris_</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">'Sepal'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 150 x 2
+#&gt;    Sepal.Length Sepal.Width
+#&gt;           &lt;dbl&gt;       &lt;dbl&gt;
+#&gt;  1          5.1         3.5
+#&gt;  2          4.9         3  
+#&gt;  3          4.7         3.2
+#&gt;  4          4.6         3.1
+#&gt;  5          5           3.6
+#&gt;  6          5.4         3.9
+#&gt;  7          4.6         3.4
+#&gt;  8          5           3.4
+#&gt;  9          4.4         2.9
+#&gt; 10          4.9         3.1
+#&gt; # … with 140 more rows</code></pre>
+<div class="sourceCode" id="cb265"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">iris_</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">ends_with</a></span><span class="op">(</span><span class="st">'Width'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 150 x 2
+#&gt;    Sepal.Width Petal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;
+#&gt;  1         3.5         0.2
+#&gt;  2         3           0.2
+#&gt;  3         3.2         0.2
+#&gt;  4         3.1         0.2
+#&gt;  5         3.6         0.2
+#&gt;  6         3.9         0.4
+#&gt;  7         3.4         0.3
+#&gt;  8         3.4         0.2
+#&gt;  9         2.9         0.2
+#&gt; 10         3.1         0.1
+#&gt; # … with 140 more rows</code></pre>
+<div class="sourceCode" id="cb267"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">iris_</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span><span class="st">'.'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 150 x 4
+#&gt;    Sepal.Length Sepal.Width Petal.Length Petal.Width
+#&gt;           &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+#&gt;  1          5.1         3.5          1.4         0.2
+#&gt;  2          4.9         3            1.4         0.2
+#&gt;  3          4.7         3.2          1.3         0.2
+#&gt;  4          4.6         3.1          1.5         0.2
+#&gt;  5          5           3.6          1.4         0.2
+#&gt;  6          5.4         3.9          1.7         0.4
+#&gt;  7          4.6         3.4          1.4         0.3
+#&gt;  8          5           3.4          1.5         0.2
+#&gt;  9          4.4         2.9          1.4         0.2
+#&gt; 10          4.9         3.1          1.5         0.1
+#&gt; # … with 140 more rows</code></pre>
+<div class="sourceCode" id="cb269"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x_1 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, x_2 <span class="op">=</span> <span class="fl">11</span><span class="op">:</span><span class="fl">20</span>, x_3 <span class="op">=</span> <span class="fl">21</span><span class="op">:</span><span class="fl">30</span>, x_4 <span class="op">=</span> <span class="fl">31</span><span class="op">:</span><span class="fl">40</span>, x_5 <span class="op">=</span> <span class="fl">41</span><span class="op">:</span><span class="fl">50</span><span class="op">)</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">num_range</a></span><span class="op">(</span><span class="st">"x_"</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 10 x 3
+#&gt;      x_2   x_3   x_4
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt;  1    11    21    31
+#&gt;  2    12    22    32
+#&gt;  3    13    23    33
+#&gt;  4    14    24    34
+#&gt;  5    15    25    35
+#&gt;  6    16    26    36
+#&gt;  7    17    27    37
+#&gt;  8    18    28    38
+#&gt;  9    19    29    39
+#&gt; 10    20    30    40</code></pre>
+<div class="sourceCode" id="cb271"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># You can still quote the variable names</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">df</span>, <span class="st">"x_1"</span>, <span class="st">"x_2"</span>, <span class="st">"x_3"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 10 x 3
+#&gt;      x_1   x_2   x_3
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt;  1     1    11    21
+#&gt;  2     2    12    22
+#&gt;  3     3    13    23
+#&gt;  4     4    14    24
+#&gt;  5     5    15    25
+#&gt;  6     6    16    26
+#&gt;  7     7    17    27
+#&gt;  8     8    18    28
+#&gt;  9     9    19    29
+#&gt; 10    10    20    30</code></pre>
+<div class="sourceCode" id="cb273"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># So `select()` can be mixed with base R's `paste0()`</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"x_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 10 x 3
+#&gt;      x_1   x_2   x_3
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt;  1     1    11    21
+#&gt;  2     2    12    22
+#&gt;  3     3    13    23
+#&gt;  4     4    14    24
+#&gt;  5     5    15    25
+#&gt;  6     6    16    26
+#&gt;  7     7    17    27
+#&gt;  8     8    18    28
+#&gt;  9     9    19    29
+#&gt; 10    10    20    30</code></pre>
+</li>
+</ul>
+</div>
+</div>
+<div id="filter-篩選出特定觀察值" class="section level2" number="4.5">
+<h2>
+<span class="header-section-number">4.5</span> <code>filter()</code>: 篩選出特定觀察值<a class="anchor" aria-label="anchor" href="#filter-%E7%AF%A9%E9%81%B8%E5%87%BA%E7%89%B9%E5%AE%9A%E8%A7%80%E5%AF%9F%E5%80%BC"><i class="fas fa-link"></i></a>
+</h2>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-72"></span>
+<img src="assets/img/filter.png" alt='篩選出 `babynames` 中的 `name` 為 "Garrett" 的觀察值。' width="70%"><p class="caption">
+Figure 4.2: 篩選出 <code>babynames</code> 中的 <code>name</code> 為 “Garrett” 的觀察值。
+</p>
+</div>
+<div class="sourceCode" id="cb275"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># filter(&lt;data frame&gt;, &lt;logical test on variable&gt;, &lt;logical test on variable&gt;, ...)</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">name</span> <span class="op">==</span> <span class="st">"Garrett"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 13 x 5
+#&gt;     year sex   name        n       prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+#&gt;  1  1880 M     Garrett    13 0.000110  
+#&gt;  2  1881 M     Garrett     7 0.0000646 
+#&gt;  3  1882 M     Garrett    15 0.000123  
+#&gt;  4  1883 M     Garrett    13 0.000116  
+#&gt;  5  1884 M     Garrett    15 0.000122  
+#&gt;  6  1885 M     Garrett     9 0.0000776 
+#&gt;  7  2013 M     Garrett  1613 0.000800  
+#&gt;  8  2013 F     Garrett     5 0.0000026 
+#&gt;  9  2014 M     Garrett  1562 0.000764  
+#&gt; 10  2014 F     Garrett     6 0.00000307
+#&gt; 11  2015 M     Garrett  1349 0.000662  
+#&gt; 12  2016 M     Garrett  1146 0.000568  
+#&gt; 13  2017 M     Garrett  1056 0.000538</code></pre>
+<div class="sourceCode" id="cb277"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">"Garrett"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">year</span> <span class="op">&lt;</span> <span class="fl">1885</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 5 x 5
+#&gt;    year sex   name        n      prop
+#&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1  1880 M     Garrett    13 0.000110 
+#&gt; 2  1881 M     Garrett     7 0.0000646
+#&gt; 3  1882 M     Garrett    15 0.000123 
+#&gt; 4  1883 M     Garrett    13 0.000116 
+#&gt; 5  1884 M     Garrett    15 0.000122</code></pre>
+<div class="sourceCode" id="cb279"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">name</span> <span class="op">==</span> <span class="st">"Garrett"</span>, <span class="va">year</span> <span class="op">&lt;</span> <span class="fl">1885</span><span class="op">)</span>  <span class="co"># equivalent to the previous command</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 5 x 5
+#&gt;    year sex   name        n      prop
+#&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1  1880 M     Garrett    13 0.000110 
+#&gt; 2  1881 M     Garrett     7 0.0000646
+#&gt; 3  1882 M     Garrett    15 0.000123 
+#&gt; 4  1883 M     Garrett    13 0.000116 
+#&gt; 5  1884 M     Garrett    15 0.000122</code></pre>
+</div>
+<div id="arrange-重新排序觀察值" class="section level2" number="4.6">
+<h2>
+<span class="header-section-number">4.6</span> <code>arrange()</code>: 重新排序觀察值<a class="anchor" aria-label="anchor" href="#arrange-%E9%87%8D%E6%96%B0%E6%8E%92%E5%BA%8F%E8%A7%80%E5%AF%9F%E5%80%BC"><i class="fas fa-link"></i></a>
+</h2>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-74"></span>
+<img src="assets/img/arrange.png" alt="依據變項 `n` 的大小由小至大排序 `babynames` 中的觀察值。" width="70%"><p class="caption">
+Figure 4.3: 依據變項 <code>n</code> 的大小由小至大排序 <code>babynames</code> 中的觀察值。
+</p>
+</div>
+<div class="sourceCode" id="cb281"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#arrange(&lt;data frame&gt;, &lt;variable name in df&gt;, &lt;variable name in df&gt;, ...)</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">n</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 5
+#&gt;     year sex   name         n      prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1  1880 M     Ab           5 0.0000422
+#&gt;  2  1880 M     Abbott       5 0.0000422
+#&gt;  3  1880 M     Agustus      5 0.0000422
+#&gt;  4  1880 M     Albertus     5 0.0000422
+#&gt;  5  1880 M     Almer        5 0.0000422
+#&gt;  6  1880 M     Alphonso     5 0.0000422
+#&gt;  7  1880 M     Alvia        5 0.0000422
+#&gt;  8  1880 M     Artie        5 0.0000422
+#&gt;  9  1880 M     Arvid        5 0.0000422
+#&gt; 10  1880 M     Ashby        5 0.0000422
+#&gt; # … with 177,770 more rows</code></pre>
+<div class="sourceCode" id="cb283"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># 由大至小排序 (降冪)</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 5
+#&gt;     year sex   name       n    prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+#&gt;  1  2013 F     Sophia 21213 0.0110 
+#&gt;  2  2013 F     Emma   20936 0.0109 
+#&gt;  3  2014 F     Emma   20924 0.0107 
+#&gt;  4  2015 F     Emma   20435 0.0105 
+#&gt;  5  2014 F     Olivia 19791 0.0101 
+#&gt;  6  2017 F     Emma   19738 0.0105 
+#&gt;  7  2015 F     Olivia 19669 0.0101 
+#&gt;  8  2015 M     Noah   19613 0.00962
+#&gt;  9  2016 F     Emma   19471 0.0101 
+#&gt; 10  2016 F     Olivia 19327 0.0100 
+#&gt; # … with 177,770 more rows</code></pre>
+<div class="sourceCode" id="cb285"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Order first by `year` then by `name`</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">year</span>, <span class="va">name</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 5
+#&gt;     year sex   name        n      prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1  1880 M     Aaron     102 0.000861 
+#&gt;  2  1880 M     Ab          5 0.0000422
+#&gt;  3  1880 F     Abbie      71 0.000727 
+#&gt;  4  1880 M     Abbott      5 0.0000422
+#&gt;  5  1880 F     Abby        6 0.0000615
+#&gt;  6  1880 M     Abe        50 0.000422 
+#&gt;  7  1880 M     Abel        9 0.0000760
+#&gt;  8  1880 F     Abigail    12 0.000123 
+#&gt;  9  1880 M     Abner      27 0.000228 
+#&gt; 10  1880 M     Abraham    81 0.000684 
+#&gt; # … with 177,770 more rows</code></pre>
+<div class="sourceCode" id="cb287"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Order first by `name` then by `year`</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">name</span>, <span class="va">year</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 5
+#&gt;     year sex   name      n       prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;      &lt;dbl&gt;
+#&gt;  1  2013 M     Aaban    14 0.00000694
+#&gt;  2  2014 M     Aaban    16 0.00000783
+#&gt;  3  2015 M     Aaban    15 0.00000736
+#&gt;  4  2016 M     Aaban     9 0.00000446
+#&gt;  5  2017 M     Aaban    11 0.0000056 
+#&gt;  6  2014 F     Aabha     9 0.00000461
+#&gt;  7  2015 F     Aabha     7 0.0000036 
+#&gt;  8  2016 F     Aabha     7 0.00000363
+#&gt;  9  2016 M     Aabid     5 0.00000248
+#&gt; 10  2016 M     Aabir     5 0.00000248
+#&gt; # … with 177,770 more rows</code></pre>
+<div class="hide" data-tag="pipe">
+<ol style="list-style-type: decimal">
+<li>Pop quiz 3: answer</li>
+</ol>
+<div class="sourceCode" id="cb289"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">girls2017</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">year</span> <span class="op">==</span> <span class="fl">2017</span>, <span class="va">sex</span> <span class="op">==</span> <span class="st">"F"</span><span class="op">)</span>
+<span class="va">girls2017</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">girls2017</span>, <span class="va">name</span>, <span class="va">n</span><span class="op">)</span>
+<span class="va">girls2017</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">girls2017</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>
+<span class="va">girls2017</span></code></pre></div>
+</div>
+</div>
+<div id="connecting-multiple-dplyr-functions-together" class="section level2" number="4.7">
+<h2>
+<span class="header-section-number">4.7</span> <code>%&gt;%</code>: Connecting multiple dplyr functions together<a class="anchor" aria-label="anchor" href="#connecting-multiple-dplyr-functions-together"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>
+<p><code>dplyr</code> 的函數<strong>一次只能做一件事情</strong>:<code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> 只能用來篩選變項、<code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> 只能用來篩選觀察值、<code><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange()</a></code> 只能用來排序資料。但資料整理的過程中往往需要<strong>一次做很多事情</strong>，例如，可能需要在篩選完觀察值之後再進行排序。如果每次呼叫完一個函數就必須將結果儲存在一個變項，會讓整理資料的過程變得很麻煩，例如：</p>
+<div class="sourceCode" id="cb290"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">girls2017</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">year</span> <span class="op">==</span> <span class="fl">2017</span>, <span class="va">sex</span> <span class="op">==</span> <span class="st">"F"</span><span class="op">)</span>
+<span class="va">girls2017</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">girls2017</span>, <span class="va">name</span>, <span class="va">n</span><span class="op">)</span>
+<span class="va">girls2017</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">girls2017</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span>
+<span class="va">girls2017</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 18,309 x 2
+#&gt;    name          n
+#&gt;    &lt;chr&gt;     &lt;dbl&gt;
+#&gt;  1 Emma      19738
+#&gt;  2 Olivia    18632
+#&gt;  3 Ava       15902
+#&gt;  4 Isabella  15100
+#&gt;  5 Sophia    14831
+#&gt;  6 Mia       13437
+#&gt;  7 Charlotte 12893
+#&gt;  8 Amelia    11800
+#&gt;  9 Evelyn    10675
+#&gt; 10 Abigail   10551
+#&gt; # … with 18,299 more rows</code></pre>
+</li>
+<li>
+<p><code>dplyr</code> (精確地說是 <code>magrittr</code>) 因此提供了一種特殊的 binary operator <code><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></code>，讓使用者可以將位在 <code><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></code> <strong>左側</strong>之表達式的執行結果 (回傳值) 做為位在 <code><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></code> <strong>右側</strong>之函數的<strong>第一個輸入值 (引數, argument)</strong>：</p>
+<div class="sourceCode" id="cb292"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Two equivalent expressions</span>
+<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">babynames</span>, <span class="va">year</span> <span class="op">==</span> <span class="fl">2017</span>, <span class="va">sex</span> <span class="op">==</span> <span class="st">"F"</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">'\n\n'</span><span class="op">)</span>  <span class="co"># 讓印出結果比較好看</span>
+
+<span class="va">babynames</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2017</span>, <span class="va">sex</span> <span class="op">==</span> <span class="st">"F"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 18,309 x 5
+#&gt;     year sex   name          n    prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+#&gt;  1  2017 F     Emma      19738 0.0105 
+#&gt;  2  2017 F     Olivia    18632 0.00994
+#&gt;  3  2017 F     Ava       15902 0.00848
+#&gt;  4  2017 F     Isabella  15100 0.00805
+#&gt;  5  2017 F     Sophia    14831 0.00791
+#&gt;  6  2017 F     Mia       13437 0.00717
+#&gt;  7  2017 F     Charlotte 12893 0.00688
+#&gt;  8  2017 F     Amelia    11800 0.00629
+#&gt;  9  2017 F     Evelyn    10675 0.00569
+#&gt; 10  2017 F     Abigail   10551 0.00563
+#&gt; # … with 18,299 more rows
+#&gt; 
+#&gt; 
+#&gt; # A tibble: 18,309 x 5
+#&gt;     year sex   name          n    prop
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+#&gt;  1  2017 F     Emma      19738 0.0105 
+#&gt;  2  2017 F     Olivia    18632 0.00994
+#&gt;  3  2017 F     Ava       15902 0.00848
+#&gt;  4  2017 F     Isabella  15100 0.00805
+#&gt;  5  2017 F     Sophia    14831 0.00791
+#&gt;  6  2017 F     Mia       13437 0.00717
+#&gt;  7  2017 F     Charlotte 12893 0.00688
+#&gt;  8  2017 F     Amelia    11800 0.00629
+#&gt;  9  2017 F     Evelyn    10675 0.00569
+#&gt; 10  2017 F     Abigail   10551 0.00563
+#&gt; # … with 18,299 more rows</code></pre>
+<p>如此便可將整理資料的過程改寫成一條「由一個個函數串成的」指令，如下</p>
+<div class="sourceCode" id="cb294"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">babynames</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2017</span>, <span class="va">sex</span> <span class="op">==</span> <span class="st">"F"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">n</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 18,309 x 2
+#&gt;    name          n
+#&gt;    &lt;chr&gt;     &lt;dbl&gt;
+#&gt;  1 Emma      19738
+#&gt;  2 Olivia    18632
+#&gt;  3 Ava       15902
+#&gt;  4 Isabella  15100
+#&gt;  5 Sophia    14831
+#&gt;  6 Mia       13437
+#&gt;  7 Charlotte 12893
+#&gt;  8 Amelia    11800
+#&gt;  9 Evelyn    10675
+#&gt; 10 Abigail   10551
+#&gt; # … with 18,299 more rows</code></pre>
+</li>
+</ul>
+</div>
+<div id="functions-for-deriving-information-in-dplyr" class="section level2" number="4.8">
+<h2>
+<span class="header-section-number">4.8</span> Functions for “deriving information” in dplyr<a class="anchor" aria-label="anchor" href="#functions-for-deriving-information-in-dplyr"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>上文介紹的內容是關於「如何篩選或排序既有的資料」。但有時候，我們需要從既有的資料去<strong>產出新的資料</strong>，例如根據既有資料的某些變項計算出新的變項，或是對既有資料做出一些摘要統計。面對這些需求，<code>dplyr</code> 提供了 2 個重要的函數：
+<ol style="list-style-type: decimal">
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code>: 在 data frame 裡建立一個新的變項</li>
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code>: 對 data frame 裡的變項進行摘要，例如，計算某個變項的<strong>算術平均數</strong>、<strong>最大(小)值</strong>、<strong>變異數</strong>等
+<ul>
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> 是 <code>dplyr</code> 中常與 <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code> 搭配使用的函數，其功能是<strong>將觀察值依據某些「類別變項」進行分類</strong>，如此 <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code> 就可依據分組後的結果去計算出<strong>各個組別內變項的摘要</strong>。例如，我們可以先使用 <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> 將 <code>babynames</code> 的觀察值依據性別 (<code>sex</code>) 進行分類，再使用 <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code> 計算出這兩個性別的姓名 (<code>name</code>) 的數量。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+<div id="mutate-建立新變項" class="section level2" number="4.9">
+<h2>
+<span class="header-section-number">4.9</span> <code>mutate()</code>: 建立新變項<a class="anchor" aria-label="anchor" href="#mutate-%E5%BB%BA%E7%AB%8B%E6%96%B0%E8%AE%8A%E9%A0%85"><i class="fas fa-link"></i></a>
+</h2>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-79"></span>
+<img src="assets/img/mutate.png" alt="依據變項 `prop` 製造新變項 `percent`。" width="70%"><p class="caption">
+Figure 4.4: 依據變項 <code>prop</code> 製造新變項 <code>percent</code>。
+</p>
+</div>
+<ul>
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> 背後運作的原理是 R 的向量式運算，亦即，它是以一個變項 (i.e. 向量) 當作操作的單元。因此，用於 <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> 內的函數必須是所謂的 “<strong>vectorized function</strong>”：vectorized function 是指可接受一個或多個 vector 當作輸入值，並且會回傳<strong>長度相等的 vector</strong>的函數。</li>
+</ul>
+<div class="sourceCode" id="cb296"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">babynames</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>percent <span class="op">=</span> <span class="va">prop</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 6
+#&gt;     year sex   name        n   prop percent
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+#&gt;  1  1880 M     John     9655 0.0815    8.15
+#&gt;  2  1880 M     William  9532 0.0805    8.05
+#&gt;  3  1880 M     James    5927 0.0501    5.01
+#&gt;  4  1880 M     Charles  5348 0.0452    4.52
+#&gt;  5  1880 M     George   5126 0.0433    4.33
+#&gt;  6  1880 M     Frank    3242 0.0274    2.74
+#&gt;  7  1880 M     Joseph   2632 0.0222    2.22
+#&gt;  8  1880 M     Thomas   2534 0.0214    2.14
+#&gt;  9  1880 M     Henry    2444 0.0206    2.06
+#&gt; 10  1880 M     Robert   2415 0.0204    2.04
+#&gt; # … with 177,770 more rows</code></pre>
+<div class="sourceCode" id="cb298"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">babynames</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>sex2 <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op">(</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"F"</span>, <span class="st">"female"</span>, <span class="st">"male"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 177,780 x 6
+#&gt;     year sex   name        n   prop sex2 
+#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;
+#&gt;  1  1880 M     John     9655 0.0815 male 
+#&gt;  2  1880 M     William  9532 0.0805 male 
+#&gt;  3  1880 M     James    5927 0.0501 male 
+#&gt;  4  1880 M     Charles  5348 0.0452 male 
+#&gt;  5  1880 M     George   5126 0.0433 male 
+#&gt;  6  1880 M     Frank    3242 0.0274 male 
+#&gt;  7  1880 M     Joseph   2632 0.0222 male 
+#&gt;  8  1880 M     Thomas   2534 0.0214 male 
+#&gt;  9  1880 M     Henry    2444 0.0206 male 
+#&gt; 10  1880 M     Robert   2415 0.0204 male 
+#&gt; # … with 177,770 more rows</code></pre>
+</div>
+<div id="summarise-對變項進行摘要" class="section level2" number="4.10">
+<h2>
+<span class="header-section-number">4.10</span> <code>summarise()</code>: 對變項進行摘要<a class="anchor" aria-label="anchor" href="#summarise-%E5%B0%8D%E8%AE%8A%E9%A0%85%E9%80%B2%E8%A1%8C%E6%91%98%E8%A6%81"><i class="fas fa-link"></i></a>
+</h2>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-81"></span>
+<img src="assets/img/summarise.png" alt="對變項 `n` 進行摘要 (計算總和與最大值)，並將摘要的結果儲存於兩個新變項 `total` 與 `max`。" width="70%"><p class="caption">
+Figure 4.5: 對變項 <code>n</code> 進行摘要 (計算總和與最大值)，並將摘要的結果儲存於兩個新變項 <code>total</code> 與 <code>max</code>。
+</p>
+</div>
+<div class="sourceCode" id="cb300"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">babynames</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>, max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 1 x 2
+#&gt;      total   max
+#&gt;      &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 19538552 21213</code></pre>
+<div class="sourceCode" id="cb302"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">babynames</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>num_of_rows <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>, num_of_names <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 1 x 2
+#&gt;   num_of_rows num_of_names
+#&gt;         &lt;int&gt;        &lt;int&gt;
+#&gt; 1      177780        45953</code></pre>
+<div id="group_by-先分類再摘要" class="section level3" number="4.10.1">
+<h3>
+<span class="header-section-number">4.10.1</span> <code>group_by()</code>: 先分類再摘要<a class="anchor" aria-label="anchor" href="#group_by-%E5%85%88%E5%88%86%E9%A1%9E%E5%86%8D%E6%91%98%E8%A6%81"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb304"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pollution</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html">tribble</a></span><span class="op">(</span>
+     <span class="op">~</span><span class="va">city</span>,   <span class="op">~</span><span class="va">size</span>,   <span class="op">~</span><span class="va">amount</span>, 
+  <span class="st">"New York"</span>, <span class="st">"large"</span>,      <span class="fl">23</span>,
+  <span class="st">"New York"</span>, <span class="st">"small"</span>,      <span class="fl">14</span>,
+  <span class="st">"London"</span>,   <span class="st">"large"</span>,      <span class="fl">22</span>,
+  <span class="st">"London"</span>,   <span class="st">"small"</span>,      <span class="fl">16</span>,
+  <span class="st">"Beijing"</span>,  <span class="st">"large"</span>,      <span class="fl">121</span>,
+  <span class="st">"Beijing"</span>,  <span class="st">"small"</span>,      <span class="fl">56</span>
+<span class="op">)</span>
+<span class="va">pollution</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 6 x 3
+#&gt;   city     size  amount
+#&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt;
+#&gt; 1 New York large     23
+#&gt; 2 New York small     14
+#&gt; 3 London   large     22
+#&gt; 4 London   small     16
+#&gt; 5 Beijing  large    121
+#&gt; 6 Beijing  small     56</code></pre>
+<div class="sourceCode" id="cb306"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pollution</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">city</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">amount</span><span class="op">)</span>, 
+              sum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">amount</span><span class="op">)</span>,
+              count <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 3 x 4
+#&gt;   city      mean   sum count
+#&gt;   &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 Beijing   88.5   177     2
+#&gt; 2 London    19      38     2
+#&gt; 3 New York  18.5    37     2</code></pre>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-84"></span>
+<img src="assets/img/group_by.png" alt="先將 `pollution` 的觀察值依據變項 `city` 分成 3 組，再各自對 3 組進行摘要 (計算污染量平均與總和) 求得之摘要表。" width="70%"><p class="caption">
+Figure 4.6: 先將 <code>pollution</code> 的觀察值依據變項 <code>city</code> 分成 3 組，再各自對 3 組進行摘要 (計算污染量平均與總和) 求得之摘要表。
+</p>
+</div>
+<div class="sourceCode" id="cb308"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pollution</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">city</span>, <span class="va">size</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">amount</span><span class="op">)</span>,
+            sum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">amount</span><span class="op">)</span>,
+            count <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 6 x 5
+#&gt; # Groups:   city [3]
+#&gt;   city     size   mean   sum count
+#&gt;   &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 Beijing  large   121   121     1
+#&gt; 2 Beijing  small    56    56     1
+#&gt; 3 London   large    22    22     1
+#&gt; 4 London   small    16    16     1
+#&gt; 5 New York large    23    23     1
+#&gt; 6 New York small    14    14     1</code></pre>
+</div>
+</div>
+<div id="參考資源-1" class="section level2 appendix" number="4.11">
+<h2>
+<span class="header-section-number">4.11</span> 參考資源<a class="anchor" aria-label="anchor" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90-1"><i class="fas fa-link"></i></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Wickham, H., &amp; Grolemund, G. (2017). <strong><em>R for Data Science</em></strong>: <a href="https://r4ds.had.co.nz/transform">Data transformation</a>
+</li>
+<li>Grolemund, G. (2019). <a href="https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/03-Transform"><strong>Transform Data with dplyr</strong></a>
+</li>
+</ol>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></div>
+<div class="empty"></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ch04"><span class="header-section-number">4</span> Data Transformation with dplyr</a></li>
+<li><a class="nav-link" href="#why-dplyr"><span class="header-section-number">4.1</span> Why dplyr?</a></li>
+<li><a class="nav-link" href="#%E8%AE%80%E5%8F%96%E8%A1%A8%E6%A0%BC%E5%BC%8F%E8%B3%87%E6%96%99-.csv"><span class="header-section-number">4.2</span> 讀取表格式資料 (.csv)</a></li>
+<li><a class="nav-link" href="#functions-for-isolating-data-in-dplyr"><span class="header-section-number">4.3</span> Functions for “isolating data” in dplyr</a></li>
+<li>
+<a class="nav-link" href="#select-%E7%AF%A9%E9%81%B8%E5%87%BA%E7%89%B9%E5%AE%9A%E8%AE%8A%E9%A0%85"><span class="header-section-number">4.4</span> select(): 篩選出特定變項</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#helpers"><span class="header-section-number">4.4.1</span> helpers</a></li></ul>
+</li>
+<li><a class="nav-link" href="#filter-%E7%AF%A9%E9%81%B8%E5%87%BA%E7%89%B9%E5%AE%9A%E8%A7%80%E5%AF%9F%E5%80%BC"><span class="header-section-number">4.5</span> filter(): 篩選出特定觀察值</a></li>
+<li><a class="nav-link" href="#arrange-%E9%87%8D%E6%96%B0%E6%8E%92%E5%BA%8F%E8%A7%80%E5%AF%9F%E5%80%BC"><span class="header-section-number">4.6</span> arrange(): 重新排序觀察值</a></li>
+<li><a class="nav-link" href="#connecting-multiple-dplyr-functions-together"><span class="header-section-number">4.7</span> %&gt;%: Connecting multiple dplyr functions together</a></li>
+<li><a class="nav-link" href="#functions-for-deriving-information-in-dplyr"><span class="header-section-number">4.8</span> Functions for “deriving information” in dplyr</a></li>
+<li><a class="nav-link" href="#mutate-%E5%BB%BA%E7%AB%8B%E6%96%B0%E8%AE%8A%E9%A0%85"><span class="header-section-number">4.9</span> mutate(): 建立新變項</a></li>
+<li>
+<a class="nav-link" href="#summarise-%E5%B0%8D%E8%AE%8A%E9%A0%85%E9%80%B2%E8%A1%8C%E6%91%98%E8%A6%81"><span class="header-section-number">4.10</span> summarise(): 對變項進行摘要</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#group_by-%E5%85%88%E5%88%86%E9%A1%9E%E5%86%8D%E6%91%98%E8%A6%81"><span class="header-section-number">4.10.1</span> group_by(): 先分類再摘要</a></li></ul>
+</li>
+<li><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90-1"><span class="header-section-number">4.11</span> 參考資源</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/rlads2021/LabBook/blob/master/04-dplyr.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/rlads2021/LabBook/edit/master/04-dplyr.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">March 21, 2021</span>.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

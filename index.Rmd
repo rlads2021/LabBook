@@ -14,8 +14,10 @@ description: "This is a minimal example of using the bookdown package to write a
 
 ```{r setup}
 knitr::opts_chunk$set(
-    echo = TRUE,comment = '#>',message = F,
-    out.width = "80%")
+    echo = TRUE,comment = '#>',
+    message = F,
+    out.width = "70%",
+    fig.align = "center")
 library(knitr)
 img <- function(...) {
     items = unlist(list(...))

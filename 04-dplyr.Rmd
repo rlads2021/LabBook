@@ -196,13 +196,13 @@ babynames %>% summarise(num_of_rows = n(), num_of_names = n_distinct(name))
 
 ```{r}
 pollution <- tibble::tribble(
-     ~city,   ~size, ~amount, 
+     ~city,   ~size,   ~amount, 
   "New York", "large",      23,
   "New York", "small",      14,
-  "London", "large",      22,
-  "London", "small",      16,
-   "Beijing", "large",      121,
-   "Beijing", "small",      56
+  "London",   "large",      22,
+  "London",   "small",      16,
+  "Beijing",  "large",      121,
+  "Beijing",  "small",      56
 )
 pollution
 
@@ -220,9 +220,9 @@ img("group_by.png")
 ```{r}
 pollution %>% 
   group_by(city, size) %>% 
-  summarise(mean = mean(amount), 
-          sum = sum(amount),
- 	          count = n())
+  summarise(mean = mean(amount),
+            sum = sum(amount),
+            count = n())
 ```
 
 
