@@ -61,7 +61,7 @@ img("directory_structure.png")
      - `C:/Users/Tiger` (Windows)  
        `/Users/Tiger` (Mac)
 
-```{r echo=F, fig.show='hold', out.width=c("47%", "52%")}
+```{r echo=F, fig.cap="絕對路徑", fig.show='hold', out.width=c("42%", "47%")}
 img("abs_path.png", "abs_path2.png")
 ```
 

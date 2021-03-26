@@ -3,7 +3,7 @@ Data Transformation with dplyr {#ch04}
 
 [([投影片](https://docs.google.com/presentation/d/1-rw_0rrLYx-oHtCsAMmvmYfjEvPbVcXiLHtbSra3LNw) /
 [程式碼](https://rlads2021.github.io/lab/src/05.zip) /
-[影片](#))
+[影片](https://youtu.be/p6b8Nz8Ob9s))
 ]{.course-resource}  
 [This material is largely based on [Garrett Grolemund's introduction to dplyr](https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/03-Transform)]{.additional-notes}
 
@@ -196,13 +196,13 @@ babynames %>% summarise(num_of_rows = n(), num_of_names = n_distinct(name))
 
 ```{r}
 pollution <- tibble::tribble(
-     ~city,   ~size, ~amount, 
+     ~city,   ~size,   ~amount, 
   "New York", "large",      23,
   "New York", "small",      14,
-  "London", "large",      22,
-  "London", "small",      16,
-   "Beijing", "large",      121,
-   "Beijing", "small",      56
+  "London",   "large",      22,
+  "London",   "small",      16,
+  "Beijing",  "large",      121,
+  "Beijing",  "small",      56
 )
 pollution
 
@@ -220,9 +220,9 @@ img("group_by.png")
 ```{r}
 pollution %>% 
   group_by(city, size) %>% 
-  summarise(mean = mean(amount), 
-          sum = sum(amount),
- 	          count = n())
+  summarise(mean = mean(amount),
+            sum = sum(amount),
+            count = n())
 ```
 
 

@@ -33,3 +33,7 @@ footer span.date {
   color: #707070;
   padding-left: 0;
 }
+
+p.caption {
+  text-align: center;
+}
