@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Chapter 1 掌握你的電腦 | RLads Lab</title>
 <meta name="author" content="Yongfu Liao">
-<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7.3/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
@@ -35,6 +35,7 @@
 <li><a class="active" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
 <li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
 <li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Transformation with dplyr</a></li>
 </ul>
 
         <div class="book-extra">
@@ -137,7 +138,7 @@ Figure 1.2: 目錄結構
 <li><p>按下 Windows 鍵 <code>⊞</code> 搜尋：<code>cmd</code> 打開「命令提示字元」</p></li>
 <li>
 <p>在跳出來的黑黑的視窗輸入 <code>cd</code>，此時應會印出一個絕對路徑<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;注意：與前述不同的是，Windows 系統的路徑是以&lt;strong&gt;反斜線 (&lt;code&gt;\&lt;/code&gt;)&lt;/strong&gt; 而非 &lt;strong&gt;&lt;code&gt;/&lt;/code&gt;&lt;/strong&gt; 作為資料夾的分隔，但使用者在輸入路徑時，&lt;strong&gt;可以使用 &lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;。&lt;/p&gt;"><sup>4</sup></a>：</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb2-1"><a href="ch01.html#cb2-1" aria-hidden="true"></a>C:\Users\{username}</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb2-1"><a href="ch01.html#cb2-1" aria-hidden="true" tabindex="-1"></a>C:\Users\{username}</span></code></pre></div>
 <p>這個路徑包含 3 個資料夾 <code>C:</code>, <code>Users</code> 以及 <code>{username}</code>，其中 <code>{username}</code> 是你登入電腦的使用者名稱</p>
 </li>
 </ol>
@@ -149,7 +150,7 @@ Figure 1.2: 目錄結構
 <li><p>在 Finder 搜尋 <code>Terminal</code> 或 <code>終端機</code></p></li>
 <li>
 <p>在跳出來的黑黑的視窗輸入 <code>pwd</code>，此時應會印出一個絕對路徑</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="ch01.html#cb3-1" aria-hidden="true"></a><span class="ex">/Users</span>/<span class="dt">{username}</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="ch01.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/Users/{username}</span></span></code></pre></div>
 <p>這個路徑包含 3 個資料夾 <code><a href="https://rdrr.io/r/base/Arithmetic.html">/</a></code>, <code>Users</code> 以及 <code>{username}</code>，其中 <code>{username}</code> 是你登入電腦的使用者名稱</p>
 </li>
 </ol>
@@ -177,28 +178,28 @@ Figure 1.3: 範例目錄結構。在此例中，工作目錄設置在 <code>Pooh
 <ul>
 <li>
 <p><code>.</code> 表示的是「當前」的目錄，所以若其出現在路徑的<strong>開頭</strong>，即是指工作目錄<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;若 &lt;code&gt;.&lt;/code&gt; 出現在路徑之中 (不常使用，但為合法的語法，例如 &lt;code&gt;/Users/./Pooh&lt;/code&gt;)，即是指 &lt;code&gt;.&lt;/code&gt; 出現之前的路徑 (在此例中是 &lt;code&gt;/Users&lt;/code&gt;)。所以 &lt;code&gt;/Users/Pooh&lt;/code&gt;, &lt;code&gt;/Users/./Pooh&lt;/code&gt;, &lt;code&gt;/Users/././Pooh&lt;/code&gt; 和 &lt;code&gt;/Users/./././Pooh&lt;/code&gt; 全都是指涉相同的資料夾。&lt;/p&gt;"><sup>5</sup></a>。所以透過相對路徑表示工作目錄非常簡短：</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="ch01.html#cb4-1" aria-hidden="true"></a><span class="ex">.</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="ch01.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span></span></code></pre></div>
 </li>
 <li>
 <p>若要表示工作目錄之下的檔案或資料夾，例如 <code>Desktop</code>，其相對路徑即為其名稱：</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="ch01.html#cb5-1" aria-hidden="true"></a><span class="ex">Desktop</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="ch01.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Desktop</span></span></code></pre></div>
 <p>或是，也可以在透過 <code>.</code> 表示當前目錄之後，再於後方加入檔案或資料夾的名稱：</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="ch01.html#cb6-1" aria-hidden="true"></a><span class="ex">./Desktop</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="ch01.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./Desktop</span></span></code></pre></div>
 </li>
 <li>
 <p>依此類推，工作目錄下面<strong>兩個階層</strong>的檔案或資料夾 (例如，<code>i.txt</code>) 的相對路徑為：</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="ch01.html#cb7-1" aria-hidden="true"></a><span class="ex">Desktop/i.txt</span></span>
-<span id="cb7-2"><a href="ch01.html#cb7-2" aria-hidden="true"></a><span class="ex">./Desktop/i.txt</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="ch01.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Desktop/i.txt</span></span>
+<span id="cb7-2"><a href="ch01.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./Desktop/i.txt</span></span></code></pre></div>
 </li>
 <li>
 <p><code>..</code> 則讓我們可以<strong>往上</strong>走。例如，若想表示工作目錄的母資料夾 <code>Users</code>，可以使用 <code>..</code>：</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="ch01.html#cb8-1" aria-hidden="true"></a><span class="ex">..</span></span>
-<span id="cb8-2"><a href="ch01.html#cb8-2" aria-hidden="true"></a><span class="ex">./..</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="ch01.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">..</span></span>
+<span id="cb8-2"><a href="ch01.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./..</span></span></code></pre></div>
 </li>
 <li>
 <p>這讓我們可以很方便地表示工作目錄的「<strong>姊妹</strong>」資料夾 <code>Tiger</code> (它們共同的母資料夾是 <code>Users</code>)：</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="ch01.html#cb9-1" aria-hidden="true"></a><span class="ex">../Tiger</span></span>
-<span id="cb9-2"><a href="ch01.html#cb9-2" aria-hidden="true"></a><span class="ex">./../Tiger</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb9-1"><a href="ch01.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">../Tiger</span></span>
+<span id="cb9-2"><a href="ch01.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./../Tiger</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span id="fig:relativepath2"></span>
 <img src="assets/img/relative_path2.png" alt="透過相對路徑表示「姊妹」的資料夾" width="33%"><p class="caption">
@@ -208,15 +209,15 @@ Figure 1.4: 透過相對路徑表示「姊妹」的資料夾
 </li>
 <li>
 <p>同理，若要表達 <code>Tiger</code> 之下的 <code>he.txt</code>，只需在原本的路徑之後加入檔名：</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="ch01.html#cb10-1" aria-hidden="true"></a><span class="ex">../Tiger/he.txt</span></span>
-<span id="cb10-2"><a href="ch01.html#cb10-2" aria-hidden="true"></a><span class="ex">./../Tiger/he.txt</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="ch01.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">../Tiger/he.txt</span></span>
+<span id="cb10-2"><a href="ch01.html#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./../Tiger/he.txt</span></span></code></pre></div>
 </li>
 </ul>
 <div class="hands-on" data-title="Terminal 202">
 <p>透過終端機更改工作目錄的指令很簡單：<code>cd</code> (“change directory”) + 絕對/相對路徑<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;在 Windows 上，若直接輸入 &lt;code&gt;cd&lt;/code&gt; 指令 (後方沒有接路徑)，會直接印出當前的工作目錄。此時，&lt;code&gt;cd&lt;/code&gt; 等同於類 Unix 系統的 &lt;code&gt;pwd&lt;/code&gt; 指令。&lt;/p&gt;"><sup>6</sup></a>。所以假設想將 Figure <a href="ch01.html#fig:relativepath2">1.4</a> 中的工作目錄 <code>Pooh</code> 更改成 <code>Tiger</code>，只要輸入：</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="ch01.html#cb11-1" aria-hidden="true"></a><span class="bu">cd</span> ../Tiger</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="ch01.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../Tiger</span></code></pre></div>
 <p>或</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="ch01.html#cb12-1" aria-hidden="true"></a><span class="bu">cd</span> /Users/Tiger</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="ch01.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /Users/Tiger</span></code></pre></div>
 <div id="windows-路徑中的反斜線" class="section level3 unnumbered">
 <h3>Windows 路徑中的反斜線 (<code>\</code>)<a class="anchor" aria-label="anchor" href="#windows-%E8%B7%AF%E5%BE%91%E4%B8%AD%E7%9A%84%E5%8F%8D%E6%96%9C%E7%B7%9A"><i class="fas fa-link"></i></a>
 </h3>
@@ -239,12 +240,12 @@ Figure 1.4: 透過相對路徑表示「姊妹」的資料夾
 </li>
 <li>
 <p>打開終端機，<code>cd</code> 到 <code>hello.R</code> 所在的資料夾 (e.g., <code>C:/Users/Tiger/Desktop</code>)，再執行 <code>Rscript hello.R</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="ch01.html#cb14-1" aria-hidden="true"></a><span class="bu">cd</span> ./Desktop</span>
-<span id="cb14-2"><a href="ch01.html#cb14-2" aria-hidden="true"></a><span class="ex">Rscript</span> hello.R</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb14-1"><a href="ch01.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ./Desktop</span>
+<span id="cb14-2"><a href="ch01.html#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> hello.R</span></code></pre></div>
 </li>
 <li>
 <p>這時，你應該會看到終端機裡印出：</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb15-1"><a href="ch01.html#cb15-1" aria-hidden="true"></a>[1] "Hello World!"</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb15-1"><a href="ch01.html#cb15-1" aria-hidden="true" tabindex="-1"></a>[1] "Hello World!"</span></code></pre></div>
 </li>
 </ol>
 <div class="hands-on" data-title="R 101">
@@ -271,9 +272,9 @@ Figure 1.4: 透過相對路徑表示「姊妹」的資料夾
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">"Hi"</span><span class="op">)</span>
 <span class="op">(</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">7</span><span class="op">)</span> <span class="op">/</span> <span class="fl">10</span></code></pre></div>
 <p>執行後會依序印出這三行的執行結果：</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb18-1"><a href="ch01.html#cb18-1" aria-hidden="true"></a>[1] "Hello World!"</span>
-<span id="cb18-2"><a href="ch01.html#cb18-2" aria-hidden="true"></a>[1] "Hi"</span>
-<span id="cb18-3"><a href="ch01.html#cb18-3" aria-hidden="true"></a>[1] 0.9</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb18-1"><a href="ch01.html#cb18-1" aria-hidden="true" tabindex="-1"></a>[1] "Hello World!"</span>
+<span id="cb18-2"><a href="ch01.html#cb18-2" aria-hidden="true" tabindex="-1"></a>[1] "Hi"</span>
+<span id="cb18-3"><a href="ch01.html#cb18-3" aria-hidden="true" tabindex="-1"></a>[1] 0.9</span></code></pre></div>
 </div>
 <div id="回傳值" class="section level3" number="1.2.2">
 <h3>
@@ -438,7 +439,7 @@ Figure 1.6: 說明文件結構。建議閱讀步驟：<code>Description</code> &
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">March 15, 2021</span>.</p>
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">March 20, 2021</span>.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
