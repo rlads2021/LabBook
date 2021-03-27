@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 2 Base R (I) &amp; 輔助工具 | RLads Lab</title>
+<meta name="author" content="Yongfu Liao">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RLads Lab</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">關於</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="active" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></li>
+<li><a class="" href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/rlads2021/LabBook">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch02" class="section level1" number="2">
+<h1>
+<span class="header-section-number">2</span> Base R (I) &amp; 輔助工具<a class="anchor" aria-label="anchor" href="#ch02"><i class="fas fa-link"></i></a>
+</h1>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1b01Vx-uTr2DQ1t2FKFFDiPzw7LlI-srYMqXIPWKQC_Q">投影片</a> /
+<a href="https://youtu.be/WV18389Op8s">影片</a>)</span></p>
+<div id="r-studio" class="section level2" number="2.1">
+<h2>
+<span class="header-section-number">2.1</span> R Studio<a class="anchor" aria-label="anchor" href="#r-studio"><i class="fas fa-link"></i></a>
+</h2>
+<div id="自訂樣式" class="section level3" number="2.1.1">
+<h3>
+<span class="header-section-number">2.1.1</span> 自訂樣式<a class="anchor" aria-label="anchor" href="#%E8%87%AA%E8%A8%82%E6%A8%A3%E5%BC%8F"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>RStudio 預設有 4 個區塊 (Pane)。你可以自行決定這 4 個區塊的位置
+<ul>
+<li>
+<code>Tools</code> –&gt; <code>Global Options...</code> –&gt; (在左欄選擇) <code>Pane Layout</code>
+</li>
+<li>Source, Console, 及 2 個自訂區塊</li>
+</ul>
+</li>
+<li>除了區塊的相對位置，也可以設定 RStudio 整體的風格以及程式碼 Syntax Highlighting 的樣式:
+<ul>
+<li>
+<code>Tools</code> –&gt; <code>Global Options...</code> –&gt; (在左欄選擇) <code>Appearance</code>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="編輯器設定" class="section level3" number="2.1.2">
+<h3>
+<span class="header-section-number">2.1.2</span> 編輯器設定<a class="anchor" aria-label="anchor" href="#%E7%B7%A8%E8%BC%AF%E5%99%A8%E8%A8%AD%E5%AE%9A"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>Source Pane 是撰寫程式碼的地方 (文字編輯器)
+<ul>
+<li>
+<p>縮排間距：建議使用 space (而非 tab) 作為縮排字元</p>
+<ul>
+<li>
+<code>Tools</code> –&gt; <code>Global Options...</code> –&gt; (在左欄選擇) <code>Code</code> –&gt; (在上方選擇) <code>Editing</code> –&gt; 勾選 <code>Insert spaces for tab</code>
+</li>
+</ul>
+</li>
+<li>
+<p>文字編碼：由於中文字在各作業系統上會有編碼不一致的問題，請<strong>務必</strong>將編碼設定為 <code>UTF-8</code></p>
+<ul>
+<li>
+<code>Tools</code> –&gt; <code>Global Options...</code> –&gt; (在左欄選擇) <code>Code</code> –&gt; (在上方選擇) <code>Saving</code> –&gt; <code>Default text encoding</code>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="工作目錄" class="section level3" number="2.1.3">
+<h3>
+<span class="header-section-number">2.1.3</span> 工作目錄<a class="anchor" aria-label="anchor" href="#%E5%B7%A5%E4%BD%9C%E7%9B%AE%E9%8C%84"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><p>使用 RStudio 時，最好養成要馬上設置「工作目錄」的習慣。</p></li>
+<li><p>RStudio 所在的「工作目錄」顯示於 Console Pane 的標籤下方 (e.g. <code>~/</code>)</p></li>
+<li>
+<p>工作目錄的設置方式</p>
+<ul>
+<li><p>RStudio 功能選單: <code>Sessions</code> &gt; <code>Set Working Directory...</code><br></p></li>
+<li>
+<p>Console</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="st">'~/Desktop/week2'</span><span class="op">)</span>
+<span class="co"># setwd('&lt;path/to/new_working_dir&gt;')</span>
+<span class="fu"><a href="https://rdrr.io/r/base/getwd.html">getwd</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># show current directory</span></code></pre></div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="函數" class="section level2" number="2.2">
+<h2>
+<span class="header-section-number">2.2</span> 函數<a class="anchor" aria-label="anchor" href="#%E5%87%BD%E6%95%B8"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">get_area</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">area</span> <span class="op">&lt;-</span> <span class="fl">3.14</span> <span class="op">*</span> <span class="fl">1</span> <span class="op">*</span> <span class="fl">1</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">area</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">get_area</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 3.14</code></pre>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Function with a argument</span>
+<span class="va">get_area</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">area</span> <span class="op">&lt;-</span> <span class="fl">3.14</span> <span class="op">*</span> <span class="va">r</span> <span class="op">*</span> <span class="va">r</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">area</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">get_area</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 12.56</code></pre>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Function with a argument that has default value</span>
+<span class="va">get_area</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">r</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">area</span> <span class="op">&lt;-</span> <span class="fl">3.14</span> <span class="op">*</span> <span class="va">r</span> <span class="op">*</span> <span class="va">r</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">area</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">get_area</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 3.14</code></pre>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">get_area</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">area</span> <span class="op">&lt;-</span> <span class="fl">3.14</span> <span class="op">*</span> <span class="va">r</span> <span class="op">*</span> <span class="va">r</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">area</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">area</span> <span class="op">&lt;-</span> <span class="fl">100</span>
+<span class="va">area</span>
+<span class="fu">get_area</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">area</span></code></pre></div>
+<pre><code>#&gt; [1] 100
+#&gt; [1] 3.14
+#&gt; [1] 100</code></pre>
+</div>
+<div id="function-arguments" class="section level2" number="2.3">
+<h2>
+<span class="header-section-number">2.3</span> Function Arguments<a class="anchor" aria-label="anchor" href="#function-arguments"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vol</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">r</span>, <span class="va">height</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">volumn</span> <span class="op">&lt;-</span> <span class="fl">3.14</span> <span class="op">*</span> <span class="va">r</span> <span class="op">*</span> <span class="va">r</span> <span class="op">*</span> <span class="va">height</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">volumn</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">vol</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 6.28</code></pre>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">vol</span><span class="op">(</span>r <span class="op">=</span> <span class="fl">1</span>, height <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># Be explicit</span></code></pre></div>
+<pre><code>#&gt; [1] 6.28</code></pre>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># If all args are named, order doesn't matter</span>
+<span class="fu">vol</span><span class="op">(</span>height <span class="op">=</span> <span class="fl">2</span>, r <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 6.28</code></pre>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Mix named and unnamed args:</span>
+<span class="co"># named args will be assigned first, then</span>
+<span class="co"># unnamed args will be assigned </span>
+<span class="co"># based on their positions</span>
+<span class="fu">vol</span><span class="op">(</span>height <span class="op">=</span> <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 6.28</code></pre>
+</div>
+<div id="vector" class="section level2" number="2.4">
+<h2>
+<span class="header-section-number">2.4</span> vector<a class="anchor" aria-label="anchor" href="#vector"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>
+<p>上週實習課使用 R 時，指令的回傳值多半只有「一個」。但 R 其實是一種以<strong>向量</strong>作為基本單位的程式語言，所以對於「一個回傳值」更精確的描述應該是「一個<strong>長度為 1</strong> 的向量」。</p>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">2</span>
+<span class="va">x</span></code></pre></div>
+<pre><code>#&gt; [1] 2</code></pre>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/vector.html">is.vector</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] TRUE</code></pre>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 1</code></pre>
+</li>
+<li>
+<p>我們上週簡短提過以 <code><a href="https://rdrr.io/r/base/Colon.html">:</a></code> 製造數列的方式 (e.g. <code>1:10</code>)。事實上，這個回傳的數列即是一個 vector。另外，由於這個 vector 的每個元素皆是整數，因此這個 vector 屬於 integer vector。我們可以使用 <code><a href="https://rdrr.io/r/base/typeof.html">typeof()</a></code> 確認 vector 的類別</p>
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/typeof.html">typeof</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "integer"</code></pre>
+</li>
+<li><p>R 裡面的 vector 可以被分成 6 種類別，其中常見的 4 種分別為 <code>integer</code>, <code>double</code>, , <code>character</code>, <code>logical</code></p></li>
+</ul>
+<div id="integer-vector" class="section level3" number="2.4.1">
+<h3>
+<span class="header-section-number">2.4.1</span> integer vector<a class="anchor" aria-label="anchor" href="#integer-vector"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>integer vector 的元素由整數組成，它可以是零、正或負的。除了使用 <code><a href="https://rdrr.io/r/base/Colon.html">:</a></code> 製造數列，也可以使用 <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> (稱為 concatenate) 組出任意序列的 vector。
+<ul>
+<li>使用 <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> 製造 integer vector 時，每個整數數字後面必須接 <code>L</code>，若沒有加上 <code>L</code>， R 會將製造出來的 vector 視為 double vector。</li>
+</ul>
+</li>
+</ul>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">int_vec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1L</span>, <span class="fl">5L</span>, <span class="fl">2L</span><span class="op">)</span>
+<span class="va">dbl_vec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span>
+<span class="va">int_vec</span></code></pre></div>
+<pre><code>#&gt; [1] -1  5  2</code></pre>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dbl_vec</span></code></pre></div>
+<pre><code>#&gt; [1] -1  5  2</code></pre>
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/typeof.html">typeof</a></span><span class="op">(</span><span class="va">int_vec</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "integer"</code></pre>
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/typeof.html">typeof</a></span><span class="op">(</span><span class="va">dbl_vec</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "double"</code></pre>
+</div>
+<div id="double-vector" class="section level3" number="2.4.2">
+<h3>
+<span class="header-section-number">2.4.2</span> double vector<a class="anchor" aria-label="anchor" href="#double-vector"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><p>double vector 儲存的是<a href="https://zh.wikipedia.org/wiki/%E6%B5%AE%E7%82%B9%E6%95%B0">浮點數</a>，亦即含有小數點的數字 (e.g <code>1.2</code>, <code>-0.75</code>)</p></li>
+<li>
+<p>在 R 裡面，integer vector 與 double vector 合稱為 numeric vector，兩者之間的區隔通常也不太重要，因為 R 在運算時，通常會將這兩種資料類型自動轉換成合適的類型</p>
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/typeof.html">typeof</a></span><span class="op">(</span><span class="fl">2L</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "integer"</code></pre>
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/typeof.html">typeof</a></span><span class="op">(</span><span class="fl">2.0</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "double"</code></pre>
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">is.numeric</a></span><span class="op">(</span><span class="fl">2L</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] TRUE</code></pre>
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">is.numeric</a></span><span class="op">(</span><span class="fl">2.0</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] TRUE</code></pre>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/typeof.html">typeof</a></span><span class="op">(</span><span class="fl">1L</span> <span class="op">+</span> <span class="fl">1.0</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "double"</code></pre>
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/typeof.html">typeof</a></span><span class="op">(</span><span class="fl">1L</span> <span class="op">/</span> <span class="fl">2L</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "double"</code></pre>
+</li>
+<li>
+<p>Special values:</p>
+<ul>
+<li><p><code>Inf</code>: 代表無限大</p></li>
+<li>
+<p><code>NaN</code>: “Not a Number”，常見於數字運算不符數學定義時，例如：</p>
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fl">0</span> <span class="op">/</span> <span class="fl">0</span></code></pre></div>
+<pre><code>#&gt; [1] NaN</code></pre>
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="cn">Inf</span> <span class="op">/</span> <span class="cn">Inf</span></code></pre></div>
+<pre><code>#&gt; [1] NaN</code></pre>
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; Warning in log(-1): NaNs produced</code></pre>
+<pre><code>#&gt; [1] NaN</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="character-vector" class="section level3" number="2.4.3">
+<h3>
+<span class="header-section-number">2.4.3</span> character vector<a class="anchor" aria-label="anchor" href="#character-vector"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p>除了數字以外，R 也可以儲存<strong>字串 (string)</strong>。character vector 的每個元素皆由一個字串所組成。在 R 裡面，只要是被引號 (quote, <code>'</code> 或 <code>"</code> 皆可) 包裹的東西就是字串，放在引號內的可以是任何字元 (e.g. 空白、數字、中文字、英文字母)</p>
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="st">"1.1"</span>  <span class="co"># This is a string (character vector of length 1), not double</span></code></pre></div>
+<pre><code>#&gt; [1] "1.1"</code></pre>
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="st">"你好！"</span></code></pre></div>
+<pre><code>#&gt; [1] "你好！"</code></pre>
+<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1.1"</span>, <span class="st">"你好！"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "1.1"    "你好！"</code></pre>
+</li>
+<li>
+<p>如果字串內含有引號 <code>"</code>，需在字串內的引號前使用跳脫字元 <code>\</code>，以表示此引號是字串的一部分而非字串的開頭或結尾</p>
+<ul>
+<li>或是，你可以使用「不同的」引號。例如以「單引號」表示字串的開頭與結尾時，字串內就可以直接使用「雙引號」，反之亦然</li>
+</ul>
+<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="st">"\""</span>  <span class="co"># escape a double quote</span>
+<span class="st">'\''</span>  <span class="co"># escape a single quote</span>
+<span class="st">'"'</span>   <span class="co"># a double quote as string without escaping</span>
+<span class="st">"'"</span>   <span class="co"># a single quote as string without escaping</span></code></pre></div>
+<pre><code>#&gt; [1] "\""
+#&gt; [1] "'"
+#&gt; [1] "\""
+#&gt; [1] "'"</code></pre>
+</li>
+</ul>
+</div>
+<div id="logical-vector" class="section level3" number="2.4.4">
+<h3>
+<span class="header-section-number">2.4.4</span> logical vector<a class="anchor" aria-label="anchor" href="#logical-vector"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><p>logical vector 的每個元素由 <code>TRUE</code> 或 <code>FALSE</code> 組成。</p></li>
+<li><p>可以使用 <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> 一項項手動輸入製造 logical vector</p></li>
+<li>
+<p>logical vector 的另一個來源則是 logical test 的回傳值：</p>
+<ul>
+<li>logical operators: <code><a href="https://rdrr.io/r/base/Comparison.html">==</a></code>, <code><a href="https://rdrr.io/r/base/Comparison.html">!=</a></code>, <code><a href="https://rdrr.io/r/base/Comparison.html">&gt;</a></code>, <code><a href="https://rdrr.io/r/base/Comparison.html">&lt;</a></code>, <code><a href="https://rdrr.io/r/base/match.html">%in%</a></code>
+</li>
+</ul>
+<div class="inline-figure"><img src="https://img.yongfu.name/rlads/logical-operators.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vec1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>
+<span class="va">vec2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># logical tests</span>
+<span class="va">vec1</span> <span class="op">&gt;</span> <span class="va">vec2</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE  TRUE FALSE</code></pre>
+<div class="sourceCode" id="cb96"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vec1</span> <span class="op">&lt;</span> <span class="va">vec2</span></code></pre></div>
+<pre><code>#&gt; [1]  TRUE FALSE  TRUE</code></pre>
+<div class="sourceCode" id="cb98"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vec1</span> <span class="op">==</span> <span class="va">vec2</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE FALSE FALSE</code></pre>
+</li>
+<li>
+<p>boolean operators (<code><a href="https://rdrr.io/r/base/Logic.html">&amp;</a></code>, <code><a href="https://rdrr.io/r/base/Logic.html">|</a></code>, <code><a href="https://rdrr.io/r/base/Logic.html">!</a></code>, <code><a href="https://rdrr.io/r/base/any.html">any()</a></code>, <code><a href="https://rdrr.io/r/base/all.html">all()</a></code>) 可以整合<strong>多個</strong> logical tests</p>
+<div class="inline-figure"><img src="https://img.yongfu.name/rlads/boolean-operators.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="sourceCode" id="cb100"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="cn">TRUE</span> <span class="op">&amp;</span> <span class="cn">TRUE</span></code></pre></div>
+<pre><code>#&gt; [1] TRUE</code></pre>
+<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="cn">TRUE</span> <span class="op">&amp;</span> <span class="cn">FALSE</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE</code></pre>
+<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="cn">TRUE</span> <span class="op">|</span> <span class="cn">FALSE</span></code></pre></div>
+<pre><code>#&gt; [1] TRUE</code></pre>
+<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">!</span><span class="cn">TRUE</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE</code></pre>
+<div class="sourceCode" id="cb108"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="op">(</span><span class="fl">1</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="fl">2</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] TRUE</code></pre>
+</li>
+</ul>
+</div>
+<div id="na" class="section level3" number="2.4.5">
+<h3>
+<span class="header-section-number">2.4.5</span> NA<a class="anchor" aria-label="anchor" href="#na"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p><code>NA</code> 代表的是「缺失值」，可以作為任何一種 vector 裡面的元素。當 <code>NA</code> 出現在 vector 中，函數對於 vector 的運算常會出現令人意外的結果:</p>
+<div class="sourceCode" id="cb110"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fl">10</span> <span class="op">&gt;</span> <span class="cn">NA</span></code></pre></div>
+<pre><code>#&gt; [1] NA</code></pre>
+<div class="sourceCode" id="cb112"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="cn">NA</span> <span class="op">==</span> <span class="cn">NA</span></code></pre></div>
+<pre><code>#&gt; [1] NA</code></pre>
+<div class="sourceCode" id="cb114"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">vec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">NA</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vec</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] NA</code></pre>
+<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vec</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 2</code></pre>
+</li>
+</ul>
+</div>
+</div>
+<div id="recycling" class="section level2" number="2.5">
+<h2>
+<span class="header-section-number">2.5</span> Recycling<a class="anchor" aria-label="anchor" href="#recycling"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>兩個或兩個以上的 vector 進行運算時，通常是以 <strong>element-wise</strong> 的方式進行。此時，若進行運算的 vector 長度不相同，例如，<code>c(1, 2, 3) + 2</code>， R 會自動將長度較短 vector (<code>2</code>) 「回收 (recycle)」，亦即，重複此向量內的元素使其「拉長」到與另一個 vector 等長；接著再將兩個一樣長的 vector 進行 element-wise 的向量運算。</li>
+</ul>
+<div class="sourceCode" id="cb118"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>
+
+<span class="co"># Arithmetic operation</span>
+<span class="va">x</span> <span class="op">+</span> <span class="fl">2</span>  <span class="co"># equivalent to...</span></code></pre></div>
+<pre><code>#&gt; [1] 3 3 4 4</code></pre>
+<div class="sourceCode" id="cb120"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 3 3 4 4</code></pre>
+<div class="sourceCode" id="cb122"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>
+
+<span class="co"># Logical operation</span>
+<span class="va">x</span> <span class="op">==</span> <span class="fl">2</span>  <span class="co"># equivalent to...</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE FALSE  TRUE  TRUE</code></pre>
+<div class="sourceCode" id="cb124"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE FALSE  TRUE  TRUE</code></pre>
+<div class="sourceCode" id="cb126"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># String operation</span>
+<span class="va">long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span><span class="op">)</span>
+<span class="va">short</span> <span class="op">&lt;-</span> <span class="st">"1"</span>
+<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"1"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "a1"</code></pre>
+<div class="sourceCode" id="cb128"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">long</span>, <span class="va">short</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "a1" "b1" "c1"</code></pre>
+</div>
+<div id="coercion" class="section level2" number="2.6">
+<h2>
+<span class="header-section-number">2.6</span> Coercion<a class="anchor" aria-label="anchor" href="#coercion"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><p>vector 內的每個元素，其資料類型 (data type) 必須相同。資料類型即是前面提到的 <code>integer</code>, <code>double</code>, <code>character</code>, <code>logical</code>。</p></li>
+<li>
+<p>若發生資料類型不一致的情形 (e.g. 將不同資料類型的元素放入 <code><a href="https://rdrr.io/r/base/c.html">c()</a></code>)，R 會根據某些<strong>規則</strong>，<strong>自動</strong>進行資料類型的轉換。這個過程在 R 裡面稱為 Coercion</p>
+<div class="sourceCode" id="cb130"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="fl">3</span><span class="op">)</span>      <span class="co"># logical &amp; numeric</span></code></pre></div>
+<pre><code>#&gt; [1] 1 0 3</code></pre>
+<div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="st">"aa"</span><span class="op">)</span>            <span class="co"># numeric &amp; character</span></code></pre></div>
+<pre><code>#&gt; [1] "-1" "aa"</code></pre>
+<div class="sourceCode" id="cb134"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="st">"hi!"</span><span class="op">)</span>  <span class="co"># logical &amp; character</span></code></pre></div>
+<pre><code>#&gt; [1] "FALSE" "TRUE"  "hi!"</code></pre>
+<div class="sourceCode" id="cb136"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="fl">0</span>, <span class="st">"hi!"</span><span class="op">)</span>      <span class="co"># logical &amp; numeric &amp; character</span></code></pre></div>
+<pre><code>#&gt; [1] "TRUE" "0"    "hi!"</code></pre>
+</li>
+</ul>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-31"></span>
+<img src="https://img.yongfu.name/rlads/coercion.png" alt="Rules of Coercion" width="70%"><p class="caption">
+Figure 2.1: Rules of Coercion
+</p>
+</div>
+<ul>
+<li><p>if coercion failed, throw error</p></li>
+<li><p>manual coercion: <code><a href="https://rdrr.io/r/base/character.html">as.character()</a></code>, <code><a href="https://rdrr.io/r/base/logical.html">as.logical()</a></code>, <code><a href="https://rdrr.io/r/base/numeric.html">as.numeric()</a></code></p></li>
+</ul>
+<div class="sourceCode" id="cb138"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">T</span>, <span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 3</code></pre>
+<div class="sourceCode" id="cb140"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"male"</span>, <span class="st">"female"</span>, <span class="st">"male"</span>, <span class="st">"female"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">gender</span> <span class="op">==</span> <span class="st">"male"</span><span class="op">)</span>  <span class="co"># num of male</span></code></pre></div>
+<pre><code>#&gt; [1] 2</code></pre>
+<div class="sourceCode" id="cb142"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">gender</span> <span class="op">==</span> <span class="st">"male"</span><span class="op">)</span>  <span class="co"># proportion of male</span></code></pre></div>
+<pre><code>#&gt; [1] 0.5</code></pre>
+</div>
+<div id="subsetting-a-vector" class="section level2" number="2.7">
+<h2>
+<span class="header-section-number">2.7</span> Subsetting a vector<a class="anchor" aria-label="anchor" href="#subsetting-a-vector"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>有 3 種方法可用於取出 vector 裡面的元素 (回傳一個新的 vector)
+<ol style="list-style-type: decimal">
+<li>透過提供 vector 中元素的位置次序 (index)</li>
+<li>透過一個與此 vector 等長的 logical vector。在 logical vector 中的相對應位置，以 <code>TRUE</code> 或 <code>FALSE</code> 表示是否保留該位置的元素</li>
+<li>透過提供元素的「名字」(i.e. <code>names</code> 屬性)</li>
+</ol>
+</li>
+</ul>
+<div id="index-subsetting" class="section level3" number="2.7.1">
+<h3>
+<span class="header-section-number">2.7.1</span> index subsetting<a class="anchor" aria-label="anchor" href="#index-subsetting"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb144"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># z[&lt;integer_vector&gt;]</span>
+<span class="va">LETTERS</span>  <span class="co"># R 內建變數: 包含所有大寫英文字母的 character vector</span></code></pre></div>
+<pre><code>#&gt;  [1] "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S"
+#&gt; [20] "T" "U" "V" "W" "X" "Y" "Z"</code></pre>
+<div class="sourceCode" id="cb146"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; [1] "A"</code></pre>
+<div class="sourceCode" id="cb148"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; [1] "A" "B" "C" "D" "E"</code></pre>
+<div class="sourceCode" id="cb150"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">LETTERS</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; [1] "A" "C" "E"</code></pre>
+<div class="sourceCode" id="cb152"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">LETTERS</span><span class="op">[</span><span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">]</span>  <span class="co"># Exclude the first 5 elements</span></code></pre></div>
+<pre><code>#&gt;  [1] "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X"
+#&gt; [20] "Y" "Z"</code></pre>
+</div>
+<div id="logical-subsetting" class="section level3" number="2.7.2">
+<h3>
+<span class="header-section-number">2.7.2</span> Logical subsetting<a class="anchor" aria-label="anchor" href="#logical-subsetting"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb154"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># z[&lt;logical_vector of length(z)&gt;]</span>
+<span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">21</span>, <span class="fl">20</span>, <span class="fl">18</span>, <span class="fl">19</span><span class="op">)</span>
+<span class="va">age</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; [1] 20 19</code></pre>
+<div class="sourceCode" id="cb156"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## Creating logical vectors</span>
+<span class="va">age</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">20</span>  <span class="co"># returns a logical vector of length 1</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE</code></pre>
+<div class="sourceCode" id="cb158"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">age</span> <span class="op">&lt;</span> <span class="fl">20</span>     <span class="co"># returns a logical vector of length(x)</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE FALSE  TRUE  TRUE</code></pre>
+<div class="sourceCode" id="cb160"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Subset a vector using a logical test</span>
+<span class="va">age</span><span class="op">[</span><span class="va">age</span> <span class="op">&lt;</span> <span class="fl">20</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; [1] 18 19</code></pre>
+</div>
+<div id="subsetting-with-names" class="section level3" number="2.7.3">
+<h3>
+<span class="header-section-number">2.7.3</span> Subsetting with names<a class="anchor" aria-label="anchor" href="#subsetting-with-names"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb162"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">20</span>, <span class="fl">18</span>, <span class="fl">19</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"kai"</span>, <span class="st">"pooh"</span>, <span class="st">"tiger"</span>, <span class="st">"piglet"</span><span class="op">)</span>
+<span class="co"># age &lt;- c(kai = 40, pooh = 20, tiger = 18, piglet = 19)  # another way of setting names</span>
+
+<span class="va">age</span></code></pre></div>
+<pre><code>#&gt;    kai   pooh  tiger piglet 
+#&gt;     40     20     18     19</code></pre>
+<div class="sourceCode" id="cb164"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">age</span><span class="op">[</span><span class="st">'kai'</span><span class="op">]</span> <span class="op">+</span> <span class="fl">9</span></code></pre></div>
+<pre><code>#&gt; kai 
+#&gt;  49</code></pre>
+<div class="sourceCode" id="cb166"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">age</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'pooh'</span>, <span class="st">'kai'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; pooh  kai 
+#&gt;   20   40</code></pre>
+</div>
+<div id="modifying-values-in-vector" class="section level3" number="2.7.4">
+<h3>
+<span class="header-section-number">2.7.4</span> Modifying Values in vector<a class="anchor" aria-label="anchor" href="#modifying-values-in-vector"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb168"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">a2z</span> <span class="op">&lt;-</span> <span class="va">LETTERS</span>
+<span class="va">a2z</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span><span class="op">)</span>
+<span class="va">a2z</span></code></pre></div>
+<pre><code>#&gt;  [1] "a" "b" "c" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S"
+#&gt; [20] "T" "U" "V" "W" "X" "Y" "Z"</code></pre>
+<div class="sourceCode" id="cb170"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"m"</span>, <span class="st">"m"</span>, <span class="st">"f"</span>, <span class="st">"f"</span><span class="op">)</span>
+<span class="va">gender</span><span class="op">[</span><span class="va">gender</span> <span class="op">==</span> <span class="st">"m"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"male"</span>
+<span class="va">gender</span></code></pre></div>
+<pre><code>#&gt; [1] "male" "male" "f"    "f"</code></pre>
+<div class="sourceCode" id="cb172"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gender</span><span class="op">[</span><span class="va">gender</span> <span class="op">==</span> <span class="st">"f"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"female"</span>
+<span class="va">gender</span></code></pre></div>
+<pre><code>#&gt; [1] "male"   "male"   "female" "female"</code></pre>
+<div class="sourceCode" id="cb174"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">gender</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"john"</span>, <span class="st">"jenny"</span>, <span class="st">"jane"</span>, <span class="st">"kate"</span><span class="op">)</span>
+<span class="va">gender</span></code></pre></div>
+<pre><code>#&gt;     john    jenny     jane     kate 
+#&gt;   "male"   "male" "female" "female"</code></pre>
+<div class="sourceCode" id="cb176"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gender</span><span class="op">[</span><span class="st">"john"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"male"</span>
+<span class="va">gender</span></code></pre></div>
+<pre><code>#&gt;     john    jenny     jane     kate 
+#&gt;   "male"   "male" "female" "female"</code></pre>
+<div class="sourceCode" id="cb178"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gender</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"jenny"</span>, <span class="st">"jane"</span>, <span class="st">"kate"</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"female"</span>
+<span class="va">gender</span></code></pre></div>
+<pre><code>#&gt;     john    jenny     jane     kate 
+#&gt;   "male" "female" "female" "female"</code></pre>
+<!-- 
+Conceptually new topic:
+Add if-else concept and then wrap up
+-->
+</div>
+</div>
+<div id="if-else" class="section level2" number="2.8">
+<h2>
+<span class="header-section-number">2.8</span> if else<a class="anchor" aria-label="anchor" href="#if-else"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>一般而言，R 是<strong>由上至下一行一行地執行程式碼</strong>。有時候我們會希望能<strong>跳過某些程式碼</strong>或是<strong>依據不同的狀況執行不同的程式碼</strong>，這時候我們就需要使用<strong>條件式</strong>。</li>
+</ul>
+<div class="sourceCode" id="cb180"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span>
+
+<span class="kw">if</span> <span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">'x is positive'</span><span class="op">)</span>
+<span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">'x is not positive'</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
+<pre><code>#&gt; [1] "x is positive"</code></pre>
+<div class="sourceCode" id="cb182"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">x</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span>
+
+<span class="kw">if</span> <span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">'x is positive'</span><span class="op">)</span>
+<span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">'x is negative'</span><span class="op">)</span>
+<span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">'x is zero'</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">'This is always printed'</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "x is negative"
+#&gt; [1] "This is always printed"</code></pre>
+<ul>
+<li><p>在 <code>if</code>-<code>else if</code>-<code>else</code> 的結構中，只有<strong>其中一個</strong>區塊 (被大括弧 <code>{}</code> 包裹的程式碼) 會被執行。執行完該區塊後，就會忽略剩下的條件控制區塊，執行條件式之後的程式碼。</p></li>
+<li><p>可以在 <code>if</code> 之後使用多個 <code>else if</code>.</p></li>
+<li>
+<p>條件式的結構：</p>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="ch02.html#cb184-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 只有 if</span></span>
+<span id="cb184-2"><a href="ch02.html#cb184-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">&lt;</span>條件<span class="sc">&gt;</span>) {</span>
+<span id="cb184-3"><a href="ch02.html#cb184-3" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span>Some Code<span class="sc">&gt;</span>  <span class="co"># 條件成立時執行</span></span>
+<span id="cb184-4"><a href="ch02.html#cb184-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb184-5"><a href="ch02.html#cb184-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb184-6"><a href="ch02.html#cb184-6" aria-hidden="true" tabindex="-1"></a><span class="co"># if, else</span></span>
+<span id="cb184-7"><a href="ch02.html#cb184-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">&lt;</span>條件<span class="sc">&gt;</span>) {</span>
+<span id="cb184-8"><a href="ch02.html#cb184-8" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span>Some Code<span class="sc">&gt;</span>  <span class="co"># &lt;條件&gt;成立時執行</span></span>
+<span id="cb184-9"><a href="ch02.html#cb184-9" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb184-10"><a href="ch02.html#cb184-10" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span>Some Code<span class="sc">&gt;</span>  <span class="co"># &lt;條件&gt;不成立時執行</span></span>
+<span id="cb184-11"><a href="ch02.html#cb184-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb184-12"><a href="ch02.html#cb184-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb184-13"><a href="ch02.html#cb184-13" aria-hidden="true" tabindex="-1"></a><span class="co"># if, else if, else</span></span>
+<span id="cb184-14"><a href="ch02.html#cb184-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">&lt;</span>條件1<span class="sc">&gt;</span>) {</span>
+<span id="cb184-15"><a href="ch02.html#cb184-15" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span>Some Code<span class="sc">&gt;</span>          <span class="co"># &lt;條件1&gt;成立時執行</span></span>
+<span id="cb184-16"><a href="ch02.html#cb184-16" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> ( <span class="sc">&lt;</span>條件2<span class="sc">&gt;</span> ) {</span>
+<span id="cb184-17"><a href="ch02.html#cb184-17" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span>Some Code<span class="sc">&gt;</span>          <span class="co"># &lt;條件1&gt;不成立、&lt;條件2&gt;成立時執行</span></span>
+<span id="cb184-18"><a href="ch02.html#cb184-18" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb184-19"><a href="ch02.html#cb184-19" aria-hidden="true" tabindex="-1"></a>    <span class="sc">&lt;</span>Some Code<span class="sc">&gt;</span>          <span class="co"># &lt;條件1&gt;、&lt;條件2&gt;皆不成立時執行</span></span>
+<span id="cb184-20"><a href="ch02.html#cb184-20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</li>
+</ul>
+</div>
+<div id="wrap-up" class="section level2" number="2.9">
+<h2>
+<span class="header-section-number">2.9</span> Wrap up: 句子產生器<a class="anchor" aria-label="anchor" href="#wrap-up"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb185"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Data</span>
+<span class="va">name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"kai"</span>, <span class="st">"pooh"</span>, <span class="st">"tiger"</span>, <span class="st">"piglet"</span><span class="op">)</span>
+<span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">20</span>, <span class="fl">18</span>, <span class="fl">19</span><span class="op">)</span>
+
+<span class="co"># Randomly draw 2 subjects</span>
+<span class="va">who</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+
+<span class="co"># Find out who is older</span>
+<span class="va">age1</span> <span class="op">&lt;-</span> <span class="va">age</span><span class="op">[</span><span class="va">who</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
+<span class="va">age2</span> <span class="op">&lt;-</span> <span class="va">age</span><span class="op">[</span><span class="va">who</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
+<span class="kw">if</span> <span class="op">(</span><span class="va">age1</span> <span class="op">&gt;</span> <span class="va">age2</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">comparitive</span> <span class="op">&lt;-</span> <span class="st">' is older than '</span>
+<span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">age1</span> <span class="op">&lt;</span> <span class="va">age2</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">comparitive</span> <span class="op">&lt;-</span> <span class="st">' is younger than '</span>
+<span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">comparitive</span> <span class="op">&lt;-</span> <span class="st">' is as old as '</span>
+<span class="op">}</span>
+
+<span class="co"># Construct sentence</span>
+<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">name</span><span class="op">[</span><span class="va">who</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">comparitive</span>, <span class="va">name</span><span class="op">[</span><span class="va">who</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "piglet is younger than kai"</code></pre>
+</div>
+<div id="r-markdown" class="section level2" number="2.10">
+<h2>
+<span class="header-section-number">2.10</span> R Markdown<a class="anchor" aria-label="anchor" href="#r-markdown"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>
+<p>使用前需先安裝 <code>rmarkdown</code>:</p>
+<div class="sourceCode" id="cb187"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'rmarkdown'</span><span class="op">)</span></code></pre></div>
+</li>
+<li><p>R Markdown (<code>.Rmd</code>) 就像之前同學用來寫自我介紹的 Markdown 文件 (<code>.md</code>) 一樣是一種<strong>純文字格式</strong>。R Markdown 的語法其實只是 Markdown 的一種擴充：它新增了一些特殊的語法，讓使用者可以直接在 R Markdown 裡面撰寫程式碼，並透過 R 將這些程式碼的<strong>運算結果插入 R Markdown 的輸出文件</strong>當中。</p></li>
+<li>
+<p>knitr Code Chunk</p>
+<ul>
+<li>執行：由上至下執行</li>
+<li>後面的 chunk 可以讀取之前的 chunks 產生的變數</li>
+</ul>
+</li>
+</ul>
+<p>(在 RStudio 使用 R Markdown)</p>
+<ul>
+<li><p>使用 RStudio 開啟 R Markdown (<code>.Rmd</code>) 時，Rmd 檔會出現在 Source Pane 讓使用者編輯</p></li>
+<li><p>將 R Markdown (<code>.Rmd</code>) 輸出 (<code>knit</code> )成 HTML 檔 (<code>.html</code>):</p></li>
+</ul>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-39"></span>
+<img src="https://bookdown.org/yihui/rmarkdown/images/hello-rmd.png" alt="R Markdown document in RStudio^[Figure from https://bookdown.org/yihui/rmarkdown/images/hello-rmd.png]." width="70%"><p class="caption">
+Figure 2.2: R Markdown document in RStudio<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;Figure from &lt;a href="https://bookdown.org/yihui/rmarkdown/images/hello-rmd.png" class="uri"&gt;https://bookdown.org/yihui/rmarkdown/images/hello-rmd.png&lt;/a&gt;&lt;/p&gt;'><sup>10</sup></a>.
+</p>
+</div>
+</div>
+<div id="參考資源" class="section level2 unnumbered">
+<h2>參考資源<a class="anchor" aria-label="anchor" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90"><i class="fas fa-link"></i></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li><p>Grolemund, G. (2014). <a href="https://rstudio-education.github.io/hopr/"><strong><em>Hands-on programming with R</em></strong></a><br>
+R Objects (<a href="https://rstudio-education.github.io/hopr/r-objects" class="uri">https://rstudio-education.github.io/hopr/r-objects</a>)<br>
+Modifying Values (<a href="https://rstudio-education.github.io/hopr/modify" class="uri">https://rstudio-education.github.io/hopr/modify</a>)</p></li>
+<li><p>Xie, Y., Allaire, J., &amp; Grolemund, G. (2019). <a href="https://bookdown.org/yihui/rmarkdown"><strong><em>R Markdown: The Definitive Guide</em></strong></a></p></li>
+</ol>
+</div>
+</div>
+
+  <div class="chapter-nav">
+<div class="prev"><a href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></div>
+<div class="next"><a href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ch02"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li>
+<a class="nav-link" href="#r-studio"><span class="header-section-number">2.1</span> R Studio</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E8%87%AA%E8%A8%82%E6%A8%A3%E5%BC%8F"><span class="header-section-number">2.1.1</span> 自訂樣式</a></li>
+<li><a class="nav-link" href="#%E7%B7%A8%E8%BC%AF%E5%99%A8%E8%A8%AD%E5%AE%9A"><span class="header-section-number">2.1.2</span> 編輯器設定</a></li>
+<li><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E7%9B%AE%E9%8C%84"><span class="header-section-number">2.1.3</span> 工作目錄</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E5%87%BD%E6%95%B8"><span class="header-section-number">2.2</span> 函數</a></li>
+<li><a class="nav-link" href="#function-arguments"><span class="header-section-number">2.3</span> Function Arguments</a></li>
+<li>
+<a class="nav-link" href="#vector"><span class="header-section-number">2.4</span> vector</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#integer-vector"><span class="header-section-number">2.4.1</span> integer vector</a></li>
+<li><a class="nav-link" href="#double-vector"><span class="header-section-number">2.4.2</span> double vector</a></li>
+<li><a class="nav-link" href="#character-vector"><span class="header-section-number">2.4.3</span> character vector</a></li>
+<li><a class="nav-link" href="#logical-vector"><span class="header-section-number">2.4.4</span> logical vector</a></li>
+<li><a class="nav-link" href="#na"><span class="header-section-number">2.4.5</span> NA</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#recycling"><span class="header-section-number">2.5</span> Recycling</a></li>
+<li><a class="nav-link" href="#coercion"><span class="header-section-number">2.6</span> Coercion</a></li>
+<li>
+<a class="nav-link" href="#subsetting-a-vector"><span class="header-section-number">2.7</span> Subsetting a vector</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#index-subsetting"><span class="header-section-number">2.7.1</span> index subsetting</a></li>
+<li><a class="nav-link" href="#logical-subsetting"><span class="header-section-number">2.7.2</span> Logical subsetting</a></li>
+<li><a class="nav-link" href="#subsetting-with-names"><span class="header-section-number">2.7.3</span> Subsetting with names</a></li>
+<li><a class="nav-link" href="#modifying-values-in-vector"><span class="header-section-number">2.7.4</span> Modifying Values in vector</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#if-else"><span class="header-section-number">2.8</span> if else</a></li>
+<li><a class="nav-link" href="#wrap-up"><span class="header-section-number">2.9</span> Wrap up: 句子產生器</a></li>
+<li><a class="nav-link" href="#r-markdown"><span class="header-section-number">2.10</span> R Markdown</a></li>
+<li><a class="nav-link" href="#%E5%8F%83%E8%80%83%E8%B3%87%E6%BA%90">參考資源</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/rlads2021/LabBook/blob/master/02-vector_datatypes_ifelse.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/rlads2021/LabBook/edit/master/02-vector_datatypes_ifelse.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">March 26, 2021</span>.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

@@ -34,3 +34,6 @@ img <- function(...) {
 # 關於 {-}
 
 [程式設計與資料科學導論](https://lopentu.github.io/rlads2021)實習課講義
+
+- [GitHub](https://github.com/rlads2021)
+- [課程影片](https://www.youtube.com/playlist?list=PL_Q2Bel87A9Tpt3SWYCwOIzI_zbo2mfdN)

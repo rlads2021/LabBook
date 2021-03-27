@@ -1,4 +1,4 @@
-Data Visualization with ggplot2 {#ch05}
+視覺化：ggplot2 {#ch05}
 =======================================
 
 [([投影片](https://docs.google.com/presentation/d/1sI3UEopvklXWhjCSCcNtOdHNe8EcfkiQwYKlysfBzws) /
@@ -40,9 +40,9 @@ diam <- diamonds %>% sample_n(size = 1500)
 
 - 使用模板繪製散布圖：
 
-  ```{r echo=F, fig.cap="`ggplot()` 的結構", out.width="50%"}
-  img("ggplot_labels.png")
-  ```
+    ```{r echo=F, fig.cap="`ggplot()` 的結構", out.width="100%"}
+    img("ggplot_labels.png")
+    ```
   
 ### 散布圖 (Scatter plot)
 
@@ -60,20 +60,20 @@ diam <- diamonds %>% sample_n(size = 1500)
 - 在 ggplot 的概念中，圖片是由**一層層**的**圖層**堆疊起來的：
   1. 第一層 (`ggplot()`) 是底圖 (初始化繪圖函數)。在這層定義的內容 (e.g. `data`) 可被之後的圖層使用。
   
-      ```{r out.width='40%'}
+      ```{r}
       ggplot(data = diam)   # 底層
       ```
       
   2. 第二層 (`geom_point()`) 畫在底圖之上。圖層之間以 `+` 連結起來,要將第一與第二層連起來，得在繪製第一層圖層的程式碼**之後**加上一個 `+`：
   
-      ```{r out.width='40%'}
+      ```{r}
       ggplot(data = diam) +                                # 底層
         geom_point(mapping = aes(x = carat, y = price))    # 第二層
       ```
 
   3. 如果想**增加其它圖層**，只要再繼續使用 `+`:
   
-      ```{r out.width='40%'}
+      ```{r}
       ggplot(data = diam) +                                # 底層
         geom_point(mapping = aes(x = carat, y = price)) +  # 第二層
         geom_smooth(mapping = aes(x = carat, y = price))   # 第三層
@@ -121,9 +121,11 @@ img("mappings.png")
 
 - `geom_bar()` 在繪製長條圖之前，為符合繪圖需求而將傳入的 data frame 進行的運算，稱為 Statistical Transformation:
 
-  ```{r echo=F, fig.cap="`geom_bar()`'s default statistical transformation<br>Source: <https://r4ds.had.co.nz/data-visualisation.html#statistical-transformations>"}
+  ```{r echo=F, fig.cap="`geom_bar()`'s default statistical transformation[^src]", out.width="100%"}
   img("visualization-stat-bar.png")
   ```
+
+[^src]: Source: <https://r4ds.had.co.nz/data-visualisation.html#statistical-transformations>
 
 ## Statistical Transformations
 
