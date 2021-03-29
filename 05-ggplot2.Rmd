@@ -2,7 +2,7 @@
 =======================================
 
 [([投影片](https://docs.google.com/presentation/d/1sI3UEopvklXWhjCSCcNtOdHNe8EcfkiQwYKlysfBzws) /
-[影片](#))
+[影片](https://youtu.be/lLoOTHNap34))
 ]{.course-resource}  
 [Some of the material is based on [Garrett Grolemund's introduction to ggplot2](https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/02-Visualize)]{.additional-notes}
 
@@ -240,7 +240,7 @@ ggplot(data = <DATA>) +
 ```{r out.width=c('33%', '33%', '33%'), fig.show='hold', fig.align='none'}
 ggplot(mpg) +
   geom_point(aes(class, hwy))
-ggsave('mpg_class_hwy_point.png', width = 14, height = 12, units = 'cm')
+#ggsave('mpg_class_hwy_point.png', width = 14, height = 12, units = 'cm')
 
 ggplot(mpg) +
   geom_boxplot(aes(class, hwy))
