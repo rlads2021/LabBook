@@ -50,7 +50,7 @@
 <span class="header-section-number">5</span> 視覺化：ggplot2<a class="anchor" aria-label="anchor" href="#ch05"><i class="fas fa-link"></i></a>
 </h1>
 <p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1sI3UEopvklXWhjCSCcNtOdHNe8EcfkiQwYKlysfBzws">投影片</a> /
-<a href="#">影片</a>)</span><br><span class="additional-notes">Some of the material is based on <a href="https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/02-Visualize">Garrett Grolemund’s introduction to ggplot2</a></span></p>
+<a href="https://youtu.be/lLoOTHNap34">影片</a>)</span><br><span class="additional-notes">Some of the material is based on <a href="https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/02-Visualize">Garrett Grolemund’s introduction to ggplot2</a></span></p>
 <div id="r-的繪圖系統" class="section level2" number="5.1">
 <h2>
 <span class="header-section-number">5.1</span> R 的繪圖系統<a class="anchor" aria-label="anchor" href="#r-%E7%9A%84%E7%B9%AA%E5%9C%96%E7%B3%BB%E7%B5%B1"><i class="fas fa-link"></i></a>
@@ -319,11 +319,11 @@ Figure 5.3: <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html
 <pre><code>#&gt; # A tibble: 5 x 2
 #&gt;   cut       count
 #&gt;   &lt;ord&gt;     &lt;int&gt;
-#&gt; 1 Fair         49
-#&gt; 2 Good        136
-#&gt; 3 Very Good   365
-#&gt; 4 Premium     396
-#&gt; 5 Ideal       554</code></pre>
+#&gt; 1 Fair         48
+#&gt; 2 Good        128
+#&gt; 3 Very Good   322
+#&gt; 4 Premium     379
+#&gt; 5 Ideal       623</code></pre>
 </li>
 <li><p>如果想使用 <code>sum_data</code> 之中的變項<strong>直接</strong>去畫出長條圖，就需要覆寫 「<code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 自動從 <code>x</code> 計算出次數」的預設行為。這個行為可由 <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 的 <code>stat</code> 參數進行設定。</p></li>
 <li><p><code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 的 <code>stat</code> 預設值是 <code>"count"</code>，讓 <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 可以從「對應至 <code>x</code> 的變項」計算出此變項裡各類別的次數。</p></li>
@@ -443,7 +443,7 @@ Figure 5.3: <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html
 <div class="sourceCode" id="cb327"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">mpg</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">class</span>, <span class="va">hwy</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">'mpg_class_hwy_point.png'</span>, width <span class="op">=</span> <span class="fl">14</span>, height <span class="op">=</span> <span class="fl">12</span>, units <span class="op">=</span> <span class="st">'cm'</span><span class="op">)</span>
+<span class="co">#ggsave('mpg_class_hwy_point.png', width = 14, height = 12, units = 'cm')</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">mpg</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">class</span>, <span class="va">hwy</span><span class="op">)</span><span class="op">)</span>

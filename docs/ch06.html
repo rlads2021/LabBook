@@ -116,15 +116,15 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <p><code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 則可以讓我們從常態分配裡取<strong>抽取出樣本</strong>。例如，若我們想從剛剛的女性身高分配 (<span class="math inline">\(\mu = 160, \sigma = 5\)</span>) 裡抽取出 3 個樣本：</p>
 <div class="sourceCode" id="cb329"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span>, mean <span class="op">=</span> <span class="fl">160</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 157.2451 154.2239 159.9038</code></pre>
+<pre><code>#&gt; [1] 150.2526 157.7595 151.8763</code></pre>
 <p>注意，因為 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 是隨機抽取<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;&lt;code&gt;rnorm()&lt;/code&gt; 的 &lt;code&gt;r&lt;/code&gt; 即為 random 的意思&lt;/p&gt;"><sup>14</sup></a>，所以每次的結果都會不同。但當我們抽取的樣本數夠大時，這些樣本形成的分配就會<strong>趨近</strong>樣本所來自的常態分配。我們可以用 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 來示範這件事：</p>
 <div class="sourceCode" id="cb331"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sampled_height</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">160</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">sampled_height</span><span class="op">)</span>  <span class="co"># Sample's mean</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">sampled_height</span><span class="op">)</span>    <span class="co"># Sample's standard deviation</span></code></pre></div>
-<pre><code>#&gt; [1] 159.9644
-#&gt; [1] 4.995699</code></pre>
-<p>我們計算所得到的樣本平均數 (159.9643524) 與標準差 (4.9956993) 與原本的常態分配相當接近 (平均 = 160, 標準差 = 5)。</p>
+<pre><code>#&gt; [1] 160.0738
+#&gt; [1] 4.937965</code></pre>
+<p>我們計算所得到的樣本平均數 (160.0738448) 與標準差 (4.9379647) 與原本的常態分配相當接近 (平均 = 160, 標準差 = 5)。</p>
 <p>除此之外，我們可以將還可以將原本的分配與抽樣的分配進行比較：</p>
 <div class="sourceCode" id="cb333"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -160,7 +160,7 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-109-1.png" width="70%" style="display: block; margin: auto;"></div>
 <div class="sourceCode" id="cb338"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 0.9229586</code></pre>
+<pre><code>#&gt; [1] 0.9391387</code></pre>
 <p>在自然界中，很多變項都呈現常態分配，除此之外，有時候不同變項之間會有線性相關。例如，兒子的身高受父親影響，所以兩者會有正向關係。此外，兩者的身高各自都會呈現常態分配 (有不同的平均與標準差)。透過 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code>，我們可以很容易地模擬這些關係：</p>
 <ul>
 <li>假設父親的身高 <span class="math inline">\(x_i \sim Normal(\mu=165, \sigma=5)\)</span>
@@ -176,8 +176,8 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-110-1.png" width="70%" style="display: block; margin: auto;"></div>
 <div class="sourceCode" id="cb341"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">dad</span>, <span class="va">son</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 0.7275274</code></pre>
-<p>透過剛剛的模擬，可以得到父親與兒子的身高之間的相關是 0.7275274。學過迴歸統計的同學，應該會記得我們也可以透過<strong>簡單線性迴歸</strong>得到這個相關係數：若將父親與兒子的身高標準化 (取 Z 分數) 再去做迴歸 <span class="math inline">\(y = \alpha + \beta x\)</span>，則這裡的 <span class="math inline">\(\beta\)</span> 即會是剛剛所得到的相關係數 0.7275274。</p>
+<pre><code>#&gt; [1] 0.7219606</code></pre>
+<p>透過剛剛的模擬，可以得到父親與兒子的身高之間的相關是 0.7219606。學過迴歸統計的同學，應該會記得我們也可以透過<strong>簡單線性迴歸</strong>得到這個相關係數：若將父親與兒子的身高標準化 (取 Z 分數) 再去做迴歸 <span class="math inline">\(y = \alpha + \beta x\)</span>，則這裡的 <span class="math inline">\(\beta\)</span> 即會是剛剛所得到的相關係數 0.7219606。</p>
 <div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-111-1.png" width="70%" style="display: block; margin: auto;"></div>
 <p>在 R 裡面要使用線性迴歸可以透過 <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>。<code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> 裡面放的是公式 (formula)，例如下方的 <code>son_std ~ dad_std</code> 即是在表達 <span class="math inline">\(y = \alpha + \beta x\)</span> 這個關係。</p>
 <div class="sourceCode" id="cb343"><pre class="downlit sourceCode r">
@@ -195,18 +195,18 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 #&gt; 
 #&gt; Residuals:
 #&gt;      Min       1Q   Median       3Q      Max 
-#&gt; -2.36163 -0.45407  0.01625  0.46650  1.83477 
+#&gt; -2.40027 -0.49372  0.03034  0.48380  1.95828 
 #&gt; 
 #&gt; Coefficients:
-#&gt;               Estimate Std. Error t value Pr(&gt;|t|)    
-#&gt; (Intercept) -2.441e-15  2.171e-02     0.0        1    
-#&gt; dad_std      7.275e-01  2.172e-02    33.5   &lt;2e-16 ***
+#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept) 2.737e-15  2.189e-02    0.00        1    
+#&gt; dad_std     7.220e-01  2.190e-02   32.96   &lt;2e-16 ***
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #&gt; 
-#&gt; Residual standard error: 0.6864 on 998 degrees of freedom
-#&gt; Multiple R-squared:  0.5293, Adjusted R-squared:  0.5288 
-#&gt; F-statistic:  1122 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
+#&gt; Residual standard error: 0.6923 on 998 degrees of freedom
+#&gt; Multiple R-squared:  0.5212, Adjusted R-squared:  0.5207 
+#&gt; F-statistic:  1086 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>在上方的輸出裡，<code>Coefficients</code> 的 <code>Estimate</code> 即是 <span class="math inline">\(\alpha\)</span> (Intercept) 與 <span class="math inline">\(\beta\)</span> (dad_std) 的估計。可以看到這裡的 <span class="math inline">\(\beta\)</span> 與先前計算出來的相關係數是相同的。</p>
 </div>
 <div id="因果與相關-causation-vs.-correlation" class="section level2" number="6.3">
