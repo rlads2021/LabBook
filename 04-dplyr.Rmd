@@ -226,7 +226,7 @@ pollution %>%
 ```
 
 
-## 參考資源 {.appendix}
+## 參考資源 {-}
 
 1. Wickham, H., & Grolemund, G. (2017). ***R for Data Science***: [Data transformation](https://r4ds.had.co.nz/transform)
 2. Grolemund, G. (2019). [**Transform Data with dplyr**](https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/03-Transform)
