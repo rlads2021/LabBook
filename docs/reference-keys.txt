@@ -19,6 +19,9 @@ fig:unnamed-chunk-84
 fig:unnamed-chunk-88
 fig:unnamed-chunk-94
 fig:unnamed-chunk-96
+fig:confound-scatter
+fig:confounder
+fig:collider
 ch01
 路徑-工作目錄
 目錄結構-directory-structure
@@ -79,7 +82,6 @@ functions-for-deriving-information-in-dplyr
 mutate-建立新變項
 summarise-對變項進行摘要
 group_by-先分類再摘要
-參考資源-1
 ch05
 r-的繪圖系統
 今天用到的資料-diamonds
@@ -96,3 +98,16 @@ facet
 template-3
 geoms
 務必閱讀
+ch06
+分配-distribution
+dnorm
+rnorm
+相關-correlation
+因果與相關-causation-vs.-correlation
+混淆因子-confounder-confounding-variable
+simulating-confounder
+controlling-for-confounder
+dont-be-a-control-freak
+對撞因子-collider
+simulating-collider
+explaining-collider

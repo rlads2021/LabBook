@@ -37,6 +37,7 @@
 <li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
 <li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></li>
 <li><a class="active" href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></li>
+<li><a class="" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
 </ul>
 
         <div class="book-extra">
@@ -319,10 +320,10 @@ Figure 5.3: <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html
 #&gt;   cut       count
 #&gt;   &lt;ord&gt;     &lt;int&gt;
 #&gt; 1 Fair         49
-#&gt; 2 Good        124
-#&gt; 3 Very Good   336
-#&gt; 4 Premium     361
-#&gt; 5 Ideal       630</code></pre>
+#&gt; 2 Good        136
+#&gt; 3 Very Good   365
+#&gt; 4 Premium     396
+#&gt; 5 Ideal       554</code></pre>
 </li>
 <li><p>如果想使用 <code>sum_data</code> 之中的變項<strong>直接</strong>去畫出長條圖，就需要覆寫 「<code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 自動從 <code>x</code> 計算出次數」的預設行為。這個行為可由 <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 的 <code>stat</code> 參數進行設定。</p></li>
 <li><p><code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 的 <code>stat</code> 預設值是 <code>"count"</code>，讓 <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 可以從「對應至 <code>x</code> 的變項」計算出此變項裡各類別的次數。</p></li>
@@ -463,28 +464,9 @@ Figure 5.3: <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html
 </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <div class="chapter-nav">
 <div class="prev"><a href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></div>
-<div class="empty"></div>
+<div class="next"><a href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav">
@@ -523,7 +505,7 @@ Figure 5.3: <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">March 27, 2021</span>.</p>
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">April 10, 2021</span>.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
@@ -531,6 +513,18 @@ Figure 5.3: <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html
   </div>
 
 </div></div>
-</footer>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 </html>

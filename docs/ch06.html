@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 6 Simulating Data with R | RLads Lab</title>
+<meta name="author" content="Yongfu Liao">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7.3/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RLads Lab</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">關於</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></li>
+<li><a class="" href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></li>
+<li><a class="active" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/rlads2021/LabBook">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch06" class="section level1" number="6">
+<h1>
+<span class="header-section-number">6</span> Simulating Data with R<a class="anchor" aria-label="anchor" href="#ch06"><i class="fas fa-link"></i></a>
+</h1>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1WVRMb8ygiXlkc797hEYQVocupW2LOajVf_MM4xUpbtk">投影片</a> /
+<a href="https://rlads2021.github.io/lab/src/08.zip">程式碼</a> /
+<a href="#">影片</a>)</span></p>
+<!-- 
+https://youtu.be/VTO14Zm6HYY
+-->
+<p>這堂實習課將介紹 R 語言裡面一些非常實用的統計學函數，並會以實例示範如何透過這些函數去模擬 (simulate) 統計學裡常見的一些概念與現象。</p>
+<div id="分配-distribution" class="section level2" number="6.1">
+<h2>
+<span class="header-section-number">6.1</span> 分配 (Distribution)<a class="anchor" aria-label="anchor" href="#%E5%88%86%E9%85%8D-distribution"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><p>R 內建許多統計分配的函數，例如 <code>*unif</code> (均勻分配, Uniform), <code>*norm</code> (常態分配, Normal), <code>*binom</code> (二項分配, Binomial), <code>*pois</code> (泊松分配, Poisson) 等</p></li>
+<li>
+<p>每種分配都有一個「家族」的函數，用來做不同事情。例如，以常態分配為例 (詳見說明文件 <code><a href="https://rdrr.io/r/stats/Normal.html">?dnorm</a></code>)：</p>
+<ul>
+<li>
+<code><a href="https://rdrr.io/r/stats/Normal.html">dnorm()</a></code>: 常態分配的<strong>機率密度</strong>
+</li>
+<li>
+<code><a href="https://rdrr.io/r/stats/Normal.html">pnorm()</a></code>: 常態分配的<strong>累積機率密度</strong>
+</li>
+<li>
+<code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code>: 從常態分配抽取出來的樣本 (隨機數)</li>
+<li>
+<code><a href="https://rdrr.io/r/stats/Normal.html">qnorm()</a></code>: 常態分配的 <strong>分位數</strong> (<a href="https://en.wikipedia.org/wiki/Quantile_function">quantile function</a>)</li>
+</ul>
+</li>
+</ul>
+<p>接下來，我們會以常態分配作為例子示範。</p>
+<div id="dnorm" class="section level3" number="6.1.1">
+<h3>
+<span class="header-section-number">6.1.1</span> <code>dnorm()</code><a class="anchor" aria-label="anchor" href="#dnorm"><i class="fas fa-link"></i></a>
+</h3>
+<p>我們可以使用 <code><a href="https://rdrr.io/r/stats/Normal.html">dnorm()</a></code> 繪製常態分配 (鐘型曲線)。想法很簡單：</p>
+<ol style="list-style-type: decimal">
+<li>製造一個 (間距很小的) 數列</li>
+<li>為每一個數列裡的值計算出相對應的機率密度</li>
+</ol>
+<p>以平均 = 160、標準差 = 5 的常態分配 (台灣成人女性身高) 為例:</p>
+<p><span class="math display">\[
+Height \sim Normal(\mu = 160, \sigma = 5)
+\]</span></p>
+<div class="sourceCode" id="cb328"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">140</span>, <span class="fl">180</span>, by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>
+<span class="va">density</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">height</span>, mean <span class="op">=</span> <span class="fl">160</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
+
+<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+    height <span class="op">=</span> <span class="va">height</span>,
+    density <span class="op">=</span> <span class="va">density</span>
+<span class="op">)</span>
+
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">height</span>, y <span class="op">=</span> <span class="va">density</span><span class="op">)</span>, 
+              size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-104-1.png" width="70%" style="display: block; margin: auto;"></div>
+</div>
+<div id="rnorm" class="section level3" number="6.1.2">
+<h3>
+<span class="header-section-number">6.1.2</span> <code>rnorm()</code><a class="anchor" aria-label="anchor" href="#rnorm"><i class="fas fa-link"></i></a>
+</h3>
+<p><code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 則可以讓我們從常態分配裡取<strong>抽取出樣本</strong>。例如，若我們想從剛剛的女性身高分配 (<span class="math inline">\(\mu = 160, \sigma = 5\)</span>) 裡抽取出 3 個樣本：</p>
+<div class="sourceCode" id="cb329"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span>, mean <span class="op">=</span> <span class="fl">160</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 157.2451 154.2239 159.9038</code></pre>
+<p>注意，因為 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 是隨機抽取<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;&lt;code&gt;rnorm()&lt;/code&gt; 的 &lt;code&gt;r&lt;/code&gt; 即為 random 的意思&lt;/p&gt;"><sup>14</sup></a>，所以每次的結果都會不同。但當我們抽取的樣本數夠大時，這些樣本形成的分配就會<strong>趨近</strong>樣本所來自的常態分配。我們可以用 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 來示範這件事：</p>
+<div class="sourceCode" id="cb331"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sampled_height</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">160</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">sampled_height</span><span class="op">)</span>  <span class="co"># Sample's mean</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">sampled_height</span><span class="op">)</span>    <span class="co"># Sample's standard deviation</span></code></pre></div>
+<pre><code>#&gt; [1] 159.9644
+#&gt; [1] 4.995699</code></pre>
+<p>我們計算所得到的樣本平均數 (159.9643524) 與標準差 (4.9956993) 與原本的常態分配相當接近 (平均 = 160, 標準差 = 5)。</p>
+<p>除此之外，我們可以將還可以將原本的分配與抽樣的分配進行比較：</p>
+<div class="sourceCode" id="cb333"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">sampled_height</span>, 
+                                y <span class="op">=</span> <span class="va">..density..</span><span class="op">)</span>,
+                  binwidth <span class="op">=</span> <span class="fl">0.8</span>, fill <span class="op">=</span> <span class="st">"pink"</span>, color <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span> <span class="op">+</span>
+   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df</span>,
+             mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">height</span>, y <span class="op">=</span> <span class="va">density</span><span class="op">)</span>,
+             size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-107-1.png" width="70%" style="display: block; margin: auto;"></div>
+<p>上圖的曲線即是透過剛剛 <code><a href="https://rdrr.io/r/stats/Normal.html">dnorm()</a></code> 計算出來的常態分配機率密度。粉紅色的直方圖則是樣本的資料。</p>
+</div>
+</div>
+<div id="相關-correlation" class="section level2" number="6.2">
+<h2>
+<span class="header-section-number">6.2</span> 相關 (Correlation)<a class="anchor" aria-label="anchor" href="#%E7%9B%B8%E9%97%9C-correlation"><i class="fas fa-link"></i></a>
+</h2>
+<p>在 R 裡面，我們可以使用 <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code> 計算兩組向量之間的皮爾森相關係數：</p>
+<div class="sourceCode" id="cb334"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Perfect correlation</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">60</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">10</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-108-1.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="sourceCode" id="cb335"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 1</code></pre>
+<p>我們可以透過 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 為 <code>y</code> 增添一些雜訊，讓 <code>x</code>, <code>y</code> 的相關不會是完美的：</p>
+<div class="sourceCode" id="cb337"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Add some noise</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-109-1.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="sourceCode" id="cb338"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 0.9229586</code></pre>
+<p>在自然界中，很多變項都呈現常態分配，除此之外，有時候不同變項之間會有線性相關。例如，兒子的身高受父親影響，所以兩者會有正向關係。此外，兩者的身高各自都會呈現常態分配 (有不同的平均與標準差)。透過 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code>，我們可以很容易地模擬這些關係：</p>
+<ul>
+<li>假設父親的身高 <span class="math inline">\(x_i \sim Normal(\mu=165, \sigma=5)\)</span>
+</li>
+<li>假設兒子的身高 (<span class="math inline">\(y_i\)</span>) 受父親的直接影響：<span class="math inline">\(y_i \sim Normal(\mu = x_i, \sigma=5)\)</span>
+</li>
+</ul>
+<div class="sourceCode" id="cb340"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Simulating correlation b/t two normal distributions</span>
+<span class="va">dad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, mean <span class="op">=</span> <span class="fl">165</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
+<span class="va">son</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, mean <span class="op">=</span> <span class="va">dad</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">dad</span>, <span class="va">son</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-110-1.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="sourceCode" id="cb341"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">dad</span>, <span class="va">son</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 0.7275274</code></pre>
+<p>透過剛剛的模擬，可以得到父親與兒子的身高之間的相關是 0.7275274。學過迴歸統計的同學，應該會記得我們也可以透過<strong>簡單線性迴歸</strong>得到這個相關係數：若將父親與兒子的身高標準化 (取 Z 分數) 再去做迴歸 <span class="math inline">\(y = \alpha + \beta x\)</span>，則這裡的 <span class="math inline">\(\beta\)</span> 即會是剛剛所得到的相關係數 0.7275274。</p>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-111-1.png" width="70%" style="display: block; margin: auto;"></div>
+<p>在 R 裡面要使用線性迴歸可以透過 <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>。<code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> 裡面放的是公式 (formula)，例如下方的 <code>son_std ~ dad_std</code> 即是在表達 <span class="math inline">\(y = \alpha + \beta x\)</span> 這個關係。</p>
+<div class="sourceCode" id="cb343"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># 標準化</span>
+<span class="va">Z</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">(</span><span class="va">x</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
+<span class="va">dad_std</span> <span class="op">&lt;-</span> <span class="fu">Z</span><span class="op">(</span><span class="va">dad</span><span class="op">)</span>
+<span class="va">son_std</span> <span class="op">&lt;-</span> <span class="fu">Z</span><span class="op">(</span><span class="va">son</span><span class="op">)</span>
+
+<span class="co"># Simple linear regression</span>
+<span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">son_std</span> <span class="op">~</span> <span class="va">dad_std</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; 
+#&gt; Call:
+#&gt; lm(formula = son_std ~ dad_std)
+#&gt; 
+#&gt; Residuals:
+#&gt;      Min       1Q   Median       3Q      Max 
+#&gt; -2.36163 -0.45407  0.01625  0.46650  1.83477 
+#&gt; 
+#&gt; Coefficients:
+#&gt;               Estimate Std. Error t value Pr(&gt;|t|)    
+#&gt; (Intercept) -2.441e-15  2.171e-02     0.0        1    
+#&gt; dad_std      7.275e-01  2.172e-02    33.5   &lt;2e-16 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; 
+#&gt; Residual standard error: 0.6864 on 998 degrees of freedom
+#&gt; Multiple R-squared:  0.5293, Adjusted R-squared:  0.5288 
+#&gt; F-statistic:  1122 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>在上方的輸出裡，<code>Coefficients</code> 的 <code>Estimate</code> 即是 <span class="math inline">\(\alpha\)</span> (Intercept) 與 <span class="math inline">\(\beta\)</span> (dad_std) 的估計。可以看到這裡的 <span class="math inline">\(\beta\)</span> 與先前計算出來的相關係數是相同的。</p>
+</div>
+<div id="因果與相關-causation-vs.-correlation" class="section level2" number="6.3">
+<h2>
+<span class="header-section-number">6.3</span> 因果與相關 (Causation vs. Correlation)<a class="anchor" aria-label="anchor" href="#%E5%9B%A0%E6%9E%9C%E8%88%87%E7%9B%B8%E9%97%9C-causation-vs.-correlation"><i class="fas fa-link"></i></a>
+</h2>
+<p>大家應該都知道變項之間<strong>相關的存在不代表因果關係的存在</strong><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;例如，左腿和右腿的長度有很高的正相關，但左腿比較長並&lt;strong&gt;不會造成&lt;/strong&gt;右腿比較長，反之亦然。&lt;/p&gt;"><sup>15</sup></a>。但當變項間存在因果關係時，(在多數情況下) 變項之間也會存在相關。上方父親與兒子身高的例子，實際上就是在<strong>模擬這兩個變項之間的因果關係</strong><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;統計學只能告訴我們變項之間&lt;strong&gt;有無關聯&lt;/strong&gt;。要知道變項之間&lt;strong&gt;有無因果&lt;/strong&gt;，我們需要&lt;strong&gt;統計學以外的東西&lt;/strong&gt;，例如領域知識 (domain knowledge)。&lt;/p&gt;"><sup>16</sup></a>。</p>
+<p>透過這類模擬，可以幫助我們去理解一些更複雜的概念。接下來，我們要透過剛剛所學的東西去模擬統計學中的<strong>混淆因子 (confounder)</strong> 與<strong>對撞因子 (collider)</strong>。</p>
+</div>
+<div id="混淆因子-confounder-confounding-variable" class="section level2" number="6.4">
+<h2>
+<span class="header-section-number">6.4</span> 混淆因子 (Confounder / Confounding Variable)<a class="anchor" aria-label="anchor" href="#%E6%B7%B7%E6%B7%86%E5%9B%A0%E5%AD%90-confounder-confounding-variable"><i class="fas fa-link"></i></a>
+</h2>
+<p>下方的這張散布圖顯示出一個奇怪的現象：</p>
+<blockquote>
+<p>手搖杯的銷售量越高，溺水的人數就越多</p>
+</blockquote>
+<p>為什麼？難道是因為喝太多手搖杯會讓大家更容易抽筋，進而導致溺水人數的增加？</p>
+<div class="figure" style="text-align: center">
+<span id="fig:confound-scatter"></span>
+<img src="assets/img/drinks_and_drown.png" alt="飲料銷售量與溺水人數關聯" width="70%"><p class="caption">
+Figure 6.1: 飲料銷售量與溺水人數關聯
+</p>
+</div>
+<p>這個例子是一個經典的混淆因子的例子。混淆因子 (a.k.a. 混淆變項、干擾因子、干擾變項) 指的是<strong>對獨變項以及依變項皆有因果影響</strong>的變項 (Figure <a href="ch06.html#fig:confounder">6.2</a>)。當混淆變項存在時，會造成獨變項與依變項之間產生<strong>虛假的關聯</strong>，例如：</p>
+<ul>
+<li>本來獨立的獨變項與依變項，會因為混淆變項而產生關聯</li>
+<li>本來關聯性不強的獨變項與依變項，會因為混淆變項而變得更強</li>
+</ul>
+<p>在上方的<a href="ch06.html#fig:confound-scatter">例子</a>裡，手搖杯與溺水人數兩者本來應該是獨立的，但因為<strong>溫度</strong>這個混淆變項使兩者產生了正向關聯：溫度越高，越多人會去買手搖杯 (造成銷售量增高)，也越多人會去玩水 (造成溺水人數變多)。</p>
+<div class="figure" style="text-align: center">
+<span id="fig:confounder"></span>
+<img src="assets/img/confounder.png" alt="混淆因子 (Confounder)" width="45%"><img src="assets/img/confounder2.png" alt="混淆因子 (Confounder)" width="45%"><p class="caption">
+Figure 6.2: 混淆因子 (Confounder)
+</p>
+</div>
+<div id="simulating-confounder" class="section level3" number="6.4.1">
+<h3>
+<span class="header-section-number">6.4.1</span> Simulating Confounder<a class="anchor" aria-label="anchor" href="#simulating-confounder"><i class="fas fa-link"></i></a>
+</h3>
+<p>在 R 裡面，我們可以很容易地去模擬手搖杯的例子。首先，我們先模擬出這三個變項之間的<strong>因果結構</strong>:</p>
+<ul>
+<li>
+<code>temp</code>: 溫度</li>
+<li>
+<code>drown</code>: 溺水人數。高溫會造成溺水人數增加。</li>
+<li>
+<code>drink</code>: 飲料銷售量。高溫會造成飲料銷售量增加。</li>
+</ul>
+<div class="sourceCode" id="cb345"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2021</span><span class="op">)</span>  <span class="co"># Make results reproducible</span>
+<span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">500</span>
+<span class="va">temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">N</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">drown</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">N</span>, mean <span class="op">=</span> <span class="va">temp</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">drink</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">N</span>, mean <span class="op">=</span> <span class="va">temp</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<p>這裡，我們假設這三個變項都來自標準差 = 1 的常態分配。為了讓資料更真實一點，這裡將這些變項做了<strong>線性轉換</strong><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;關於線性轉換以及之後的繪圖函數見 &lt;a href="https://rlads2021.github.io/lab/src/08.zip"&gt;&lt;code&gt;08.zip&lt;/code&gt;&lt;/a&gt; 內的 &lt;a href="https://rlads2021.github.io/lab/src/functions.R"&gt;&lt;code&gt;functions.R&lt;/code&gt;&lt;/a&gt;。&lt;/p&gt;'><sup>17</sup></a>，讓它們的值落在合理的範圍：</p>
+<ul>
+<li>
+<code>temp</code>: 10-40 度</li>
+<li>
+<code>drown</code>: 0-1234 人</li>
+<li>
+<code>drink</code>: 300-2000 杯</li>
+</ul>
+<div class="sourceCode" id="cb346"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"functions.R"</span><span class="op">)</span>
+
+<span class="co"># Scale to make data more realistic</span>
+<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+    temp <span class="op">=</span> <span class="fu">minMaxScale</span><span class="op">(</span><span class="va">temp</span>, m <span class="op">=</span> <span class="fl">10</span>, M <span class="op">=</span> <span class="fl">40</span><span class="op">)</span>,
+    drown <span class="op">=</span> <span class="fu">minMaxScale</span><span class="op">(</span><span class="va">drown</span>, m <span class="op">=</span> <span class="fl">0</span>, M <span class="op">=</span> <span class="fl">1234</span><span class="op">)</span>, 
+    drink <span class="op">=</span> <span class="fu">minMaxScale</span><span class="op">(</span><span class="va">drink</span>, m <span class="op">=</span> <span class="fl">300</span>, M <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+<p>接下來，我們就可以看看這三個變項之間彼此的關聯：</p>
+<div class="sourceCode" id="cb347"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Requires package `psych`, see functions.R</span>
+<span class="fu">plotPairs</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-115-1.png" width="70%" style="display: block; margin: auto;"></div>
+<p>上圖中間那欄最下方 (row = 3, column = 2) 的散布圖即是上方的手搖杯銷售量與溺水人數散布圖 (Figure <a href="ch06.html#fig:confound-scatter">6.1</a>)。在 (2, 3) 位置上的數字 (0.53) 即是手搖杯銷售量與溺水人數的相關係數。</p>
+</div>
+<div id="controlling-for-confounder" class="section level3" number="6.4.2">
+<h3>
+<span class="header-section-number">6.4.2</span> Controlling for Confounder<a class="anchor" aria-label="anchor" href="#controlling-for-confounder"><i class="fas fa-link"></i></a>
+</h3>
+<p>透過這幾張散布圖，我們能夠得知這三個變項之間彼此都有正向關聯。但這些圖本身並無法告訴我們哪些變項<strong>造成</strong>了哪些變項。要知道這點，我們需要兩個東西：</p>
+<ol style="list-style-type: decimal">
+<li>這些變項之間的因果結構 (這樣我們才知道混淆變項是誰)</li>
+<li>更複雜的統計模型用來<strong>控制混淆變項</strong>的影響</li>
+</ol>
+<p>第一點我們已經知道了 (因為資料是我們自己模擬出來的)，但在現實世界中，我們通常不會知道真正的因果結構長什麼樣子。這時候就需要動用領域知識去做出<strong>因果結構的假設</strong> (可以有很多種)，然後透過資料去檢驗並剔除不符的因果結構。</p>
+<p>至於第二點，我們可以使用<strong>多元迴歸</strong>模型。在只使用簡單迴歸模型的情況下，我們可能會錯誤推斷溺水人數的原因來自手搖杯銷售量：</p>
+<div class="sourceCode" id="cb348"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu">Z</span><span class="op">(</span><span class="va">drown</span><span class="op">)</span> <span class="op">~</span> <span class="fu">Z</span><span class="op">(</span><span class="va">drink</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span></code></pre></div>
+<pre><code>#&gt;                 Estimate Std. Error      t value     Pr(&gt;|t|)
+#&gt; (Intercept) 1.896855e-16 0.03809807 4.978874e-15 1.000000e+00
+#&gt; Z(drink)    5.250932e-01 0.03813623 1.376888e+01 8.849357e-37</code></pre>
+<p>但若<strong>在迴歸模型中加入混淆變項</strong>，模型就會幫我們控制混淆變項的影響。這時，我們就可以得知<strong>在沒有混淆變項的影響下，手搖杯銷售量的提升對溺水人數的影響</strong>為何：</p>
+<div class="sourceCode" id="cb350"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu">Z</span><span class="op">(</span><span class="va">drown</span><span class="op">)</span> <span class="op">~</span> <span class="fu">Z</span><span class="op">(</span><span class="va">drink</span><span class="op">)</span> <span class="op">+</span> <span class="fu">Z</span><span class="op">(</span><span class="va">temp</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span></code></pre></div>
+<pre><code>#&gt;                 Estimate Std. Error      t value     Pr(&gt;|t|)
+#&gt; (Intercept) 6.618100e-17 0.03092700 2.139910e-15 1.000000e+00
+#&gt; Z(drink)    4.512621e-02 0.04299789 1.049498e+00 2.944589e-01
+#&gt; Z(temp)     6.916087e-01 0.04299789 1.608471e+01 3.604313e-47</code></pre>
+<p>透過多元迴歸的控制，可以看到 <code>drink</code> 對 <code>drown</code> 的影響從原本的 <code>0.525</code> 變成 <code>0.045</code>。換言之，飲料銷售量對於溺水人數幾乎沒有影響。在簡單迴歸裡，<code>drink</code> 對 <code>drown</code> 的影響其實來自溫度 <code>temp</code> (<code>temp</code> 對 <code>drown</code> 的影響是 <code>0.692</code>)。</p>
+</div>
+</div>
+<div id="dont-be-a-control-freak" class="section level2" number="6.5">
+<h2>
+<span class="header-section-number">6.5</span> Don’t be a Control Freak<a class="anchor" aria-label="anchor" href="#dont-be-a-control-freak"><i class="fas fa-link"></i></a>
+</h2>
+<p>發現了<strong>多元迴歸</strong>的神奇功能之後，或許會以為在<strong>迴歸式裡面加入越多預測變項越好</strong> (我當初就是如此認為)，因為這樣就能控制掉任何可能的混淆變項的影響，留下來最「乾淨」的迴歸係數 <span class="math inline">\(\beta_i\)</span>。<strong>這是錯的！！！</strong><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;除非你只想要&lt;strong&gt;預測&lt;/strong&gt;，而對變項之間的關係沒有興趣。這時候，多元迴歸裡的變項越多，預測力就會越好 (即使變項之間有&lt;a href="https://en.wikipedia.org/wiki/Multicollinearity"&gt;共線&lt;/a&gt;的情形)。&lt;/p&gt;'><sup>18</sup></a>不經思考 (沒有因果結構) 地將變項丟進迴歸式裡不但會讓結果難以詮釋，甚至在某些情況下會<strong>製造出原本不存在的關聯</strong>。</p>
+<p>讓我們回到身高的例子。下方這筆資料包含 500 位男性的身高 (<code>son</code>) 以及這些男性的父親 (<code>dad</code>) 與母親 (<code>mom</code>) 的身高：</p>
+<div class="sourceCode" id="cb352"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">'https://rlads2021.github.io/lab/src/collider.csv'</span>
+<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 6 x 3
+#&gt;     mom   dad   son
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1  158.  178.  173.
+#&gt; 2  161.  163.  164.
+#&gt; 3  162.  178.  175.
+#&gt; 4  151.  163.  157.
+#&gt; 5  170.  178.  178.
+#&gt; 6  173.  167.  172.</code></pre>
+<p>假設我們想看<strong>父親的身高如何受母親以及兒子的身高影響</strong><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;如果你仔細想的話會發現這句話相當荒謬。兒子的身高怎麼可能會&lt;strong&gt;影響&lt;/strong&gt;老爸的身高？這看起來荒謬的原因是因為身高的例子對我們來說太熟悉，所以我們可以很快發現問題。但現實世界中遇到的變項，彼此之間的關係就不會如此明顯了。&lt;/p&gt;"><sup>19</sup></a>，這時我們可能就會很直觀地使用這個迴歸式：</p>
+<p><span class="math display">\[
+Dad = \alpha + \beta_{Mom} Mom + \beta_{Son} Son
+\]</span></p>
+<div class="sourceCode" id="cb354"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu">Z</span><span class="op">(</span><span class="va">dad</span><span class="op">)</span> <span class="op">~</span> <span class="fu">Z</span><span class="op">(</span><span class="va">mom</span><span class="op">)</span> <span class="op">+</span> <span class="fu">Z</span><span class="op">(</span><span class="va">son</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficient</span></code></pre></div>
+<pre><code>#&gt;                  Estimate Std. Error       t value     Pr(&gt;|t|)
+#&gt; (Intercept)  4.725574e-16 0.03186325  1.483080e-14 1.000000e+00
+#&gt; Z(mom)      -5.193205e-01 0.03986636 -1.302654e+01 1.404517e-33
+#&gt; Z(son)       8.788082e-01 0.03986636  2.204386e+01 1.282788e-75</code></pre>
+<p>迴歸式的 <span class="math inline">\(\beta\)</span> 係數可能會讓我們得到一個結論：</p>
+<blockquote>
+<p><span class="math inline">\(\beta_{mom}\)</span> = -0.519，所以…<strong>父親越高母親就越矮</strong></p>
+</blockquote>
+<p>所以這代表什麼？矮的女性喜歡跟高的男性結婚？矮的男性也喜歡跟高的女性結婚？要不然為何父親與母親的身高會是負向關係？</p>
+</div>
+<div id="對撞因子-collider" class="section level2" number="6.6">
+<h2>
+<span class="header-section-number">6.6</span> 對撞因子 (Collider)<a class="anchor" aria-label="anchor" href="#%E5%B0%8D%E6%92%9E%E5%9B%A0%E5%AD%90-collider"><i class="fas fa-link"></i></a>
+</h2>
+<p>其實在剛剛的資料裡，<strong>父親與母親的身高彼此是獨立的</strong>。它們之間的關聯之所以會產生，是因為在多元迴歸裡，我們<strong>控制了不該控制的變項</strong>。這筆身高的資料其實是來自於下圖的因果結構：</p>
+<div class="figure" style="text-align: center">
+<span id="fig:collider"></span>
+<img src="assets/img/collider.png" alt="對撞因子 (Collider)" width="45%"><img src="assets/img/collider2.png" alt="對撞因子 (Collider)" width="45%"><p class="caption">
+Figure 6.3: 對撞因子 (Collider)
+</p>
+</div>
+<p>母親與父親的身高對兒子的身高皆有直接的因果影響。在這種情況下，如果我們在迴歸式裡面去控制兒子的身高，就會造成原本獨立的父、母親身高產生虛假關聯。在這種因果結構中，兒子身高的這個變項稱為對撞因子 (Collider)。對撞因子指的是被多個變項直接影響的變項。因為有多個因果影響「匯入」同一個變項，所以稱作對撞因子。</p>
+<p>所以為何在控制了對撞因子之後，本來沒有關聯的變項會產生關聯呢？一個直觀的解釋是因為統計上的控制在概念上就是在固定某個變項的數值。所以在<strong>固定兒子的身高</strong>之後，一旦我知道母親的身高是矮的，我自然就會知道父親的身高是高的；反之亦成立，在固定兒子身高下，若父親是矮的，母親就會是高的<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;這裡的高矮不是相對於整個群體的父母身高，而是相對於「兒子身高為某個數值」的那些父母。&lt;/p&gt;"><sup>20</sup></a>。接下來，我們來看看如何用 R 模擬這個現象。</p>
+<div id="simulating-collider" class="section level3" number="6.6.1">
+<h3>
+<span class="header-section-number">6.6.1</span> Simulating Collider<a class="anchor" aria-label="anchor" href="#simulating-collider"><i class="fas fa-link"></i></a>
+</h3>
+<p>首先，我們透過 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 模擬出上方的因果結構：</p>
+<ul>
+<li>
+<code>mom</code>: 母親身高</li>
+<li>
+<code>dad</code>: 父親身高</li>
+<li>
+<code>son</code>: 兒子身高。受父母身高的直接影響，且父親與母親的<strong>影響程度相同</strong>
+</li>
+</ul>
+<div class="sourceCode" id="cb356"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1914</span><span class="op">)</span>  <span class="co"># Make results reproducible</span>
+<span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">500</span>        <span class="co"># Sample size</span>
+<span class="va">mom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span>
+<span class="va">dad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span>
+<span class="va">son</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="va">mom</span> <span class="op">+</span> <span class="va">dad</span><span class="op">)</span> <span class="co"># dad &amp; mom causally influence son's height</span>
+
+<span class="co"># Scale variables to make them more realistic</span>
+<span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+    mom <span class="op">=</span> <span class="fl">160</span> <span class="op">+</span> <span class="fl">5</span> <span class="op">*</span> <span class="va">mom</span>,    <span class="co"># Scale to Normal(160, 5)</span>
+    dad <span class="op">=</span> <span class="fl">170</span> <span class="op">+</span> <span class="fl">5</span> <span class="op">*</span> <span class="va">dad</span>,    <span class="co"># Scale to Normal(170, 5)</span>
+    son <span class="op">=</span> <span class="fl">170</span> <span class="op">+</span> <span class="fl">5</span> <span class="op">*</span> <span class="fu">Z</span><span class="op">(</span><span class="va">son</span><span class="op">)</span>  <span class="co"># Scale to Normal(170, 5)</span>
+<span class="op">)</span></code></pre></div>
+<p>這裡，我們一樣將各變項進行線性轉換 (非必要)，讓資料看起來更直觀一點。我們將母親的身高平均轉換為 160；父親與兒子身高平均轉換為 170；三個變項的標準差皆轉換成 5。現在的這筆資料即與剛剛透過網路讀進來的 <code>collider.csv</code> 內容相同，我們可以透過相同的迴歸模型來檢驗看看：</p>
+<div class="sourceCode" id="cb357"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu">Z</span><span class="op">(</span><span class="va">dad</span><span class="op">)</span> <span class="op">~</span> <span class="fu">Z</span><span class="op">(</span><span class="va">mom</span><span class="op">)</span> <span class="op">+</span> <span class="fu">Z</span><span class="op">(</span><span class="va">son</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficient</span></code></pre></div>
+<pre><code>#&gt;                  Estimate Std. Error       t value     Pr(&gt;|t|)
+#&gt; (Intercept)  4.725574e-16 0.03186325  1.483080e-14 1.000000e+00
+#&gt; Z(mom)      -5.193205e-01 0.03986636 -1.302654e+01 1.404517e-33
+#&gt; Z(son)       8.788082e-01 0.03986636  2.204386e+01 1.282788e-75</code></pre>
+<p>現在，若我們將對撞因子 <code>son</code> 從迴歸模型裡剔除，即可看到父親與母親的身高彼此之間沒有關聯：</p>
+<div class="sourceCode" id="cb359"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu">Z</span><span class="op">(</span><span class="va">dad</span><span class="op">)</span> <span class="op">~</span> <span class="fu">Z</span><span class="op">(</span><span class="va">mom</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">coefficient</span></code></pre></div>
+<pre><code>#&gt;                  Estimate Std. Error       t value  Pr(&gt;|t|)
+#&gt; (Intercept) -1.587427e-16 0.04476484 -3.546147e-15 1.0000000
+#&gt; Z(mom)       7.903449e-03 0.04480967  1.763782e-01 0.8600685</code></pre>
+<p>透過變項間的兩兩散布圖，我們也可以看到比較合理的趨勢：父母的身高是獨立的，兒子的身高與父母皆為正相關。</p>
+<div class="sourceCode" id="cb361"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">plotPairs</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-123-1.png" width="70%" style="display: block; margin: auto;"></div>
+</div>
+<div id="explaining-collider" class="section level3" number="6.6.2">
+<h3>
+<span class="header-section-number">6.6.2</span> Explaining Collider<a class="anchor" aria-label="anchor" href="#explaining-collider"><i class="fas fa-link"></i></a>
+</h3>
+<p>前文只透過文字描述為何「控制」對撞因子會造成原本獨立的變項產生關聯。現在我們可以透過剛剛的身高資料來幫助我們理解這件事情。下方的這幾張散布圖中，灰色的點是<strong>所有的資料</strong>，黑色的點則是<strong>身高被固定在某個數值</strong><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;在這裡因為身高是連續的變項，所以無法真的將身高固定在「某一個」數值，否則會找不到符合的觀察值。這裡的作法是將身高固定在某一個很小的範圍內 (1.5 公分) 當作&lt;strong&gt;兒子身高的控制&lt;/strong&gt;。&lt;/p&gt;"><sup>21</sup></a>的樣本，藍色的線則是透過這些黑色的點所算出來的迴歸線。在這裡我們可以看到<strong>控制兒子身高</strong>的作用：父親與母親的身高產生了負向相關。</p>
+<div class="sourceCode" id="cb362"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">plotRange</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span>, <span class="va">lower</span>, <span class="va">upper</span><span class="op">)</span> <span class="op">{</span>
+  
+  <span class="va">df_filt</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span><span class="va">lower</span> <span class="op">&lt;=</span> <span class="va">df</span><span class="op">$</span><span class="va">son</span> <span class="op">&amp;</span> <span class="va">df</span><span class="op">$</span><span class="va">son</span> <span class="op">&lt;</span> <span class="va">upper</span>, <span class="op">]</span>
+  <span class="va">r</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">df_filt</span><span class="op">$</span><span class="va">mom</span>, <span class="va">df_filt</span><span class="op">$</span><span class="va">dad</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>
+
+  <span class="va">pl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">mom</span>, <span class="va">dad</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df</span>, color <span class="op">=</span> <span class="st">"grey"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df_filt</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df_filt</span>, size <span class="op">=</span> <span class="fl">1</span>,
+                  method <span class="op">=</span> <span class="st">"lm"</span>, se<span class="op">=</span><span class="cn">F</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"r = "</span>, <span class="va">r</span>, <span class="st">"; son's height fixed at "</span>, <span class="va">lower</span>, <span class="st">"~"</span>, <span class="va">upper</span>, <span class="st">" cm"</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">pl</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
+<div class="sourceCode" id="cb363"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">rng</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">165</span>, <span class="fl">175</span>, by <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>
+<span class="va">plts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="st">"list"</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">rng</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">rng</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">rng</span><span class="op">)</span><span class="op">)</span> <span class="kw">break</span>
+  <span class="va">plts</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">plotRange</span><span class="op">(</span><span class="va">df</span>, <span class="va">rng</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">rng</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html">wrap_plots</a></span><span class="op">(</span><span class="va">plts</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-124-1.png" width="100%" style="display: block; margin: auto;"></div>
+</div>
+</div>
+<div id="進階閱讀" class="section level2 unnumbered">
+<h2>進階閱讀<a class="anchor" aria-label="anchor" href="#%E9%80%B2%E9%9A%8E%E9%96%B1%E8%AE%80"><i class="fas fa-link"></i></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Pearl, J., Glymour, M., &amp; Jewell, N. P. (2016). <em>Causal inference in statistics: A primer</em>
+</li>
+<li>Pearl, J. (2009). <em>Causality (2nd ed.)</em>
+</li>
+<li>McElreath, R. (2020). <em>Statistical rethinking: A Bayesian course with examples in R and Stan (2nd ed.)</em>
+</li>
+</ol>
+<!-- Footnotes -->
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></div>
+<div class="empty"></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ch06"><span class="header-section-number">6</span> Simulating Data with R</a></li>
+<li>
+<a class="nav-link" href="#%E5%88%86%E9%85%8D-distribution"><span class="header-section-number">6.1</span> 分配 (Distribution)</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#dnorm"><span class="header-section-number">6.1.1</span> dnorm()</a></li>
+<li><a class="nav-link" href="#rnorm"><span class="header-section-number">6.1.2</span> rnorm()</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E7%9B%B8%E9%97%9C-correlation"><span class="header-section-number">6.2</span> 相關 (Correlation)</a></li>
+<li><a class="nav-link" href="#%E5%9B%A0%E6%9E%9C%E8%88%87%E7%9B%B8%E9%97%9C-causation-vs.-correlation"><span class="header-section-number">6.3</span> 因果與相關 (Causation vs. Correlation)</a></li>
+<li>
+<a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E5%9B%A0%E5%AD%90-confounder-confounding-variable"><span class="header-section-number">6.4</span> 混淆因子 (Confounder / Confounding Variable)</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#simulating-confounder"><span class="header-section-number">6.4.1</span> Simulating Confounder</a></li>
+<li><a class="nav-link" href="#controlling-for-confounder"><span class="header-section-number">6.4.2</span> Controlling for Confounder</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#dont-be-a-control-freak"><span class="header-section-number">6.5</span> Don’t be a Control Freak</a></li>
+<li>
+<a class="nav-link" href="#%E5%B0%8D%E6%92%9E%E5%9B%A0%E5%AD%90-collider"><span class="header-section-number">6.6</span> 對撞因子 (Collider)</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#simulating-collider"><span class="header-section-number">6.6.1</span> Simulating Collider</a></li>
+<li><a class="nav-link" href="#explaining-collider"><span class="header-section-number">6.6.2</span> Explaining Collider</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E9%96%B1%E8%AE%80">進階閱讀</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/rlads2021/LabBook/blob/master/06-stats.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/rlads2021/LabBook/edit/master/06-stats.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">April 10, 2021</span>.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+</html>

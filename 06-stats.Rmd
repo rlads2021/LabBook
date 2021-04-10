@@ -1,0 +1,400 @@
+Simulating Data with R {#ch06}
+===============================
+
+[([投影片](https://docs.google.com/presentation/d/1WVRMb8ygiXlkc797hEYQVocupW2LOajVf_MM4xUpbtk) /
+[程式碼](https://rlads2021.github.io/lab/src/08.zip) /
+[影片](#))
+]{.course-resource}
+
+<!-- 
+https://youtu.be/VTO14Zm6HYY
+-->
+
+這堂實習課將介紹 R 語言裡面一些非常實用的統計學函數，並會以實例示範如何透過這些函數去模擬 (simulate) 統計學裡常見的一些概念與現象。
+
+
+分配 (Distribution)
+-----------------------------------------------------
+
+- R 內建許多統計分配的函數，例如 `*unif` (均勻分配, Uniform), `*norm` (常態分配, Normal), `*binom` (二項分配, Binomial), `*pois` (泊松分配, Poisson) 等
+
+- 每種分配都有一個「家族」的函數，用來做不同事情。例如，以常態分配為例 (詳見說明文件 `?dnorm`)：
+  - `dnorm()`: 常態分配的**機率密度**
+  - `pnorm()`: 常態分配的**累積機率密度**
+  - `rnorm()`: 從常態分配抽取出來的樣本 (隨機數)
+  - `qnorm()`: 常態分配的 **分位數** ([quantile function](https://en.wikipedia.org/wiki/Quantile_function))
+
+接下來，我們會以常態分配作為例子示範。
+
+
+### `dnorm()`
+
+我們可以使用 `dnorm()` 繪製常態分配 (鐘型曲線)。想法很簡單：
+
+1. 製造一個 (間距很小的) 數列
+2. 為每一個數列裡的值計算出相對應的機率密度
+
+以平均 = 160、標準差 = 5 的常態分配 (台灣成人女性身高) 為例:
+
+$$
+Height \sim Normal(\mu = 160, \sigma = 5)
+$$
+
+
+```{r}
+library(ggplot2)
+ggplot2::theme_set(ggplot2::theme_bw())
+
+height <- seq(140, 180, by = 0.01)
+density <- dnorm(x = height, mean = 160, sd = 5)
+
+df <- data.frame(
+	height = height,
+	density = density
+)
+
+ggplot(df) +
+   geom_point(aes(x = height, y = density), 
+              size = 0.1)
+```
+
+
+### `rnorm()`
+
+`rnorm()` 則可以讓我們從常態分配裡取**抽取出樣本**。例如，若我們想從剛剛的女性身高分配 ($\mu = 160, \sigma = 5$) 裡抽取出 3 個樣本：
+
+```{r}
+rnorm(n = 3, mean = 160, sd = 5)
+```
+
+注意，因為 `rnorm()` 是隨機抽取^[`rnorm()` 的 `r` 即為 random 的意思]，所以每次的結果都會不同。但當我們抽取的樣本數夠大時，這些樣本形成的分配就會**趨近**樣本所來自的常態分配。我們可以用 `rnorm()` 來示範這件事：
+
+```{r results='hold'}
+sampled_height <- rnorm(n = nrow(df), mean = 160, sd = 5)
+mean(sampled_height)  # Sample's mean
+sd(sampled_height)    # Sample's standard deviation
+```
+
+我們計算所得到的樣本平均數 (`r mean(sampled_height)`) 與標準差 (`r sd(sampled_height)`) 與原本的常態分配相當接近 (平均 = 160, 標準差 = 5)。
+
+除此之外，我們可以將還可以將原本的分配與抽樣的分配進行比較：
+
+```{r}
+ggplot() +
+   geom_histogram(mapping = aes(x = sampled_height, 
+                                y = ..density..),
+                  binwidth = 0.8, fill = "pink", color = "grey") +
+   geom_point(data = df,
+             mapping = aes(x = height, y = density),
+             size = 0.1)
+```
+
+上圖的曲線即是透過剛剛 `dnorm()` 計算出來的常態分配機率密度。粉紅色的直方圖則是樣本的資料。
+
+
+
+相關 (Correlation)
+-----------------------------------------------------
+
+在 R 裡面，我們可以使用 `cor()` 計算兩組向量之間的皮爾森相關係數：
+
+```{r}
+# Perfect correlation
+x <- 1:60
+y <- x + 10
+plot(x, y)
+cor(x, y)
+```
+
+我們可以透過 `rnorm()` 為 `y` 增添一些雜訊，讓 `x`, `y` 的相關不會是完美的：
+
+```{r}
+# Add some noise
+y <- x + rnorm(n = length(x), mean = 0, sd = 7)
+plot(x, y)
+cor(x, y)
+```
+
+在自然界中，很多變項都呈現常態分配，除此之外，有時候不同變項之間會有線性相關。例如，兒子的身高受父親影響，所以兩者會有正向關係。此外，兩者的身高各自都會呈現常態分配 (有不同的平均與標準差)。透過 `rnorm()`，我們可以很容易地模擬這些關係：
+
+- 假設父親的身高 $x_i \sim Normal(\mu=165, \sigma=5)$
+- 假設兒子的身高 ($y_i$) 受父親的直接影響：$y_i \sim Normal(\mu = x_i, \sigma=5)$
+
+```{r}
+# Simulating correlation b/t two normal distributions
+dad <- rnorm(n = 1000, mean = 165, sd = 5)
+son <- rnorm(n = 1000, mean = dad, sd = 5)
+plot(dad, son)
+cor(dad, son)
+```
+
+透過剛剛的模擬，可以得到父親與兒子的身高之間的相關是 `r cor(dad, son)`。學過迴歸統計的同學，應該會記得我們也可以透過**簡單線性迴歸**得到這個相關係數：若將父親與兒子的身高標準化 (取 Z 分數) 再去做迴歸 $y = \alpha + \beta x$，則這裡的 $\beta$ 即會是剛剛所得到的相關係數 `r cor(dad, son)`。
+
+```{r echo=F}
+Z <- function(x) (x - mean(x)) / sd(x)
+plot(Z(dad), Z(son))
+abline(lm(Z(dad) ~ Z(son)), col = "red")
+```
+
+
+在 R 裡面要使用線性迴歸可以透過 `lm()`。`lm()` 裡面放的是公式 (formula)，例如下方的 `son_std ~ dad_std` 即是在表達 $y = \alpha + \beta x$ 這個關係。
+
+```{r}
+# 標準化
+Z <- function(x) (x - mean(x)) / sd(x)
+dad_std <- Z(dad)
+son_std <- Z(son)
+
+# Simple linear regression
+fit <- lm(son_std ~ dad_std)
+summary(fit)
+```
+
+在上方的輸出裡，`Coefficients` 的 `Estimate` 即是 $\alpha$ (Intercept) 與 $\beta$ (dad_std) 的估計。可以看到這裡的 $\beta$ 與先前計算出來的相關係數是相同的。
+
+
+因果與相關 (Causation vs. Correlation)
+----------------------------------------------
+
+大家應該都知道變項之間**相關的存在不代表因果關係的存在**[^leg-length]。但當變項間存在因果關係時，(在多數情況下) 變項之間也會存在相關。上方父親與兒子身高的例子，實際上就是在**模擬這兩個變項之間的因果關係**[^domain-knowledge]。
+
+透過這類模擬，可以幫助我們去理解一些更複雜的概念。接下來，我們要透過剛剛所學的東西去模擬統計學中的**混淆因子 (confounder)** 與**對撞因子 (collider)**。
+
+
+混淆因子 (Confounder / Confounding Variable)
+-------------------------------------------------
+
+下方的這張散布圖顯示出一個奇怪的現象：
+
+> 手搖杯的銷售量越高，溺水的人數就越多
+
+為什麼？難道是因為喝太多手搖杯會讓大家更容易抽筋，進而導致溺水人數的增加？
+
+```{r confound-scatter, fig.cap="飲料銷售量與溺水人數關聯", echo=F}
+img("drinks_and_drown.png")
+```
+
+這個例子是一個經典的混淆因子的例子。混淆因子 (a.k.a. 混淆變項、干擾因子、干擾變項) 指的是**對獨變項以及依變項皆有因果影響**的變項 (Figure \@ref(fig:confounder))。當混淆變項存在時，會造成獨變項與依變項之間產生**虛假的關聯**，例如：
+
+- 本來獨立的獨變項與依變項，會因為混淆變項而產生關聯
+- 本來關聯性不強的獨變項與依變項，會因為混淆變項而變得更強
+
+在上方的[例子](#fig:confound-scatter)裡，手搖杯與溺水人數兩者本來應該是獨立的，但因為**溫度**這個混淆變項使兩者產生了正向關聯：溫度越高，越多人會去買手搖杯 (造成銷售量增高)，也越多人會去玩水 (造成溺水人數變多)。
+
+```{r confounder, fig.cap="混淆因子 (Confounder)", out.width="45%", fig.show='hold', echo=F}
+img(c("confounder.png", "confounder2.png"))
+```
+
+### Simulating Confounder
+
+在 R 裡面，我們可以很容易地去模擬手搖杯的例子。首先，我們先模擬出這三個變項之間的**因果結構**:
+
+- `temp`: 溫度
+- `drown`: 溺水人數。高溫會造成溺水人數增加。
+- `drink`: 飲料銷售量。高溫會造成飲料銷售量增加。
+
+```{r}
+set.seed(2021)  # Make results reproducible
+N <- 500
+temp <- rnorm(n = N, mean = 0, sd = 1)
+drown <- rnorm(n = N, mean = temp, sd = 1)
+drink <- rnorm(n = N, mean = temp, sd = 1)
+```
+
+這裡，我們假設這三個變項都來自標準差 = 1 的常態分配。為了讓資料更真實一點，這裡將這些變項做了**線性轉換**[^functions]，讓它們的值落在合理的範圍：
+
+- `temp`: 10-40 度
+- `drown`: 0-1234 人
+- `drink`: 300-2000 杯
+
+```{r}
+source("functions.R")
+
+# Scale to make data more realistic
+df <- data.frame(
+    temp = minMaxScale(temp, m = 10, M = 40),
+    drown = minMaxScale(drown, m = 0, M = 1234), 
+    drink = minMaxScale(drink, m = 300, M = 2000)
+)
+```
+
+接下來，我們就可以看看這三個變項之間彼此的關聯：
+
+```{r}
+# Requires package `psych`, see functions.R
+plotPairs(df)
+```
+
+上圖中間那欄最下方 (row = 3, column = 2) 的散布圖即是上方的手搖杯銷售量與溺水人數散布圖 (Figure \@ref(fig:confound-scatter))。在 (2, 3) 位置上的數字 (0.53) 即是手搖杯銷售量與溺水人數的相關係數。
+
+
+### Controlling for Confounder
+
+透過這幾張散布圖，我們能夠得知這三個變項之間彼此都有正向關聯。但這些圖本身並無法告訴我們哪些變項**造成**了哪些變項。要知道這點，我們需要兩個東西：
+
+1. 這些變項之間的因果結構 (這樣我們才知道混淆變項是誰)
+2. 更複雜的統計模型用來**控制混淆變項**的影響
+
+第一點我們已經知道了 (因為資料是我們自己模擬出來的)，但在現實世界中，我們通常不會知道真正的因果結構長什麼樣子。這時候就需要動用領域知識去做出**因果結構的假設** (可以有很多種)，然後透過資料去檢驗並剔除不符的因果結構。
+
+至於第二點，我們可以使用**多元迴歸**模型。在只使用簡單迴歸模型的情況下，我們可能會錯誤推斷溺水人數的原因來自手搖杯銷售量：
+
+```{r}
+fit <- lm(Z(drown) ~ Z(drink), data = df)
+summary(fit)$coefficients
+```
+
+但若**在迴歸模型中加入混淆變項**，模型就會幫我們控制混淆變項的影響。這時，我們就可以得知**在沒有混淆變項的影響下，手搖杯銷售量的提升對溺水人數的影響**為何：
+
+```{r}
+fit <- lm(Z(drown) ~ Z(drink) + Z(temp), data = df)
+summary(fit)$coefficients
+```
+
+透過多元迴歸的控制，可以看到 `drink` 對 `drown` 的影響從原本的 `0.525` 變成 `0.045`。換言之，飲料銷售量對於溺水人數幾乎沒有影響。在簡單迴歸裡，`drink` 對 `drown` 的影響其實來自溫度 `temp` (`temp` 對 `drown` 的影響是 `0.692`)。
+
+
+
+Don't be a Control Freak
+-------------------------
+
+發現了**多元迴歸**的神奇功能之後，或許會以為在**迴歸式裡面加入越多預測變項越好** (我當初就是如此認為)，因為這樣就能控制掉任何可能的混淆變項的影響，留下來最「乾淨」的迴歸係數 $\beta_i$。**這是錯的！！！**[^prediction]不經思考 (沒有因果結構) 地將變項丟進迴歸式裡不但會讓結果難以詮釋，甚至在某些情況下會**製造出原本不存在的關聯**。
+
+讓我們回到身高的例子。下方這筆資料包含 500 位男性的身高 (`son`) 以及這些男性的父親 (`dad`) 與母親 (`mom`) 的身高：
+
+```{r}
+url <- 'https://rlads2021.github.io/lab/src/collider.csv'
+df <- readr::read_csv(url)
+head(df)
+```
+
+假設我們想看**父親的身高如何受母親以及兒子的身高影響**[^rediculous]，這時我們可能就會很直觀地使用這個迴歸式：
+
+$$
+Dad = \alpha + \beta_{Mom} Mom + \beta_{Son} Son
+$$
+
+
+```{r}
+fit <- lm(Z(dad) ~ Z(mom) + Z(son), data = df)
+summary(fit)$coefficient
+```
+
+迴歸式的 $\beta$ 係數可能會讓我們得到一個結論：
+
+> $\beta_{mom}$ = `r round(summary(fit)$coefficient[2,1] , 3)`，所以...**父親越高母親就越矮**
+
+所以這代表什麼？矮的女性喜歡跟高的男性結婚？矮的男性也喜歡跟高的女性結婚？要不然為何父親與母親的身高會是負向關係？
+
+
+對撞因子 (Collider)
+---------------------------------------------
+
+其實在剛剛的資料裡，**父親與母親的身高彼此是獨立的**。它們之間的關聯之所以會產生，是因為在多元迴歸裡，我們**控制了不該控制的變項**。這筆身高的資料其實是來自於下圖的因果結構：
+
+```{r collider, fig.cap="對撞因子 (Collider)", echo=F, out.width="45%", fig.show='hold'}
+img(c("collider.png", "collider2.png"))
+```
+
+母親與父親的身高對兒子的身高皆有直接的因果影響。在這種情況下，如果我們在迴歸式裡面去控制兒子的身高，就會造成原本獨立的父、母親身高產生虛假關聯。在這種因果結構中，兒子身高的這個變項稱為對撞因子 (Collider)。對撞因子指的是被多個變項直接影響的變項。因為有多個因果影響「匯入」同一個變項，所以稱作對撞因子。
+
+所以為何在控制了對撞因子之後，本來沒有關聯的變項會產生關聯呢？一個直觀的解釋是因為統計上的控制在概念上就是在固定某個變項的數值。所以在**固定兒子的身高**之後，一旦我知道母親的身高是矮的，我自然就會知道父親的身高是高的；反之亦成立，在固定兒子身高下，若父親是矮的，母親就會是高的[^relative-short-tall]。接下來，我們來看看如何用 R 模擬這個現象。
+
+
+### Simulating Collider
+
+首先，我們透過 `rnorm()` 模擬出上方的因果結構：
+
+- `mom`: 母親身高
+- `dad`: 父親身高
+- `son`: 兒子身高。受父母身高的直接影響，且父親與母親的**影響程度相同**
+
+```{r}
+set.seed(1914)  # Make results reproducible
+N <- 500        # Sample size
+mom <- rnorm(N)
+dad <- rnorm(N)
+son <- rnorm(N, mom + dad) # dad & mom causally influence son's height
+
+# Scale variables to make them more realistic
+df <- data.frame(
+    mom = 160 + 5 * mom,    # Scale to Normal(160, 5)
+    dad = 170 + 5 * dad,    # Scale to Normal(170, 5)
+    son = 170 + 5 * Z(son)  # Scale to Normal(170, 5)
+)
+```
+
+這裡，我們一樣將各變項進行線性轉換 (非必要)，讓資料看起來更直觀一點。我們將母親的身高平均轉換為 160；父親與兒子身高平均轉換為 170；三個變項的標準差皆轉換成 5。現在的這筆資料即與剛剛透過網路讀進來的 `collider.csv` 內容相同，我們可以透過相同的迴歸模型來檢驗看看：
+
+```{r}
+fit <- lm(Z(dad) ~ Z(mom) + Z(son), data = df)
+summary(fit)$coefficient
+```
+
+現在，若我們將對撞因子 `son` 從迴歸模型裡剔除，即可看到父親與母親的身高彼此之間沒有關聯：
+
+```{r}
+fit <- lm(Z(dad) ~ Z(mom), data = df)
+summary(fit)$coefficient
+```
+
+透過變項間的兩兩散布圖，我們也可以看到比較合理的趨勢：父母的身高是獨立的，兒子的身高與父母皆為正相關。
+
+```{r}
+plotPairs(df)
+```
+
+
+### Explaining Collider
+
+前文只透過文字描述為何「控制」對撞因子會造成原本獨立的變項產生關聯。現在我們可以透過剛剛的身高資料來幫助我們理解這件事情。下方的這幾張散布圖中，灰色的點是**所有的資料**，黑色的點則是**身高被固定在某個數值**[^continuous]的樣本，藍色的線則是透過這些黑色的點所算出來的迴歸線。在這裡我們可以看到**控制兒子身高**的作用：父親與母親的身高產生了負向相關。
+
+```{r test, fig.dim=c(8, 12)}
+plotRange <- function(df, lower, upper) {
+  
+  df_filt <- df[lower <= df$son & df$son < upper, ]
+  r <-  round(cor(df_filt$mom, df_filt$dad), 3)
+
+  pl <- ggplot(mapping = aes(mom, dad)) +
+      geom_point(data = df, color = "grey", size = 1) +
+      geom_point(data = df_filt, size = 1) +
+      geom_smooth(data = df_filt, size = 1,
+                  method = "lm", se=F) +
+      labs(subtitle = paste0("r = ", r, "; son's height fixed at ", lower, "~", upper, " cm"))
+  return(pl)
+}
+```
+
+```{r out.width="100%", fig.dim=c(8.5, 12)}
+rng <- seq(165, 175, by = 1.5)
+plts <- vector("list", length = length(rng) - 1)
+for (i in seq_along(rng)) {
+  if (i == length(rng)) break
+  plts[[i]] <- plotRange(df, rng[i], rng[i + 1])
+}
+patchwork::wrap_plots(plts, ncol = 2)
+```
+
+
+## 進階閱讀 {-}
+
+1. Pearl, J., Glymour, M., & Jewell, N. P. (2016). *Causal inference in statistics: A primer*
+1. Pearl, J. (2009). *Causality (2nd ed.)*
+1. McElreath, R. (2020). *Statistical rethinking: A Bayesian course with examples in R and Stan (2nd ed.)*
+
+
+<!-- Footnotes -->
+[^leg-length]: 例如，左腿和右腿的長度有很高的正相關，但左腿比較長並**不會造成**右腿比較長，反之亦然。
+
+[^domain-knowledge]: 統計學只能告訴我們變項之間**有無關聯**。要知道變項之間**有無因果**，我們需要**統計學以外的東西**，例如領域知識 (domain knowledge)。
+
+[^functions]: 關於線性轉換以及之後的繪圖函數見 [`08.zip`](https://rlads2021.github.io/lab/src/08.zip) 內的 [`functions.R`](https://rlads2021.github.io/lab/src/functions.R)。
+
+[^rediculous]: 如果你仔細想的話會發現這句話相當荒謬。兒子的身高怎麼可能會**影響**老爸的身高？這看起來荒謬的原因是因為身高的例子對我們來說太熟悉，所以我們可以很快發現問題。但現實世界中遇到的變項，彼此之間的關係就不會如此明顯了。
+
+[^prediction]: 除非你只想要**預測**，而對變項之間的關係沒有興趣。這時候，多元迴歸裡的變項越多，預測力就會越好 (即使變項之間有[共線](https://en.wikipedia.org/wiki/Multicollinearity)的情形)。
+
+
+[^relative-short-tall]: 這裡的高矮不是相對於整個群體的父母身高，而是相對於「兒子身高為某個數值」的那些父母。
+
+[^continuous]: 在這裡因為身高是連續的變項，所以無法真的將身高固定在「某一個」數值，否則會找不到符合的觀察值。這裡的作法是將身高固定在某一個很小的範圍內 (1.5 公分) 當作**兒子身高的控制**。
