@@ -3,12 +3,8 @@ Simulating Data with R {#ch06}
 
 [([投影片](https://docs.google.com/presentation/d/1WVRMb8ygiXlkc797hEYQVocupW2LOajVf_MM4xUpbtk) /
 [程式碼](https://rlads2021.github.io/lab/src/08.zip) /
-[影片](#))
+[影片](https://youtu.be/VTO14Zm6HYY))
 ]{.course-resource}
-
-<!-- 
-https://youtu.be/VTO14Zm6HYY
--->
 
 這堂實習課將介紹 R 語言裡面一些非常實用的統計學函數，並會以實例示範如何透過這些函數去模擬 (simulate) 統計學裡常見的一些概念與現象。
 
