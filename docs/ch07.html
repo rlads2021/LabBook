@@ -182,8 +182,6 @@
 </div>
 </li>
 </ul>
-<pre><code>#&gt; Warning in readLines("assets/corpus/news_first_para.txt"): incomplete final line
-#&gt; found on 'assets/corpus/news_first_para.txt'</code></pre>
 </div>
 <div id="your-turn" class="section level3" number="7.1.4">
 <h3>
@@ -250,7 +248,7 @@
 </li>
 <li>
 <p>Regular Expression in R function: <strong><code>"today\\.$"</code></strong></p>
-<div class="sourceCode" id="cb365"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb364"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://stringr.tidyverse.org">stringr</a></span><span class="op">)</span>
 <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_view.html">str_view</a></span><span class="op">(</span><span class="st">"It is sunny today."</span>, <span class="st">"today\\.$"</span><span class="op">)</span></code></pre></div>
 <div id="htmlwidget-c1c5fb4f9920696ef050" style="width:960px;height:100%;" class="str_view html-widget"></div>
@@ -263,17 +261,17 @@
 <h3>
 <span class="header-section-number">7.2.1</span> <code>str_detect()</code><a class="anchor" aria-label="anchor" href="#str_detect"><i class="fas fa-link"></i></a>
 </h3>
-<div class="sourceCode" id="cb366"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb365"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cat"</span>, <span class="st">"bed"</span>, <span class="st">"car"</span>, <span class="st">"Mr."</span><span class="op">)</span>
 <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"a"</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; [1]  TRUE FALSE  TRUE FALSE</code></pre>
-<div class="sourceCode" id="cb368"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb367"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"\\."</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; [1] FALSE FALSE FALSE  TRUE</code></pre>
 <ul>
 <li>
 <p><code><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect()</a></code> 可與 <code>[]</code> 或 <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> 結合，用來篩選資料：</p>
-<div class="sourceCode" id="cb370"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb369"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cat"</span>, <span class="st">"bed"</span>, <span class="st">"car"</span>, <span class="st">"Mr."</span><span class="op">)</span>
 <span class="va">s</span><span class="op">[</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"^c"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <pre><code>#&gt; [1] "cat" "car"</code></pre>
@@ -287,7 +285,7 @@
 <ul>
 <li>
 <p><code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match()</a></code> 可從文字裡抓出符合 RegEx 的字串。<code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match()</a></code> 只會抓出 <code>str</code> 每個元素裡<strong>第一個符合的字串</strong>，並且以 <code>matrix</code> 的資料結構回傳：</p>
-<div class="sourceCode" id="cb372"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb371"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Won't match."</span>, 
        <span class="st">"One two three, four five six."</span>, 
        <span class="st">"Seven eight nine."</span><span class="op">)</span>
@@ -307,7 +305,7 @@
 </li>
 <li>
 <p>若要抓出<strong>所有符合的字串</strong>，需使用 <code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match_all()</a></code><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;&lt;code&gt;stringr&lt;/code&gt; 的許多函數，都有兩個版本：&lt;code&gt;str_*()&lt;/code&gt; 與 &lt;code&gt;str_*_all()&lt;/code&gt;&lt;/p&gt;"><sup>22</sup></a>。<code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match_all()</a></code> 會抓出 <code>str</code> 每個元素裡<strong>所有符合的字串</strong>，並以 <code>list</code> 的資料結構回傳：</p>
-<div class="sourceCode" id="cb374"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb373"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match_all</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"([a-zA-Z]+) ([a-zA-Z]+) ([a-zA-Z]+)"</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; [[1]]
 #&gt;      [,1] [,2] [,3] [,4]
