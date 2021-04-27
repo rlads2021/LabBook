@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 7 字串處理 | RLads Lab</title>
+<meta name="author" content="Yongfu Liao">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
+<script src="libs/str_view-binding-1.4.0/str_view.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RLads Lab</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">關於</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></li>
+<li><a class="" href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></li>
+<li><a class="" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
+<li><a class="active" href="ch07.html"><span class="header-section-number">7</span> 字串處理</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/rlads2021/LabBook">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch07" class="section level1" number="7">
+<h1>
+<span class="header-section-number">7</span> 字串處理<a class="anchor" aria-label="anchor" href="#ch07"><i class="fas fa-link"></i></a>
+</h1>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1O7w7mARctARCCkHGd6lNM5gbwfkK5_MBRymktdrryYg">投影片</a> /
+<a href="https://rlads2021.github.io/lab/src/09.zip">程式碼</a> /
+<a href="https://youtu.be/dQXIitYRNQ4">影片</a>)</span></p>
+<div id="regular-expression" class="section level2" number="7.1">
+<h2>
+<span class="header-section-number">7.1</span> Regular Expression (<a href="http://loonkwil.github.io/regexify/">✍️</a>)<a class="anchor" aria-label="anchor" href="#regular-expression"><i class="fas fa-link"></i></a>
+</h2>
+<div id="basics-.-escape" class="section level3" number="7.1.1">
+<h3>
+<span class="header-section-number">7.1.1</span> Basics: <code>.</code>, <code>^</code>, <code>$</code>, <code>|</code>, <code>\</code> (escape)<a class="anchor" aria-label="anchor" href="#basics-.-escape"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p><code>.</code>: 萬用字元</p>
+<div class="regex-view">
+<code class="regex-input">妹妹.正</code>
+<pre><code>我<span class="matched-regex">妹妹很正</span><br>我<span class="matched-regex">妹妹超正</span><br>我妹妹超級正<br>我<span class="matched-regex">妹妹 正</span></code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">妹妹..正</code>
+<pre><code>我妹妹很正<br>我妹妹超正<br>我<span class="matched-regex">妹妹超級正</span><br>我妹妹 正</code></pre>
+</div>
+</li>
+<li>
+<p><code><a href="https://rdrr.io/r/base/Arithmetic.html">^</a></code>, <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code>: Anchors</p>
+<div class="regex-view">
+<code class="regex-input">^你</code>
+<pre><code><span class="matched-regex"><span class="matched-regex">你</span></span>妹妹很正<br>我妹妹超正<br><span class="matched-regex"><span class="matched-regex">你</span></span>沒有妹妹</code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">超正$</code>
+<pre><code>你妹妹很正<br>我妹妹<span class="matched-regex">超正</span><br>你沒有妹妹</code></pre>
+</div>
+</li>
+<li>
+<p><code>()</code>, <code><a href="https://rdrr.io/r/base/Logic.html">|</a></code>: group</p>
+<div class="regex-view">
+<code class="regex-input">gre|ay</code>
+<pre><code><span class="matched-regex">gre</span>y<br>gr<span class="matched-regex">ay</span></code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">gr(e|a)y</code>
+<pre><code><span class="matched-regex">grey</span><br><span class="matched-regex">gray</span></code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">(很|超|超級)正</code>
+<pre><code>我妹妹<span class="matched-regex">很正</span><br>我妹妹<span class="matched-regex">超正</span><br>我妹妹<span class="matched-regex">超級正</span></code></pre>
+</div>
+</li>
+<li>
+<p><code>\</code>: escape</p>
+<div class="regex-view">
+<code class="regex-input">妹妹超\.級\.正</code>
+<pre><code>我<span class="matched-regex">妹妹超.級.正</span><br>我妹妹超～級～正</code></pre>
+</div>
+</li>
+</ul>
+</div>
+<div id="repetition" class="section level3" number="7.1.2">
+<h3>
+<span class="header-section-number">7.1.2</span> Repetition<a class="anchor" aria-label="anchor" href="#repetition"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p><code><a href="https://rdrr.io/r/base/Arithmetic.html">+</a></code>, <code><a href="https://rdrr.io/r/utils/Question.html">?</a></code></p>
+<div class="regex-view">
+<code class="regex-input">超+正</code>
+<pre><code>我妹妹<span class="matched-regex">超正</span><br>我妹妹超級正<br>我妹妹<span class="matched-regex">超超超超正</span></code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">超級?正</code>
+<pre><code>我妹妹<span class="matched-regex">超正</span><br>我妹妹<span class="matched-regex">超級正</span><br>我妹妹超超超<span class="matched-regex">超正</span></code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">超+級?正</code>
+<pre><code>我妹妹<span class="matched-regex">超正</span><br>我妹妹<span class="matched-regex">超級正</span><br>我妹妹<span class="matched-regex">超超超超正</span></code></pre>
+</div>
+</li>
+<li>
+<p><code>{num}</code>, <code>{min,}</code>, <code>{,max}</code>, <code>{min,max}</code></p>
+<div class="regex-view">
+<code class="regex-input">\d{4}-\d{2}-\d{2}</code>
+<pre><code>今天是 <span class="matched-regex">2019-10-31</span><br>今天是 2019-2-10<br>今天是 2019-1-1</code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">\d{4}-\d{1,2}-\d{1,2}</code>
+<pre><code>今天是 <span class="matched-regex">2019-10-31</span><br>今天是 <span class="matched-regex">2019-2-10</span><br>今天是 <span class="matched-regex">2019-1-1</span></code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">\d{4}-\d{1,}-\d{1,}</code>
+<pre><code>今天是 <span class="matched-regex">2019-1-10</span><br>不存在 <span class="matched-regex">2019-555-555</span></code></pre>
+</div>
+</li>
+</ul>
+</div>
+<div id="character-classes" class="section level3" number="7.1.3">
+<h3>
+<span class="header-section-number">7.1.3</span> Character classes<a class="anchor" aria-label="anchor" href="#character-classes"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p><code>\s</code></p>
+<div class="regex-view">
+<code class="regex-input">妹妹\s超正</code>
+<pre><code>我妹妹超正<br>1 space: 我<span class="matched-regex">妹妹 超正</span><br>1 tab: 我<span class="matched-regex">妹妹  超正</span><br>2 tabs: 我妹妹        超正</code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">妹妹\s+超正</code>
+<pre><code>我妹妹超正<br>我<span class="matched-regex">妹妹 超正</span><br>我<span class="matched-regex">妹妹 超正</span><br>我<span class="matched-regex">妹妹        超正</span></code></pre>
+</div>
+</li>
+<li>
+<p><code>[]</code></p>
+<div class="regex-view">
+<code class="regex-input">[超很極]正</code>
+<pre><code>我妹妹<span class="matched-regex">超正</span><br>我妹妹<span class="matched-regex">很正</span><br>我妹妹<span class="matched-regex">極正</span><br>我妹妹不正</code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">[B-D]1</code>
+<pre><code>A1 <span class="matched-regex">B1</span> <span class="matched-regex">C1</span> <span class="matched-regex">D1</span> E1 F1 G1 H1 I1 J1 K1 L1 M1 N1 O1 P1 Q1 R1 S1 T1 U1 V1 W1 X1 Y1 Z1</code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">a[2-5]</code>
+<pre><code>a1 <span class="matched-regex">a2</span> <span class="matched-regex">a3</span> <span class="matched-regex">a4</span> <span class="matched-regex">a5</span> a6 a7 a8 a9 a10</code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">a[^2-5]</code>
+<pre><code><span class="matched-regex"><span class="matched-regex">a1</span></span> a2 a3 a4 a5 <span class="matched-regex">a6</span> <span class="matched-regex">a7</span> <span class="matched-regex">a8</span> <span class="matched-regex">a9</span> <span class="matched-regex"><span class="matched-regex">a1</span></span>0</code></pre>
+</div>
+</li>
+</ul>
+<pre><code>#&gt; Warning in readLines("assets/corpus/news_first_para.txt"): incomplete final line
+#&gt; found on 'assets/corpus/news_first_para.txt'</code></pre>
+</div>
+<div id="your-turn" class="section level3" number="7.1.4">
+<h3>
+<span class="header-section-number">7.1.4</span> Your Turn<a class="anchor" aria-label="anchor" href="#your-turn"><i class="fas fa-link"></i></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li>
+<p>找出所有<strong>記者姓名</strong></p>
+<div class="regex-view">
+<code class="regex-input hide">【.{3}╱.+報導】</code>
+<pre><code><span class="matched-regex">【賴德剛╱綜合報導】</span><br>大聯盟勞資協議昨獲共識，要繳交超出部分的17.5%稅額，連續第2年則課30%，連續第3年40%，第4年起都是50%。新版協議，第1年稅額調高為20%，第2年不變，第3年起都是50％。<br><span class="matched-regex">【曾雪蒨╱台中報導】</span><br>一名35歲OL是「3C控」，白天上班打電腦、訊軟體聲響，竟忍不住低頭滑手機看內容...<br><span class="matched-regex">【蔡裕隆╱彰化報導】</span><br>台灣啤酒「台版天兵麥基(JaVale McGee)」周伯勳，昨出戰臺灣銀行，轟出全隊次高...<br><span class="matched-regex">【韓政燕╱綜合外電報導】</span><br>日本前晚從鹿兒島縣種子島宇宙中心成功發射搭載無人補給太空船「鸛」6號的...<br>【國際中心╱綜合外電報導】<br>今年美國總統大選期間，大量假新聞充斥推特、臉書等社交網站，遭質疑扭曲真相...<br><span class="matched-regex">【鍾裕能╱綜合報導】</span><br>巨人季後簽了陽岱鋼、山口俊、森福允彥共3名自由球員，又網羅前樂天大砲...</code></pre>
+</div>
+</li>
+<li>
+<p>找出所有<strong>百分比</strong> (e.g. <code>20%</code>, <code>17.5%</code>)</p>
+<div class="regex-view">
+<code class="regex-input hide">[0-9.]+%</code>
+<pre><code>【賴德剛╱綜合報導】<br>大聯盟勞資協議昨獲共識，要繳交超出部分的<span class="matched-regex">17.5%</span>稅額，連續第2年則課<span class="matched-regex">30%</span>，連續第3年<span class="matched-regex">40%</span>，第4年起都是<span class="matched-regex">50%</span>。新版協議，第1年稅額調高為<span class="matched-regex">20%</span>，第2年不變，第3年起都是50％。<br>【曾雪蒨╱台中報導】<br>一名35歲OL是「3C控」，白天上班打電腦、訊軟體聲響，竟忍不住低頭滑手機看內容...<br>【蔡裕隆╱彰化報導】<br>台灣啤酒「台版天兵麥基(JaVale McGee)」周伯勳，昨出戰臺灣銀行，轟出全隊次高...<br>【韓政燕╱綜合外電報導】<br>日本前晚從鹿兒島縣種子島宇宙中心成功發射搭載無人補給太空船「鸛」6號的...<br>【國際中心╱綜合外電報導】<br>今年美國總統大選期間，大量假新聞充斥推特、臉書等社交網站，遭質疑扭曲真相...<br>【鍾裕能╱綜合報導】<br>巨人季後簽了陽岱鋼、山口俊、森福允彥共3名自由球員，又網羅前樂天大砲...</code></pre>
+</div>
+</li>
+</ol>
+</div>
+<div id="backreference" class="section level3" number="7.1.5">
+<h3>
+<span class="header-section-number">7.1.5</span> Backreference<a class="anchor" aria-label="anchor" href="#backreference"><i class="fas fa-link"></i></a>
+</h3>
+<div class="regex-view">
+<code class="regex-input">(.)..\1</code>
+<pre><code><span class="matched-regex">防不勝防</span><br><span class="matched-regex">精益求精</span><br><span class="matched-regex">眉下添眉</span><br><span class="matched-regex">年復一年</span><br>噩噩渾渾<br>沸沸揚揚<br>紛紛攘攘<br>風風雨雨</code></pre>
+</div>
+<div class="regex-view">
+<code class="regex-input">(.)\1(.)\2</code>
+<pre><code>防不勝防<br>精益求精<br>眉下添眉<br>年復一年<br><span class="matched-regex">噩噩渾渾</span><br><span class="matched-regex">沸沸揚揚</span><br><span class="matched-regex">紛紛攘攘</span><br><span class="matched-regex">風風雨雨</span></code></pre>
+</div>
+</div>
+<div id="your-turn-1" class="section level3" number="7.1.6">
+<h3>
+<span class="header-section-number">7.1.6</span> Your Turn<a class="anchor" aria-label="anchor" href="#your-turn-1"><i class="fas fa-link"></i></a>
+</h3>
+<div class="regex-view">
+<code class="regex-input hide">一(.{1,2})接著?又?一\1</code>
+<pre><code><span class="matched-regex">一口接一口</span><br><span class="matched-regex">一口接著一口</span><br><span class="matched-regex">一口接著又一口</span><br><span class="matched-regex">一巴掌接著一巴掌</span></code></pre>
+</div>
+</div>
+</div>
+<div id="stringr" class="section level2" number="7.2">
+<h2>
+<span class="header-section-number">7.2</span> stringr<a class="anchor" aria-label="anchor" href="#stringr"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><p><code>stringr</code> 套件是 tidyverse 裡面用來處理字串的套件，比起 base R 的字串處理函數，<code>stringr</code> 中的函數在命名上相當一致 (<code>str_*</code>)、函數名稱也較「透明」因此比較容易記得。</p></li>
+<li>
+<p>在 R 裡面，Regular Expression 是以<strong>字串</strong>的資料類型 (i.e. <code>character</code>) 去表徵，因此有一點需特別注意：</p>
+<blockquote>
+<p>若 Regular Expression 裡面出現<strong>反斜線</strong>，則在將此 Regex 寫進 R 的函數時，需要在<strong>每一個反斜線之前再加上一個反斜線</strong></p>
+</blockquote>
+<ul>
+<li>
+<p>Regular Expression: <strong><code>today\.$</code></strong></p>
+<div class="regex-view">
+<code class="regex-input">today\.$</code>
+<pre><code>It is sunny <span class="matched-regex">today.</span></code></pre>
+</div>
+</li>
+<li>
+<p>Regular Expression in R function: <strong><code>"today\\.$"</code></strong></p>
+<div class="sourceCode" id="cb365"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://stringr.tidyverse.org">stringr</a></span><span class="op">)</span>
+<span class="fu"><a href="https://stringr.tidyverse.org/reference/str_view.html">str_view</a></span><span class="op">(</span><span class="st">"It is sunny today."</span>, <span class="st">"today\\.$"</span><span class="op">)</span></code></pre></div>
+<div id="htmlwidget-c1c5fb4f9920696ef050" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c1c5fb4f9920696ef050">{"x":{"html":"<ul>\n  <li>It is sunny <span class='match'>today.<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+</li>
+</ul>
+</li>
+</ul>
+<div id="str_detect" class="section level3" number="7.2.1">
+<h3>
+<span class="header-section-number">7.2.1</span> <code>str_detect()</code><a class="anchor" aria-label="anchor" href="#str_detect"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb366"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cat"</span>, <span class="st">"bed"</span>, <span class="st">"car"</span>, <span class="st">"Mr."</span><span class="op">)</span>
+<span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"a"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1]  TRUE FALSE  TRUE FALSE</code></pre>
+<div class="sourceCode" id="cb368"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"\\."</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] FALSE FALSE FALSE  TRUE</code></pre>
+<ul>
+<li>
+<p><code><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect()</a></code> 可與 <code>[]</code> 或 <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> 結合，用來篩選資料：</p>
+<div class="sourceCode" id="cb370"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cat"</span>, <span class="st">"bed"</span>, <span class="st">"car"</span>, <span class="st">"Mr."</span><span class="op">)</span>
+<span class="va">s</span><span class="op">[</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"^c"</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt; [1] "cat" "car"</code></pre>
+</li>
+</ul>
+</div>
+<div id="str_match-str_match_all" class="section level3" number="7.2.2">
+<h3>
+<span class="header-section-number">7.2.2</span> <code>str_match()</code> / <code>str_match_all()</code><a class="anchor" aria-label="anchor" href="#str_match-str_match_all"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p><code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match()</a></code> 可從文字裡抓出符合 RegEx 的字串。<code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match()</a></code> 只會抓出 <code>str</code> 每個元素裡<strong>第一個符合的字串</strong>，並且以 <code>matrix</code> 的資料結構回傳：</p>
+<div class="sourceCode" id="cb372"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Won't match."</span>, 
+       <span class="st">"One two three, four five six."</span>, 
+       <span class="st">"Seven eight nine."</span><span class="op">)</span>
+<span class="fu"><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"([a-zA-Z]+) ([a-zA-Z]+) ([a-zA-Z]+)"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt;      [,1]               [,2]    [,3]    [,4]   
+#&gt; [1,] NA                 NA      NA      NA     
+#&gt; [2,] "One two three"    "One"   "two"   "three"
+#&gt; [3,] "Seven eight nine" "Seven" "eight" "nine"</code></pre>
+<ul>
+<li>回傳的 matrix 中，
+<ul>
+<li>每列 (row) 對應到 <code>str</code> 中的一個元素。在此，因為 <code>str</code> 長度為 3，因此回傳的 matrix 有 3 列。matrix 的每列代表 <code>str</code> 中每個元素 (字串) 中<strong>第一個</strong>符合 RegEx 的部份。</li>
+<li>第一行 (column) 是<strong>整個 RegEx 抓到的字串</strong>，i.e. 符合 <code>(\w+) (\w+) (\w+)</code> 的字串。後面幾行依序是 RegEx 中，<strong>各個 group</strong> 所抓到的字串，i.e. 各個 <code>()</code> 裡的 RegEx。例如，第二行是第一個 <code>(\w+)</code> 所抓到的內容；第三行則是第二個 <code>(\w+)</code> 所抓到的內容；依此類推。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>若要抓出<strong>所有符合的字串</strong>，需使用 <code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match_all()</a></code><a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;&lt;code&gt;stringr&lt;/code&gt; 的許多函數，都有兩個版本：&lt;code&gt;str_*()&lt;/code&gt; 與 &lt;code&gt;str_*_all()&lt;/code&gt;&lt;/p&gt;"><sup>22</sup></a>。<code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match_all()</a></code> 會抓出 <code>str</code> 每個元素裡<strong>所有符合的字串</strong>，並以 <code>list</code> 的資料結構回傳：</p>
+<div class="sourceCode" id="cb374"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match_all</a></span><span class="op">(</span><span class="va">s</span>, <span class="st">"([a-zA-Z]+) ([a-zA-Z]+) ([a-zA-Z]+)"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [[1]]
+#&gt;      [,1] [,2] [,3] [,4]
+#&gt; 
+#&gt; [[2]]
+#&gt;      [,1]            [,2]   [,3]   [,4]   
+#&gt; [1,] "One two three" "One"  "two"  "three"
+#&gt; [2,] "four five six" "four" "five" "six"  
+#&gt; 
+#&gt; [[3]]
+#&gt;      [,1]               [,2]    [,3]    [,4]  
+#&gt; [1,] "Seven eight nine" "Seven" "eight" "nine"</code></pre>
+<ul>
+<li>回傳的 list 中，list 的每個元素依序對應到 <code>str</code> 的每個元素。因此，回傳的 list 長度為 3 (與 <code>str</code> 相同)
+<ul>
+<li>list 的每個元素內儲存的是一個 matrix，這個 matrix 的每列 (row) 對應到一個符合 RegEx 的字串。每行 (column) 的意義則與 <code><a href="https://stringr.tidyverse.org/reference/str_match.html">str_match()</a></code> 回傳的 matrix 相同。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="配合閱讀" class="section level2" number="7.3">
+<h2>
+<span class="header-section-number">7.3</span> 配合閱讀<a class="anchor" aria-label="anchor" href="#%E9%85%8D%E5%90%88%E9%96%B1%E8%AE%80"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><a href="https://r4ds.had.co.nz/strings.html">R for Data Science: Strings</a></li>
+<li><a href="https://stringr.tidyverse.org/articles/regular-expressions.html">Regular Expression</a></li>
+<li><a href="https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf">stringr cheatsheet</a></li>
+</ul>
+</div>
+<div id="相關資源" class="section level2" number="7.4">
+<h2>
+<span class="header-section-number">7.4</span> 相關資源<a class="anchor" aria-label="anchor" href="#%E7%9B%B8%E9%97%9C%E8%B3%87%E6%BA%90"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>
+<a href="https://regexone.com">Regex One</a>: RegEx 互動式學習</li>
+<li><a href="http://loonkwil.github.io/regexify">RegEx Online Tester</a></li>
+</ul>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></div>
+<div class="empty"></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ch07"><span class="header-section-number">7</span> 字串處理</a></li>
+<li>
+<a class="nav-link" href="#regular-expression"><span class="header-section-number">7.1</span> Regular Expression (✍️)</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#basics-.-escape"><span class="header-section-number">7.1.1</span> Basics: ., ^, $, |, \ (escape)</a></li>
+<li><a class="nav-link" href="#repetition"><span class="header-section-number">7.1.2</span> Repetition</a></li>
+<li><a class="nav-link" href="#character-classes"><span class="header-section-number">7.1.3</span> Character classes</a></li>
+<li><a class="nav-link" href="#your-turn"><span class="header-section-number">7.1.4</span> Your Turn</a></li>
+<li><a class="nav-link" href="#backreference"><span class="header-section-number">7.1.5</span> Backreference</a></li>
+<li><a class="nav-link" href="#your-turn-1"><span class="header-section-number">7.1.6</span> Your Turn</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#stringr"><span class="header-section-number">7.2</span> stringr</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#str_detect"><span class="header-section-number">7.2.1</span> str_detect()</a></li>
+<li><a class="nav-link" href="#str_match-str_match_all"><span class="header-section-number">7.2.2</span> str_match() / str_match_all()</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E9%85%8D%E5%90%88%E9%96%B1%E8%AE%80"><span class="header-section-number">7.3</span> 配合閱讀</a></li>
+<li><a class="nav-link" href="#%E7%9B%B8%E9%97%9C%E8%B3%87%E6%BA%90"><span class="header-section-number">7.4</span> 相關資源</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/rlads2021/LabBook/blob/master/07-stringr.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/rlads2021/LabBook/edit/master/07-stringr.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">April 27, 2021</span>.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+</html>

@@ -110,3 +110,16 @@ dont-be-a-control-freak
 對撞因子-collider
 simulating-collider
 explaining-collider
+ch07
+regular-expression
+basics-.-escape
+repetition
+character-classes
+your-turn
+backreference
+your-turn-1
+stringr
+str_detect
+str_match-str_match_all
+配合閱讀
+相關資源

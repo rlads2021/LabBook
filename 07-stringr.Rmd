@@ -1,0 +1,272 @@
+字串處理 {#ch07}
+===============
+
+[([投影片](https://docs.google.com/presentation/d/1O7w7mARctARCCkHGd6lNM5gbwfkK5_MBRymktdrryYg) /
+[程式碼](https://rlads2021.github.io/lab/src/09.zip) /
+[影片](https://youtu.be/dQXIitYRNQ4))
+]{.course-resource}
+
+
+## Regular Expression ([✍️](http://loonkwil.github.io/regexify/))
+
+```{r echo=F}
+re.escape <- function(strings){
+    vals <- c("\\\\", "\\[", "\\]", "\\(", "\\)", 
+              "\\{", "\\}", "\\^", "\\$","\\*", 
+              "\\+", "\\?", "\\.", "\\|", "\\s", "\\S", "\\d", "\\D", "\\w")
+    replace.vals <- gsub("\\", '\\\\' , vals, fixed = T)
+    for(i in seq_along(vals)){
+        strings <- gsub(vals[i], replace.vals[i], strings, fixed = T)
+    }
+    strings
+}
+
+regex_view <- function(text, pattern, multiline = T, showInput = T) {
+  matched <- stringr::str_extract_all(text, stringr::regex(pattern, multiline = multiline))
+  
+  out_text <- text
+  for (i in seq_along(matched)) {
+    for (mat in matched[[i]]) {
+      out_text[i] <- stringr::str_replace_all(out_text[i], stringr::fixed(mat), 
+                             paste0('<span class="matched-regex">', mat, '</span>'))
+      out_text[i] <- stringr::str_replace_all(out_text[i], '\n+', '<br>')
+    }
+  }
+  
+  showInput <- ifelse(showInput, '<code class="regex-input">', '<code class="regex-input hide">')
+  writeLines(paste0('<div class="regex-view">', 
+                    paste0(showInput, re.escape(pattern), '</code>'),
+                    '<pre><code>',
+                    paste0(out_text, collapse = '<br>'), 
+                    '</code></pre>',
+                    '</div>'), useBytes = T)
+  return(invisible(out_text) )
+}
+```
+
+### Basics: `.`, `^`, `$`, `|`, `\` (escape)
+
+
+- `.`: 萬用字元
+
+  ```{r, results='asis', echo=F}
+  regex_view('我妹妹很正
+  我妹妹超正
+  我妹妹超級正
+  我妹妹 正',
+  '妹妹.正')
+              
+  regex_view('我妹妹很正
+  我妹妹超正
+  我妹妹超級正
+  我妹妹 正',
+  '妹妹..正')
+  ```
+
+- `^`, `$`: Anchors
+
+  ```{r, results='asis', echo=F}
+  regex_view('你妹妹很正
+  我妹妹超正
+  你沒有妹妹',
+  '^你')
+
+  regex_view('你妹妹很正
+  我妹妹超正
+  你沒有妹妹',
+  '超正$')
+  ```
+
+- `()`, `|`: group
+
+  ```{r, results='asis', echo=F}
+  regex_view(c("grey", "gray"), 'gre|ay')
+  regex_view(c("grey", "gray"), 'gr(e|a)y')
+  
+  regex_view('我妹妹很正
+  我妹妹超正
+  我妹妹超級正', 
+  '(很|超|超級)正')
+  ```
+
+- `\`: escape
+
+  ```{r, results='asis', echo=F}
+  regex_view('我妹妹超.級.正
+  我妹妹超～級～正', 
+  '妹妹超\\.級\\.正')
+  ```
+
+### Repetition
+
+- `+`, `?`
+
+  ```{r results='asis', echo=F}
+  regex_view(c('我妹妹超正', '我妹妹超級正', '我妹妹超超超超正'),
+  '超+正')
+  
+  regex_view(c('我妹妹超正', '我妹妹超級正', '我妹妹超超超超正'),
+  '超級?正')
+  
+  regex_view(c('我妹妹超正', '我妹妹超級正', '我妹妹超超超超正'),
+  '超+級?正')
+  ```
+
+- `{num}`, `{min,}`, `{,max}`, `{min,max}`
+
+  ```{r results='asis', echo=F}
+  regex_view(c('今天是 2019-10-31', '今天是 2019-2-10', '今天是 2019-1-1'),
+  '\\d{4}-\\d{2}-\\d{2}')
+  
+  regex_view(c('今天是 2019-10-31', '今天是 2019-2-10', '今天是 2019-1-1'),
+  '\\d{4}-\\d{1,2}-\\d{1,2}')
+  
+  regex_view(c('今天是 2019-1-10', '不存在 2019-555-555'),
+  '\\d{4}-\\d{1,}-\\d{1,}')
+  ```
+
+
+### Character classes
+
+- `\s`
+
+  ```{r, results='asis', echo=F}
+  regex_view(c('我妹妹超正', 
+  '1 space: 我妹妹 超正', '1 tab: 我妹妹\t超正', '2 tabs: 我妹妹\t\t超正'), 
+  '妹妹\\s超正', multiline = T)
+  
+  regex_view(c('我妹妹超正', 
+  '我妹妹 超正', '我妹妹\t超正', '我妹妹\t\t超正'), 
+  '妹妹\\s+超正', multiline = T)
+  ```
+
+- `[]`
+
+  ```{r, results='asis', echo=F}
+  regex_view(c('我妹妹超正', 
+  '我妹妹很正', '我妹妹極正', '我妹妹不正'), 
+  '[超很極]正')
+  
+  regex_view(paste0(LETTERS, 1, collapse = ' '),
+  '[B-D]1')
+  
+  regex_view(paste0('a', 1:10, collapse = ' '), 
+  'a[2-5]')
+  
+  regex_view(paste0('a', 1:10, collapse = ' '), 
+  'a[^2-5]')
+  ```
+
+```{r results='asis', echo=FALSE}
+library(dplyr)
+news <- readLines('assets/corpus/news_first_para.txt') %>%
+  paste0(collapse = '\n')
+```
+
+### Your Turn
+
+1. 找出所有**記者姓名**
+
+    ```{r results='asis', echo=F}
+    regex_view(news, '【.{3}╱.+報導】', showInput = F)
+    ```
+
+1. 找出所有**百分比** (e.g. `20%`, `17.5%`)
+
+    ```{r results='asis', echo=F}
+    regex_view(news, '[0-9.]+%', showInput = F)
+    ```
+
+### Backreference
+
+  ```{r results='asis', echo=F}
+  AABB <- readLines('assets/corpus/AABB.txt')
+  ABCA <- readLines('assets/corpus/ABCA.txt')
+  
+  regex_view(c(ABCA[1:4], AABB[1:4]), '(.)..\\1')
+  
+  regex_view(c(ABCA[1:4], AABB[1:4]), '(.)\\1(.)\\2')
+  ```
+
+### Your Turn
+
+  ```{r results='asis', echo=F}
+  regex_view(readLines('assets/corpus/construction.txt'),
+             '一(.{1,2})接著?又?一\\1', showInput = F)
+  ```
+
+
+
+## stringr
+
+- `stringr` 套件是 tidyverse 裡面用來處理字串的套件，比起 base R 的字串處理函數，`stringr` 中的函數在命名上相當一致 (`str_*`)、函數名稱也較「透明」因此比較容易記得。
+
+- 在 R 裡面，Regular Expression 是以**字串**的資料類型 (i.e. `character`) 去表徵，因此有一點需特別注意：
+  
+  > 若 Regular Expression 裡面出現**反斜線**，則在將此 Regex 寫進 R 的函數時，需要在**每一個反斜線之前再加上一個反斜線**
+  
+  -  Regular Expression: **`today\.$`**
+    ```{r results='asis', echo=F}
+    regex_view('It is sunny today.', 'today\\.$')
+    ```
+  
+  - Regular Expression in R function: **`"today\\.$"`**
+    ```{r}
+    library(stringr)
+    str_view("It is sunny today.", "today\\.$")
+    ```
+  
+
+### `str_detect()`
+
+```{r}
+s <- c("cat", "bed", "car", "Mr.")
+str_detect(s, "a")
+str_detect(s, "\\.")
+```
+
+- `str_detect()` 可與 `[]` 或 `dplyr::filter()` 結合，用來篩選資料：
+    ```{r}
+    s <- c("cat", "bed", "car", "Mr.")
+    s[str_detect(s, "^c")]
+    ```
+
+
+### `str_match()` / `str_match_all()`
+
+- `str_match()` 可從文字裡抓出符合 RegEx 的字串。`str_match()` 只會抓出 `str` 每個元素裡**第一個符合的字串**，並且以 `matrix` 的資料結構回傳：
+    
+    ```{r}
+    s <- c("Won't match.", 
+           "One two three, four five six.", 
+           "Seven eight nine.")
+    str_match(s, "([a-zA-Z]+) ([a-zA-Z]+) ([a-zA-Z]+)")
+    ```
+
+    - 回傳的 matrix 中，
+        - 每列 (row) 對應到 `str` 中的一個元素。在此，因為 `str` 長度為 3，因此回傳的 matrix 有 3 列。matrix 的每列代表 `str` 中每個元素 (字串) 中**第一個**符合 RegEx 的部份。
+        - 第一行 (column) 是**整個 RegEx 抓到的字串**，i.e. 符合 `(\w+) (\w+) (\w+)` 的字串。後面幾行依序是 RegEx 中，**各個 group** 所抓到的字串，i.e. 各個 `()` 裡的 RegEx。例如，第二行是第一個 `(\w+)` 所抓到的內容；第三行則是第二個 `(\w+)` 所抓到的內容；依此類推。
+
+- 若要抓出**所有符合的字串**，需使用 `str_match_all()`[^all]。`str_match_all()` 會抓出 `str` 每個元素裡**所有符合的字串**，並以 `list` 的資料結構回傳：
+
+    ```{r}
+    str_match_all(s, "([a-zA-Z]+) ([a-zA-Z]+) ([a-zA-Z]+)")
+    ```
+
+    - 回傳的 list 中，list 的每個元素依序對應到 `str` 的每個元素。因此，回傳的 list 長度為 3 (與 `str` 相同)
+      - list 的每個元素內儲存的是一個 matrix，這個 matrix 的每列 (row) 對應到一個符合 RegEx 的字串。每行 (column) 的意義則與 `str_match()` 回傳的 matrix 相同。
+
+
+[^all]: `stringr` 的許多函數，都有兩個版本：`str_*()` 與 `str_*_all()`
+
+
+## 配合閱讀
+
+- [R for Data Science: Strings](https://r4ds.had.co.nz/strings.html)
+- [Regular Expression](https://stringr.tidyverse.org/articles/regular-expressions.html)
+- [stringr cheatsheet](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf)
+
+## 相關資源
+
+- [Regex One](https://regexone.com): RegEx 互動式學習
+- [RegEx Online Tester](http://loonkwil.github.io/regexify)
