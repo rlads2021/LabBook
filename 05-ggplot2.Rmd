@@ -251,6 +251,6 @@ ggplot(mpg) +
 #ggsave('mpg_class_hwy_color.png', width = 16, height = 12, units = 'cm')
 ```
 
-## 務必閱讀
+## 參考資源 (務必閱讀) {-}
 
-- [R for Data Science: Data visualisation](https://r4ds.had.co.nz/data-visualisation.html)
+1. Wickham, H., & Grolemund, G. (2017). ***R for Data Science***: [Data visualisation](https://r4ds.had.co.nz/data-visualisation)
