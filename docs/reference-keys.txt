@@ -111,7 +111,7 @@ dont-be-a-control-freak
 simulating-collider
 explaining-collider
 ch07
-regular-expression
+regular-expression-️
 basics-.-escape
 repetition
 character-classes
@@ -123,3 +123,10 @@ str_detect
 str_match-str_match_all
 配合閱讀
 相關資源
+ch08
+斷詞
+使用-data-frame-建立語料庫
+tidytext-framework
+詞頻表
+視覺化
+quanteda-framework

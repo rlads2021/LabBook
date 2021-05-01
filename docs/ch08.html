@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 8 中文文本資料處理 | RLads Lab</title>
+<meta name="author" content="Yongfu Liao">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7.3/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
+<script src="libs/str_view-binding-1.4.0/str_view.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RLads Lab</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">關於</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></li>
+<li><a class="" href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></li>
+<li><a class="" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
+<li><a class="" href="ch07.html"><span class="header-section-number">7</span> 字串處理</a></li>
+<li><a class="active" href="ch08.html"><span class="header-section-number">8</span> 中文文本資料處理</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/rlads2021/LabBook">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch08" class="section level1" number="8">
+<h1>
+<span class="header-section-number">8</span> 中文文本資料處理<a class="anchor" aria-label="anchor" href="#ch08"><i class="fas fa-link"></i></a>
+</h1>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1WruOFF0Jpj1Sw6q8o0oVZCho26DTFwq4Q5qQUDm5vzY">投影片</a> /
+<a href="https://rlads2021.github.io/lab/src/10.zip">程式碼</a> /
+<a href="https://youtu.be/3QPpVGxNjkY">影片</a>)</span></p>
+<div id="斷詞" class="section level2" number="8.1">
+<h2>
+<span class="header-section-number">8.1</span> 斷詞<a class="anchor" aria-label="anchor" href="#%E6%96%B7%E8%A9%9E"><i class="fas fa-link"></i></a>
+</h2>
+<p><a href="https://github.com/fxsjy/jieba">jieba</a> 是一個用於中文斷詞的 (Python) 套件。<a href="https://github.com/qinwf/jiebaR"><code>jiebaR</code></a> 則是 jieba 的 R 版本。</p>
+<p>使用 <code>jiebaR</code> 進行斷詞只須兩個步驟：</p>
+<ol style="list-style-type: decimal">
+<li>使用 <code><a href="https://rdrr.io/pkg/jiebaR/man/worker.html">worker()</a></code> 初始化斷詞設定</li>
+<li>使用 <code><a href="https://rdrr.io/pkg/jiebaR/man/segment.html">segment()</a></code> 將文字斷詞</li>
+</ol>
+<ul>
+<li>
+<p><code><a href="https://rdrr.io/pkg/jiebaR/man/segment.html">jiebaR::segment()</a></code> 回傳一個 character vector，vector 內的每個元素都是一個被斷出來的詞：</p>
+<div class="sourceCode" id="cb375"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/qinwf/jiebaR/">jiebaR</a></span><span class="op">)</span>
+<span class="va">seg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/worker.html">worker</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">txt</span> <span class="op">&lt;-</span> <span class="st">"失業的熊讚陪柯文哲看銀翼殺手"</span> 
+<span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/segment.html">segment</a></span><span class="op">(</span><span class="va">txt</span>, <span class="va">seg</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "失業" "的熊" "讚"   "陪"   "柯文" "哲看" "銀翼" "殺手"</code></pre>
+</li>
+<li>
+<p><code>jiebaR</code> 的斷詞有時會不太精準，尤其是遇到<strong>專有名詞或是特殊詞彙</strong>時，這些詞彙時常會被斷開。若想避免這種情況，可以新增一份自訂辭典 (儲存在一份純文字檔，每個詞佔一行)，例如 <code>user_dict.txt</code> 的內容如下：</p>
+<pre><code>熊讚
+柯文哲
+銀翼殺手</code></pre>
+<p>如此在 <code><a href="https://rdrr.io/pkg/jiebaR/man/worker.html">worker()</a></code> 中設定自訂辭典，<code>jiebaR</code> 就不會將這些詞彙斷開：</p>
+<div class="sourceCode" id="cb378"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># With user dict</span>
+<span class="va">seg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/worker.html">worker</a></span><span class="op">(</span>user <span class="op">=</span> <span class="st">"assets/corpus/user_dict.txt"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/segment.html">segment</a></span><span class="op">(</span><span class="va">txt</span>, <span class="va">seg</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "失業"     "的"       "熊讚"     "陪"       "柯文哲"   "看"       "銀翼殺手"</code></pre>
+</li>
+</ul>
+</div>
+<div id="使用-data-frame-建立語料庫" class="section level2" number="8.2">
+<h2>
+<span class="header-section-number">8.2</span> 使用 data frame 建立語料庫<a class="anchor" aria-label="anchor" href="#%E4%BD%BF%E7%94%A8-data-frame-%E5%BB%BA%E7%AB%8B%E8%AA%9E%E6%96%99%E5%BA%AB"><i class="fas fa-link"></i></a>
+</h2>
+<p>我們的目標是建立一個 data frame 儲存文本資料。在這個 data frame 中，每一個 row 代表一篇文章，每個變項 (column) 記錄著該篇文章的某個資訊。根據文本資料的來源，該 data frame 可能會有不同數量的變項，例如，「文章發表日期」、「作者」、「標題」、「主題」等。但最重要的是，此 data frame <strong>至少</strong>需具備<strong>兩個變項</strong> — 「文章 id」與「(斷完詞的) 文章內文」。下方使用一個簡單的例子 (3 篇文章) 說明如何建立這種 data frame。</p>
+<ul>
+<li>
+<p>第一步是將 <code>docs</code> 內的各篇文章 (character vector)
+進行斷詞，並在斷完詞後，將文章的內容存入另一個<strong>等長</strong>的 character vector 中。同篇文章中，被斷開的詞之間以一個<strong>全形空白字元</strong>分隔:</p>
+<div class="sourceCode" id="cb380"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/qinwf/jiebaR/">jiebaR</a></span><span class="op">)</span>
+
+<span class="co"># Data: 3 篇文章</span>
+<span class="va">docs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+  <span class="st">"蝴蝶和蜜蜂們帶著花朵的蜜糖回來了，羊隊和牛群告別了田野回家了，火紅的太陽也滾著火輪子回家了，當街燈亮起來向村莊道過晚安，夏天的夜就輕輕地來了。"</span>,
+  <span class="st">"朋友買了一件衣料，綠色的底子帶白色方格，當她拿給我們看時，一位對圍棋十分感與趣的同學說：「啊，好像棋盤似的。」「我看倒有點像稿紙。」我說。「真像一塊塊綠豆糕。」一位外號叫「大食客」的同學緊接著說。"</span>,
+  <span class="st">"每天，天剛亮時，我母親便把我喊醒，叫我披衣坐起。我從不知道她醒來坐了多久了。她看我清醒了，便對我說昨天我做錯了什麼事，說錯了什麼話，要我認錯，要我用功讀書。"</span>
+  <span class="op">)</span>
+
+<span class="co"># Initialize jiebaR</span>
+<span class="va">seg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/worker.html">worker</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="va">docs_segged</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span><span class="st">"character"</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">docs</span><span class="op">)</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">docs</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="co"># Segment each element in docs</span>
+  <span class="va">segged</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/segment.html">segment</a></span><span class="op">(</span><span class="va">docs</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">seg</span><span class="op">)</span>
+
+  <span class="co"># Collapse the character vector into a string, separated by space</span>
+  <span class="va">docs_segged</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">segged</span>, collapse <span class="op">=</span> <span class="st">"\u3000"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="va">docs_segged</span></code></pre></div>
+<pre><code>#&gt; [1] "蝴蝶　和　蜜蜂　們　帶　著　花朵　的　蜜糖　回來　了　羊隊　和　牛群　告別　了　田野　回家　了　火紅　的　太陽　也　滾　著火　輪子　回家　了　當　街燈　亮　起來　向　村莊　道過　晚安　夏天　的　夜　就　輕輕地　來　了"                                      
+#&gt; [2] "朋友　買　了　一件　衣料　綠色　的　底子　帶　白色　方格　當　她　拿給　我們　看時　一位　對　圍棋　十分　感與趣　的　同　學說　啊　好像　棋盤　似的　我　看　倒　有點像　稿紙　我　說　真　像　一塊塊　綠豆糕　一位　外號　叫　大　食客　的　同學　緊接著　說"
+#&gt; [3] "每天　天剛亮　時　我　母親　便　把　我　喊醒　叫　我　披衣　坐起　我　從不　知道　她　醒來　坐　了　多久　了　她　看　我　清醒　了　便　對　我　說　昨天　我　做　錯　了　什麼　事　說錯　了　什麼　話　要　我　認錯　要　我　用功讀書"</code></pre>
+</li>
+<li>
+<p>如此，我們就能使用這個斷完詞的 <code>docs_segged</code> 製作 data frame:</p>
+<div class="sourceCode" id="cb382"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">docs_df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>
+  doc_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">docs_segged</span><span class="op">)</span>,
+  content <span class="op">=</span> <span class="va">docs_segged</span>
+<span class="op">)</span>
+
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">docs_df</span>, align <span class="op">=</span> <span class="st">"c"</span><span class="op">)</span></code></pre></div>
+<table class="table table-sm">
+<colgroup>
+<col width="3%">
+<col width="96%">
+</colgroup>
+<thead><tr class="header">
+<th align="center">doc_id</th>
+<th align="center">content</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">蝴蝶　和　蜜蜂　們　帶　著　花朵　的　蜜糖　回來　了　羊隊　和　牛群　告別　了　田野　回家　了　火紅　的　太陽　也　滾　著火　輪子　回家　了　當　街燈　亮　起來　向　村莊　道過　晚安　夏天　的　夜　就　輕輕地　來　了</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">朋友　買　了　一件　衣料　綠色　的　底子　帶　白色　方格　當　她　拿給　我們　看時　一位　對　圍棋　十分　感與趣　的　同　學說　啊　好像　棋盤　似的　我　看　倒　有點像　稿紙　我　說　真　像　一塊塊　綠豆糕　一位　外號　叫　大　食客　的　同學　緊接著　說</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">每天　天剛亮　時　我　母親　便　把　我　喊醒　叫　我　披衣　坐起　我　從不　知道　她　醒來　坐　了　多久　了　她　看　我　清醒　了　便　對　我　說　昨天　我　做　錯　了　什麼　事　說錯　了　什麼　話　要　我　認錯　要　我　用功讀書</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+<div id="tidytext-framework" class="section level2" number="8.3">
+<h2>
+<span class="header-section-number">8.3</span> tidytext framework<a class="anchor" aria-label="anchor" href="#tidytext-framework"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><p><code>tidytext</code> 套件是 R 生態圈中比較近期的 text mining 套件，它將 tidyverse 的想法運用到文本資料處理上，換言之，就是使用 data frame 的資料結構去表徵和處理文本資料。</p></li>
+<li>
+<p>使用 <code>tidytext</code> 的方法處理文本資料有好有壞。</p>
+<ul>
+<li><p>好處是使用者能輕易地結合 <code>dplyr</code> 與 <code>ggplot2</code> 於文本分析中，因而能快速地視覺化文本資料。</p></li>
+<li>
+<p>壞處是，在 <code>tidytext</code> framework 之下，文章的<strong>內部 (i.e. 詞彙與詞彙之間的) 結構</strong>會消失，因為它對於文本的想法是 <a href="https://en.wikipedia.org/wiki/Bag-of-words_model">bag-of-words</a>。</p>
+<p><code>tidytext</code> 所倡導的儲存文本資料的格式是 <strong>one-token-per-document-per-row</strong>，亦即，在一個 data frame 中，每一橫列 (row) 是一篇文章中的一個 token。因此，若有兩篇文章，第一篇被斷成 38 個詞彙，第二篇被斷成 20 個詞彙，則共需要一個 58 列 (row) 的 data frame 來儲存這兩篇文章。</p>
+</li>
+</ul>
+</li>
+<li><p>一般而言，tidytext 的架構適合用於<strong>與詞頻有關</strong>的分析，例如，計算文章的 <a href="https://en.wikipedia.org/wiki/Lexical_diversity">lexical diversity</a> 或是透過情緒詞的詞頻進行情緒分析。</p></li>
+<li>
+<p>透過 <code><a href="https://rdrr.io/pkg/tidytext/man/unnest_tokens.html">tidytext::unnest_tokens()</a></code>，可以將 <code>docs_df</code> 中儲存之 (已斷詞) 文本資料，變成 tidytext format，i.e.，<strong>one-token-per-document-per-row</strong> 的 data frame:</p>
+<div class="sourceCode" id="cb383"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/juliasilge/tidytext">tidytext</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+
+<span class="va">tidy_text_format</span> <span class="op">&lt;-</span> <span class="va">docs_df</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tidytext/man/unnest_tokens.html">unnest_tokens</a></span><span class="op">(</span>output <span class="op">=</span> <span class="st">"word"</span>, input <span class="op">=</span> <span class="st">"content"</span>,
+                token <span class="op">=</span> <span class="st">"regex"</span>, pattern <span class="op">=</span> <span class="st">"\u3000"</span><span class="op">)</span>  <span class="co"># 以空白字元作為 token 分隔依據</span>
+
+<span class="va">tidy_text_format</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 139 x 2
+#&gt;    doc_id word 
+#&gt;     &lt;int&gt; &lt;chr&gt;
+#&gt;  1      1 蝴蝶 
+#&gt;  2      1 和   
+#&gt;  3      1 蜜蜂 
+#&gt;  4      1 們   
+#&gt;  5      1 帶   
+#&gt;  6      1 著   
+#&gt;  7      1 花朵 
+#&gt;  8      1 的   
+#&gt;  9      1 蜜糖 
+#&gt; 10      1 回來 
+#&gt; # … with 129 more rows</code></pre>
+</li>
+</ul>
+<div id="詞頻表" class="section level3" number="8.3.1">
+<h3>
+<span class="header-section-number">8.3.1</span> 詞頻表<a class="anchor" aria-label="anchor" href="#%E8%A9%9E%E9%A0%BB%E8%A1%A8"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p>可以使用 <code>dplyr</code> 的 <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> 與 <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code> 計算詞頻表：</p>
+<div class="sourceCode" id="cb385"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tidy_text_format</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">word</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 99 x 2
+#&gt;    word      n
+#&gt;    &lt;chr&gt; &lt;int&gt;
+#&gt;  1 了       11
+#&gt;  2 我       11
+#&gt;  3 的        6
+#&gt;  4 她        3
+#&gt;  5 說        3
+#&gt;  6 一位      2
+#&gt;  7 什麼      2
+#&gt;  8 便        2
+#&gt;  9 叫        2
+#&gt; 10 和        2
+#&gt; # … with 89 more rows</code></pre>
+<div class="sourceCode" id="cb387"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Equivalent to ...</span>
+<span class="va">tidy_text_format</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">word</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 99 x 2
+#&gt;    word      n
+#&gt;    &lt;chr&gt; &lt;int&gt;
+#&gt;  1 了       11
+#&gt;  2 我       11
+#&gt;  3 的        6
+#&gt;  4 她        3
+#&gt;  5 說        3
+#&gt;  6 一位      2
+#&gt;  7 什麼      2
+#&gt;  8 便        2
+#&gt;  9 叫        2
+#&gt; 10 和        2
+#&gt; # … with 89 more rows</code></pre>
+</li>
+</ul>
+</div>
+<div id="視覺化" class="section level3" number="8.3.2">
+<h3>
+<span class="header-section-number">8.3.2</span> 視覺化<a class="anchor" aria-label="anchor" href="#%E8%A6%96%E8%A6%BA%E5%8C%96"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb389"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="va">tidy_text_format</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">word</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>word <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html">reorder</a></span><span class="op">(</span><span class="va">word</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>   <span class="co"># 依照 n 排序文字</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/top_n.html">top_n</a></span><span class="op">(</span><span class="fl">10</span>, <span class="va">n</span><span class="op">)</span> <span class="op">%&gt;%</span>                      <span class="co"># 取 n 排名前 10 者</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">word</span>, <span class="va">n</span><span class="op">)</span>, stat <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html">coord_flip</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-150-1.png" width="70%" style="display: block; margin: auto;"></div>
+</div>
+</div>
+<div id="quanteda-framework" class="section level2" number="8.4">
+<h2>
+<span class="header-section-number">8.4</span> quanteda framework<a class="anchor" aria-label="anchor" href="#quanteda-framework"><i class="fas fa-link"></i></a>
+</h2>
+<p>傳統 R 的 text mining 生態圈中，使用的是另一種 (高階) 資料結構儲存文本資料 — 語料庫 (corpus)。<a href="https://quanteda.io/articles/pkgdown/comparison.html">不同的套件有自己定義 corpus 的方式</a>，且各自進行文本分析的流程與想法差異頗大。目前最流行、支援最多的兩個套件是 <a href="https://quanteda.io/index.html"><code>quanteda</code></a> 與 <a href="http://tm.r-forge.r-project.org"><code>tm</code></a>。其中，<code>quanteda</code> 在中文支援以及說明與<a href="https://tutorials.quanteda.io">教學</a>文件的完整度較高。</p>
+<p>下方為 <code>quanteda</code> 套件的一些使用範例。欲比較完整地了解 <code>quanteda</code>，請閱讀 <a href="https://tutorials.quanteda.io">quanteda tutorials</a>。</p>
+<ul>
+<li>使用 <code>quanteda</code> 的好處在於它保留了文章的內部結構，例如，可以透過 <code><a href="https://quanteda.io/reference/kwic.html">quanteda::kwic()</a></code> 去檢視特定詞彙或是片語出現的語境。與此同時，<code>quanteda</code> 也提供許多 bag-of-words 想法之下的函數。</li>
+<li>但 <code>quanteda</code> 的缺點在於其內容龐雜，需要一些語料庫語言學的背景知識以及相當的時間摸索才能掌握。</li>
+</ul>
+<div class="sourceCode" id="cb390"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io">quanteda</a></span><span class="op">)</span>
+
+<span class="co"># 將 data frame 轉換成 Corpus object</span>
+<span class="va">quanteda_corpus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span><span class="op">(</span><span class="va">docs_df</span>, 
+                          docid_field <span class="op">=</span> <span class="st">"doc_id"</span>, 
+                          text_field <span class="op">=</span> <span class="st">"content"</span><span class="op">)</span></code></pre></div>
+<ul>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Key_Word_in_Context">Key Word in Context</a></p>
+<div class="sourceCode" id="cb391"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># tokenize the corpus </span>
+<span class="va">q_tokens</span> <span class="op">&lt;-</span> <span class="fu">tokenizers</span><span class="fu">::</span><span class="fu"><a href="https://lincolnmullen.com/software/tokenizers/reference/basic-tokenizers.html">tokenize_regex</a></span><span class="op">(</span><span class="va">quanteda_corpus</span>, <span class="st">"\u3000"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu"><a href="https://quanteda.io/reference/kwic.html">kwic</a></span><span class="op">(</span><span class="va">q_tokens</span>, <span class="st">"我"</span>, window <span class="op">=</span> <span class="fl">5</span>, valuetype <span class="op">=</span> <span class="st">"regex"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>align <span class="op">=</span> <span class="st">"c"</span><span class="op">)</span></code></pre></div>
+<table class="table table-sm">
+<thead><tr class="header">
+<th align="center">docname</th>
+<th align="center">from</th>
+<th align="center">to</th>
+<th align="center">pre</th>
+<th align="center">keyword</th>
+<th align="center">post</th>
+<th align="center">pattern</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">15</td>
+<td align="center">15</td>
+<td align="center">白色 方格 當 她 拿給</td>
+<td align="center">我們</td>
+<td align="center">看時 一位 對 圍棋 十分</td>
+<td align="center">我</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">29</td>
+<td align="center">29</td>
+<td align="center">學說 啊 好像 棋盤 似的</td>
+<td align="center">我</td>
+<td align="center">看 倒 有點像 稿紙 我</td>
+<td align="center">我</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">34</td>
+<td align="center">34</td>
+<td align="center">我 看 倒 有點像 稿紙</td>
+<td align="center">我</td>
+<td align="center">說 真 像 一塊塊 綠豆糕</td>
+<td align="center">我</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">4</td>
+<td align="center">每天 天剛亮 時</td>
+<td align="center">我</td>
+<td align="center">母親 便 把 我 喊醒</td>
+<td align="center">我</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">8</td>
+<td align="center">8</td>
+<td align="center">時 我 母親 便 把</td>
+<td align="center">我</td>
+<td align="center">喊醒 叫 我 披衣 坐起</td>
+<td align="center">我</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">11</td>
+<td align="center">11</td>
+<td align="center">便 把 我 喊醒 叫</td>
+<td align="center">我</td>
+<td align="center">披衣 坐起 我 從不 知道</td>
+<td align="center">我</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">14</td>
+<td align="center">14</td>
+<td align="center">喊醒 叫 我 披衣 坐起</td>
+<td align="center">我</td>
+<td align="center">從不 知道 她 醒來 坐</td>
+<td align="center">我</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">25</td>
+<td align="center">25</td>
+<td align="center">了 多久 了 她 看</td>
+<td align="center">我</td>
+<td align="center">清醒 了 便 對 我</td>
+<td align="center">我</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">30</td>
+<td align="center">30</td>
+<td align="center">我 清醒 了 便 對</td>
+<td align="center">我</td>
+<td align="center">說 昨天 我 做 錯</td>
+<td align="center">我</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">33</td>
+<td align="center">33</td>
+<td align="center">便 對 我 說 昨天</td>
+<td align="center">我</td>
+<td align="center">做 錯 了 什麼 事</td>
+<td align="center">我</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">44</td>
+<td align="center">44</td>
+<td align="center">說錯 了 什麼 話 要</td>
+<td align="center">我</td>
+<td align="center">認錯 要 我 用功讀書</td>
+<td align="center">我</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">47</td>
+<td align="center">47</td>
+<td align="center">話 要 我 認錯 要</td>
+<td align="center">我</td>
+<td align="center">用功讀書</td>
+<td align="center">我</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="ch07.html"><span class="header-section-number">7</span> 字串處理</a></div>
+<div class="empty"></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ch08"><span class="header-section-number">8</span> 中文文本資料處理</a></li>
+<li><a class="nav-link" href="#%E6%96%B7%E8%A9%9E"><span class="header-section-number">8.1</span> 斷詞</a></li>
+<li><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-data-frame-%E5%BB%BA%E7%AB%8B%E8%AA%9E%E6%96%99%E5%BA%AB"><span class="header-section-number">8.2</span> 使用 data frame 建立語料庫</a></li>
+<li>
+<a class="nav-link" href="#tidytext-framework"><span class="header-section-number">8.3</span> tidytext framework</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E8%A9%9E%E9%A0%BB%E8%A1%A8"><span class="header-section-number">8.3.1</span> 詞頻表</a></li>
+<li><a class="nav-link" href="#%E8%A6%96%E8%A6%BA%E5%8C%96"><span class="header-section-number">8.3.2</span> 視覺化</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#quanteda-framework"><span class="header-section-number">8.4</span> quanteda framework</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/rlads2021/LabBook/blob/master/08-chinese_text_process.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/rlads2021/LabBook/edit/master/08-chinese_text_process.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 1, 2021</span>.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+</html>

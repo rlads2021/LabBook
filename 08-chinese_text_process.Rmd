@@ -1,0 +1,172 @@
+中文文本資料處理 {#ch08}
+========================
+
+[([投影片](https://docs.google.com/presentation/d/1WruOFF0Jpj1Sw6q8o0oVZCho26DTFwq4Q5qQUDm5vzY) /
+[程式碼](https://rlads2021.github.io/lab/src/10.zip) /
+[影片](https://youtu.be/3QPpVGxNjkY))
+]{.course-resource}
+
+
+## 斷詞
+
+[jieba](https://github.com/fxsjy/jieba) 是一個用於中文斷詞的 (Python) 套件。[`jiebaR`](https://github.com/qinwf/jiebaR) 則是 jieba 的 R 版本。
+
+使用 `jiebaR` 進行斷詞只須兩個步驟：
+
+1. 使用 `worker()` 初始化斷詞設定
+2. 使用 `segment()` 將文字斷詞
+
+- `jiebaR::segment()` 回傳一個 character vector，vector 內的每個元素都是一個被斷出來的詞：
+    ```{r}
+    library(jiebaR)
+    seg <- worker()
+    txt <- "失業的熊讚陪柯文哲看銀翼殺手" 
+    segment(txt, seg)
+    ```
+
+- `jiebaR` 的斷詞有時會不太精準，尤其是遇到**專有名詞或是特殊詞彙**時，這些詞彙時常會被斷開。若想避免這種情況，可以新增一份自訂辭典 (儲存在一份純文字檔，每個詞佔一行)，例如 `user_dict.txt` 的內容如下：
+    ```{r echo=FALSE, results='asis'}
+    cat(
+      paste0('\n```\n',
+           paste0(readLines("assets/corpus/user_dict.txt"), collapse = '\n'),
+           '\n```\n')
+    )
+    ```
+    
+    如此在 `worker()` 中設定自訂辭典，`jiebaR` 就不會將這些詞彙斷開：
+
+    ```{r}
+    # With user dict
+    seg <- worker(user = "assets/corpus/user_dict.txt")
+    segment(txt, seg)
+    ```
+
+
+## 使用 data frame 建立語料庫
+
+我們的目標是建立一個 data frame 儲存文本資料。在這個 data frame 中，每一個 row 代表一篇文章，每個變項 (column) 記錄著該篇文章的某個資訊。根據文本資料的來源，該 data frame 可能會有不同數量的變項，例如，「文章發表日期」、「作者」、「標題」、「主題」等。但最重要的是，此 data frame **至少**需具備**兩個變項** --- 「文章 id」與「(斷完詞的) 文章內文」。下方使用一個簡單的例子 (3 篇文章) 說明如何建立這種 data frame。
+
+- 第一步是將 `docs` 內的各篇文章 (character vector) 
+進行斷詞，並在斷完詞後，將文章的內容存入另一個**等長**的 character vector 中。同篇文章中，被斷開的詞之間以一個**全形空白字元**分隔:
+
+    ```{r segment}
+    library(jiebaR)
+    
+    # Data: 3 篇文章
+    docs <- c(
+      "蝴蝶和蜜蜂們帶著花朵的蜜糖回來了，羊隊和牛群告別了田野回家了，火紅的太陽也滾著火輪子回家了，當街燈亮起來向村莊道過晚安，夏天的夜就輕輕地來了。",
+      "朋友買了一件衣料，綠色的底子帶白色方格，當她拿給我們看時，一位對圍棋十分感與趣的同學說：「啊，好像棋盤似的。」「我看倒有點像稿紙。」我說。「真像一塊塊綠豆糕。」一位外號叫「大食客」的同學緊接著說。",
+      "每天，天剛亮時，我母親便把我喊醒，叫我披衣坐起。我從不知道她醒來坐了多久了。她看我清醒了，便對我說昨天我做錯了什麼事，說錯了什麼話，要我認錯，要我用功讀書。"
+      )
+    
+    # Initialize jiebaR
+    seg <- worker()
+    
+    docs_segged <- vector("character", length = length(docs))
+    for (i in seq_along(docs)) {
+      # Segment each element in docs
+      segged <- segment(docs[i], seg)
+      
+      # Collapse the character vector into a string, separated by space
+      docs_segged[i] <- paste0(segged, collapse = "\u3000")
+    }
+    
+    docs_segged
+    ```
+
+- 如此，我們就能使用這個斷完詞的 `docs_segged` 製作 data frame:
+
+    ```{r docs_df}
+    docs_df <- tibble::tibble(
+      doc_id = seq_along(docs_segged),
+      content = docs_segged
+    )
+    
+    knitr::kable(docs_df, align = "c")
+    ```
+
+
+## tidytext framework
+
+- `tidytext` 套件是 R 生態圈中比較近期的 text mining 套件，它將 tidyverse 的想法運用到文本資料處理上，換言之，就是使用 data frame 的資料結構去表徵和處理文本資料。
+
+- 使用 `tidytext` 的方法處理文本資料有好有壞。
+    - 好處是使用者能輕易地結合 `dplyr` 與 `ggplot2` 於文本分析中，因而能快速地視覺化文本資料。
+    - 壞處是，在 `tidytext` framework 之下，文章的**內部 (i.e. 詞彙與詞彙之間的) 結構**會消失，因為它對於文本的想法是 [bag-of-words](https://en.wikipedia.org/wiki/Bag-of-words_model)。
+    
+        `tidytext` 所倡導的儲存文本資料的格式是 **one-token-per-document-per-row**，亦即，在一個 data frame 中，每一橫列 (row) 是一篇文章中的一個 token。因此，若有兩篇文章，第一篇被斷成 38 個詞彙，第二篇被斷成 20 個詞彙，則共需要一個 58 列 (row) 的 data frame 來儲存這兩篇文章。
+        
+- 一般而言，tidytext 的架構適合用於**與詞頻有關**的分析，例如，計算文章的 [lexical diversity](https://en.wikipedia.org/wiki/Lexical_diversity) 或是透過情緒詞的詞頻進行情緒分析。
+
+- 透過 `tidytext::unnest_tokens()`，可以將 `docs_df` 中儲存之 (已斷詞) 文本資料，變成 tidytext format，i.e.，**one-token-per-document-per-row** 的 data frame:
+    ```{r}
+    library(tidytext)
+    library(dplyr)
+    
+    tidy_text_format <- docs_df %>%
+      unnest_tokens(output = "word", input = "content",
+                    token = "regex", pattern = "\u3000")  # 以空白字元作為 token 分隔依據
+    
+    tidy_text_format
+    ```
+
+
+### 詞頻表
+
+- 可以使用 `dplyr` 的 `group_by()` 與 `summarise()` 計算詞頻表：
+    ```{r}
+    tidy_text_format %>%
+      group_by(word) %>%
+      summarise(n = n()) %>%
+      arrange(desc(n))
+    
+    # Equivalent to ...
+    tidy_text_format %>%
+      count(word) %>%
+      arrange(desc(n))
+    ```
+
+
+
+### 視覺化
+
+```{r}
+library(ggplot2)
+tidy_text_format %>%
+  count(word) %>%
+  mutate(word = reorder(word, n)) %>%   # 依照 n 排序文字
+  top_n(10, n) %>%                      # 取 n 排名前 10 者
+  ggplot() +
+    geom_bar(aes(word, n), stat = "identity") +
+    coord_flip()
+```
+
+
+## quanteda framework
+
+傳統 R 的 text mining 生態圈中，使用的是另一種 (高階) 資料結構儲存文本資料 --- 語料庫 (corpus)。[不同的套件有自己定義 corpus 的方式](https://quanteda.io/articles/pkgdown/comparison.html)，且各自進行文本分析的流程與想法差異頗大。目前最流行、支援最多的兩個套件是 [`quanteda`](https://quanteda.io/index.html) 與 [`tm`](http://tm.r-forge.r-project.org)。其中，`quanteda` 在中文支援以及說明與[教學](https://tutorials.quanteda.io)文件的完整度較高。
+
+下方為 `quanteda` 套件的一些使用範例。欲比較完整地了解 `quanteda`，請閱讀 [quanteda tutorials](https://tutorials.quanteda.io)。
+
+- 使用 `quanteda` 的好處在於它保留了文章的內部結構，例如，可以透過 `quanteda::kwic()` 去檢視特定詞彙或是片語出現的語境。與此同時，`quanteda` 也提供許多 bag-of-words 想法之下的函數。
+- 但 `quanteda` 的缺點在於其內容龐雜，需要一些語料庫語言學的背景知識以及相當的時間摸索才能掌握。
+
+
+```{r}
+library(quanteda)
+
+# 將 data frame 轉換成 Corpus object
+quanteda_corpus <- corpus(docs_df, 
+                          docid_field = "doc_id", 
+                          text_field = "content")
+```
+
+- [Key Word in Context](https://en.wikipedia.org/wiki/Key_Word_in_Context)
+    ```{r}
+    # tokenize the corpus 
+    q_tokens <- tokenizers::tokenize_regex(quanteda_corpus, "\u3000") %>%
+      tokens()
+    
+    kwic(q_tokens, "我", window = 5, valuetype = "regex") %>%
+      knitr::kable(align = "c")
+    ```
