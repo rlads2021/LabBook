@@ -86,7 +86,6 @@ library(dplyr)
 library(quanteda)
 library(quanteda.textstats)
 library(quanteda.textmodels)
-source("functions.R")
 
 # Document data frame
 docs_df <- readRDS("samesex_marriage.rds")
