@@ -6,10 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Chapter 6 Simulating Data with R | RLads Lab</title>
 <meta name="author" content="Yongfu Liao">
-<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7.3/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
-<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
 </head>
 <body data-spy="scroll" data-target="#toc">
@@ -41,6 +41,7 @@
 <li><a class="active" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
 <li><a class="" href="ch07.html"><span class="header-section-number">7</span> 字串處理</a></li>
 <li><a class="" href="ch08.html"><span class="header-section-number">8</span> 中文文本資料處理</a></li>
+<li><a class="" href="ch09.html"><span class="header-section-number">9</span> 文本與詞彙的向量表徵</a></li>
 </ul>
 
         <div class="book-extra">
@@ -93,7 +94,7 @@
 Height \sim Normal(\mu = 160, \sigma = 5)
 \]</span></p>
 <div class="sourceCode" id="cb328"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">height</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">140</span>, <span class="fl">180</span>, by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>
@@ -107,7 +108,7 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">+</span>
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">height</span>, y <span class="op">=</span> <span class="va">density</span><span class="op">)</span>, 
               size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-104-1.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-104-1.png" width="75%" style="display: block; margin: auto;"></div>
 </div>
 <div id="rnorm" class="section level3" number="6.1.2">
 <h3>
@@ -116,15 +117,15 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <p><code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 則可以讓我們從常態分配裡取<strong>抽取出樣本</strong>。例如，若我們想從剛剛的女性身高分配 (<span class="math inline">\(\mu = 160, \sigma = 5\)</span>) 裡抽取出 3 個樣本：</p>
 <div class="sourceCode" id="cb329"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span>, mean <span class="op">=</span> <span class="fl">160</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 163.9027 160.1375 164.2598</code></pre>
+<pre><code>#&gt; [1] 157.3073 170.1825 160.1855</code></pre>
 <p>注意，因為 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 是隨機抽取<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;&lt;code&gt;rnorm()&lt;/code&gt; 的 &lt;code&gt;r&lt;/code&gt; 即為 random 的意思&lt;/p&gt;"><sup>14</sup></a>，所以每次的結果都會不同。但當我們抽取的樣本數夠大時，這些樣本形成的分配就會<strong>趨近</strong>樣本所來自的常態分配。我們可以用 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> 來示範這件事：</p>
 <div class="sourceCode" id="cb331"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sampled_height</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">160</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">sampled_height</span><span class="op">)</span>  <span class="co"># Sample's mean</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">sampled_height</span><span class="op">)</span>    <span class="co"># Sample's standard deviation</span></code></pre></div>
-<pre><code>#&gt; [1] 159.9
-#&gt; [1] 5.143471</code></pre>
-<p>我們計算所得到的樣本平均數 (159.8999919) 與標準差 (5.1434712) 與原本的常態分配相當接近 (平均 = 160, 標準差 = 5)。</p>
+<pre><code>#&gt; [1] 159.9228
+#&gt; [1] 4.98371</code></pre>
+<p>我們計算所得到的樣本平均數 (159.9227917) 與標準差 (4.9837097) 與原本的常態分配相當接近 (平均 = 160, 標準差 = 5)。</p>
 <p>除此之外，我們可以將還可以將原本的分配與抽樣的分配進行比較：</p>
 <div class="sourceCode" id="cb333"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -134,7 +135,7 @@ Height \sim Normal(\mu = 160, \sigma = 5)
    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df</span>,
              mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">height</span>, y <span class="op">=</span> <span class="va">density</span><span class="op">)</span>,
              size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-107-1.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-107-1.png" width="75%" style="display: block; margin: auto;"></div>
 <p>上圖的曲線即是透過剛剛 <code><a href="https://rdrr.io/r/stats/Normal.html">dnorm()</a></code> 計算出來的常態分配機率密度。粉紅色的直方圖則是樣本的資料。</p>
 </div>
 </div>
@@ -147,8 +148,8 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <code class="sourceCode R"><span class="co"># Perfect correlation</span>
 <span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">60</span>
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">10</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-108-1.png" width="70%" style="display: block; margin: auto;"></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-108-1.png" width="75%" style="display: block; margin: auto;"></div>
 <div class="sourceCode" id="cb335"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; [1] 1</code></pre>
@@ -156,11 +157,11 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <div class="sourceCode" id="cb337"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Add some noise</span>
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-109-1.png" width="70%" style="display: block; margin: auto;"></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-109-1.png" width="75%" style="display: block; margin: auto;"></div>
 <div class="sourceCode" id="cb338"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 0.8877002</code></pre>
+<pre><code>#&gt; [1] 0.9286819</code></pre>
 <p>在自然界中，很多變項都呈現常態分配，除此之外，有時候不同變項之間會有線性相關。例如，兒子的身高受父親影響，所以兩者會有正向關係。此外，兩者的身高各自都會呈現常態分配 (有不同的平均與標準差)。透過 <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code>，我們可以很容易地模擬這些關係：</p>
 <ul>
 <li>假設父親的身高 <span class="math inline">\(x_i \sim Normal(\mu=165, \sigma=5)\)</span>
@@ -172,13 +173,13 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <code class="sourceCode R"><span class="co"># Simulating correlation b/t two normal distributions</span>
 <span class="va">dad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, mean <span class="op">=</span> <span class="fl">165</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 <span class="va">son</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, mean <span class="op">=</span> <span class="va">dad</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">dad</span>, <span class="va">son</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-110-1.png" width="70%" style="display: block; margin: auto;"></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dad</span>, <span class="va">son</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-110-1.png" width="75%" style="display: block; margin: auto;"></div>
 <div class="sourceCode" id="cb341"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">dad</span>, <span class="va">son</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 0.7058593</code></pre>
-<p>透過剛剛的模擬，可以得到父親與兒子的身高之間的相關是 0.7058593。學過迴歸統計的同學，應該會記得我們也可以透過<strong>簡單線性迴歸</strong>得到這個相關係數：若將父親與兒子的身高標準化 (取 Z 分數) 再去做迴歸 <span class="math inline">\(y = \alpha + \beta x\)</span>，則這裡的 <span class="math inline">\(\beta\)</span> 即會是剛剛所得到的相關係數 0.7058593。</p>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-111-1.png" width="70%" style="display: block; margin: auto;"></div>
+<pre><code>#&gt; [1] 0.6908442</code></pre>
+<p>透過剛剛的模擬，可以得到父親與兒子的身高之間的相關是 0.6908442。學過迴歸統計的同學，應該會記得我們也可以透過<strong>簡單線性迴歸</strong>得到這個相關係數：若將父親與兒子的身高標準化 (取 Z 分數) 再去做迴歸 <span class="math inline">\(y = \alpha + \beta x\)</span>，則這裡的 <span class="math inline">\(\beta\)</span> 即會是剛剛所得到的相關係數 0.6908442。</p>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-111-1.png" width="75%" style="display: block; margin: auto;"></div>
 <p>在 R 裡面要使用線性迴歸可以透過 <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>。<code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> 裡面放的是公式 (formula)，例如下方的 <code>son_std ~ dad_std</code> 即是在表達 <span class="math inline">\(y = \alpha + \beta x\)</span> 這個關係。</p>
 <div class="sourceCode" id="cb343"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># 標準化</span>
@@ -195,18 +196,18 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 #&gt; 
 #&gt; Residuals:
 #&gt;      Min       1Q   Median       3Q      Max 
-#&gt; -2.81359 -0.44882  0.04147  0.49839  2.04465 
+#&gt; -2.53679 -0.46190  0.01617  0.47826  2.33451 
 #&gt; 
 #&gt; Coefficients:
 #&gt;              Estimate Std. Error t value Pr(&gt;|t|)    
-#&gt; (Intercept) 2.822e-15  2.241e-02    0.00        1    
-#&gt; dad_std     7.059e-01  2.242e-02   31.48   &lt;2e-16 ***
+#&gt; (Intercept) 5.964e-16  2.287e-02    0.00        1    
+#&gt; dad_std     6.908e-01  2.289e-02   30.19   &lt;2e-16 ***
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #&gt; 
-#&gt; Residual standard error: 0.7087 on 998 degrees of freedom
-#&gt; Multiple R-squared:  0.4982, Adjusted R-squared:  0.4977 
-#&gt; F-statistic:   991 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
+#&gt; Residual standard error: 0.7234 on 998 degrees of freedom
+#&gt; Multiple R-squared:  0.4773, Adjusted R-squared:  0.4767 
+#&gt; F-statistic: 911.2 on 1 and 998 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>在上方的輸出裡，<code>Coefficients</code> 的 <code>Estimate</code> 即是 <span class="math inline">\(\alpha\)</span> (Intercept) 與 <span class="math inline">\(\beta\)</span> (dad_std) 的估計。可以看到這裡的 <span class="math inline">\(\beta\)</span> 與先前計算出來的相關係數是相同的。</p>
 </div>
 <div id="因果與相關-causation-vs.-correlation" class="section level2" number="6.3">
@@ -227,7 +228,7 @@ Height \sim Normal(\mu = 160, \sigma = 5)
 <p>為什麼？難道是因為喝太多手搖杯會讓大家更容易抽筋，進而導致溺水人數的增加？</p>
 <div class="figure" style="text-align: center">
 <span id="fig:confound-scatter"></span>
-<img src="assets/img/drinks_and_drown.png" alt="飲料銷售量與溺水人數關聯" width="70%"><p class="caption">
+<img src="assets/img/drinks_and_drown.png" alt="飲料銷售量與溺水人數關聯" width="75%"><p class="caption">
 Figure 6.1: 飲料銷售量與溺水人數關聯
 </p>
 </div>
@@ -284,7 +285,7 @@ Figure 6.2: 混淆因子 (Confounder)
 <div class="sourceCode" id="cb347"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Requires package `psych`, see functions.R</span>
 <span class="fu">plotPairs</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-115-1.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-115-1.png" width="75%" style="display: block; margin: auto;"></div>
 <p>上圖中間那欄最下方 (row = 3, column = 2) 的散布圖即是上方的手搖杯銷售量與溺水人數散布圖 (Figure <a href="ch06.html#fig:confound-scatter">6.1</a>)。在 (2, 3) 位置上的數字 (0.53) 即是手搖杯銷售量與溺水人數的相關係數。</p>
 </div>
 <div id="controlling-for-confounder" class="section level3" number="6.4.2">
@@ -409,7 +410,7 @@ Figure 6.3: 對撞因子 (Collider)
 <p>透過變項間的兩兩散布圖，我們也可以看到比較合理的趨勢：父母的身高是獨立的，兒子的身高與父母皆為正相關。</p>
 <div class="sourceCode" id="cb361"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">plotPairs</span><span class="op">(</span><span class="va">df</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-123-1.png" width="70%" style="display: block; margin: auto;"></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-123-1.png" width="75%" style="display: block; margin: auto;"></div>
 </div>
 <div id="explaining-collider" class="section level3" number="6.6.2">
 <h3>
@@ -502,7 +503,7 @@ Figure 6.3: 對撞因子 (Collider)
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 1, 2021</span>.</p>
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 10, 2021</span>.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 9 文本與詞彙的向量表徵 | RLads Lab</title>
+<meta name="author" content="Yongfu Liao">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
+<script src="libs/str_view-binding-1.4.0/str_view.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RLads Lab</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">關於</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></li>
+<li><a class="" href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></li>
+<li><a class="" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
+<li><a class="" href="ch07.html"><span class="header-section-number">7</span> 字串處理</a></li>
+<li><a class="" href="ch08.html"><span class="header-section-number">8</span> 中文文本資料處理</a></li>
+<li><a class="active" href="ch09.html"><span class="header-section-number">9</span> 文本與詞彙的向量表徵</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/rlads2021/LabBook">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch09" class="section level1" number="9">
+<h1>
+<span class="header-section-number">9</span> 文本與詞彙的向量表徵<a class="anchor" aria-label="anchor" href="#ch09"><i class="fas fa-link"></i></a>
+</h1>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1NXWSy1tQV7R1FQY4qvkcBsbQKsB9d54dfrU6Lj07QAE">投影片</a> /
+<a href="https://rlads2021.github.io/lab/src/11.zip">程式碼</a> /
+<a href="https://youtu.be/UViBpa82nks">影片</a>)</span></p>
+<div id="representing-documents" class="section level2" number="9.1">
+<h2>
+<span class="header-section-number">9.1</span> Representing Documents<a class="anchor" aria-label="anchor" href="#representing-documents"><i class="fas fa-link"></i></a>
+</h2>
+<p>由於資料科學以及統計學方法上的限制，要對文本進行量化分析之前，常常需要將原本以符碼 (文字) 去表徵的文本轉換成數值的表徵，如此我們才有辦法對文本去進行一些資料科學中常見的分析，例如相似度計算、分群、分類等。</p>
+<div id="document-term-matrix-a-toy-example" class="section level3" number="9.1.1">
+<h3>
+<span class="header-section-number">9.1.1</span> Document-Term Matrix: A Toy Example<a class="anchor" aria-label="anchor" href="#document-term-matrix-a-toy-example"><i class="fas fa-link"></i></a>
+</h3>
+<p>將文本轉換成數值的表徵方式相當多，其中一種最簡單的方式，即是使用 document-term matrix 將文本以數值向量去表徵。document-term matrix 裡面記錄著各個文本中的各種詞彙出現的次數。以這 3 篇文本為例：</p>
+<ul>
+<li>
+<code>doc1</code>: <em>I baked the cake and the muffin</em>
+</li>
+<li>
+<code>doc2</code>: <em>I loved the cake</em>
+</li>
+<li>
+<code>doc3</code>: <em>I wrote the book</em>
+</li>
+</ul>
+<p>我們可以使用下方的矩陣 <code>dtm</code> 去表示這 3 篇文本。在這個矩陣中，每個 row 即是一篇文本的向量表徵 (由上至下依序為 <code>doc1</code>, <code>doc2</code>, <code>doc3</code>)；每個 column 是某個特定的詞彙；矩陣中的數值則是該種詞彙出現在該篇文本的次數，例如 cell <code>(2, 1)</code> 代表 <code>I</code> 這個詞彙在 <code>doc2</code> 中出現了 1 次。</p>
+<div class="sourceCode" id="cb392"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#' doc1:    "I baked the cake and the muffin"</span>
+<span class="co">#' doc2:    "I loved the cake"</span>
+<span class="co">#' doc3:    "I wrote the book"</span>
+<span class="co">#' TERMS:        I  baked loved wrote the and cake muffin book</span>
+<span class="va">dtm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="fl">1</span>,   <span class="fl">1</span>,    <span class="fl">0</span>,    <span class="fl">0</span>,   <span class="fl">2</span>,  <span class="fl">1</span>,   <span class="fl">1</span>,    <span class="fl">1</span>,   <span class="fl">0</span> ,
+                 <span class="fl">1</span>,   <span class="fl">0</span>,    <span class="fl">1</span>,    <span class="fl">0</span>,   <span class="fl">1</span>,  <span class="fl">0</span>,   <span class="fl">1</span>,    <span class="fl">0</span>,   <span class="fl">0</span> , 
+                 <span class="fl">1</span>,   <span class="fl">0</span>,    <span class="fl">0</span>,    <span class="fl">1</span>,   <span class="fl">1</span>,  <span class="fl">0</span>,   <span class="fl">0</span>,    <span class="fl">0</span>,   <span class="fl">1</span> <span class="op">)</span>, 
+              nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">9</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">dtm</span></code></pre></div>
+<pre><code>#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+#&gt; [1,]    1    1    0    0    2    1    1    1    0
+#&gt; [2,]    1    0    1    0    1    0    1    0    0
+#&gt; [3,]    1    0    0    1    1    0    0    0    1</code></pre>
+<div class="inline-figure"><img src="assets/img/dtm.png" width="75%" style="display: block; margin: auto;"></div>
+<p>有了文本的向量表徵之後，我們就能去量化比較文本之間的相似度，方法是直接利用向量之間的距離公式 <span class="math inline">\(d(\overrightarrow{p}, \overrightarrow{q})\)</span> 以及相似度公式 <span class="math inline">\(cos(\theta)\)</span>：</p>
+<p><span class="math display">\[
+d(\overrightarrow{p}, \overrightarrow{q}) = \sqrt{ (p_1 - q_1)^2 + (p_2 - q_2)^2 + ... + (p_n - q_n)^2 }
+\]</span></p>
+<p><span class="math display">\[
+cos(\theta) = \frac{\overrightarrow{p} \cdot \overrightarrow{q}}{\lVert p \rVert \lVert q \rVert }
+\]</span></p>
+<p>為了避免每篇文本長度不同造成的文本向量長度不同，在使用距離公式時，我們通常會多一個將向量常規化的動作，讓兩個文本向量的長度變得一樣 (i.e., 皆變成單位向量)</p>
+<div class="sourceCode" id="cb394"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#### Distance / Similarity Measures ####</span>
+<span class="va">cossim</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x1</span> <span class="op">*</span> <span class="va">x2</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x1</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x2</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">)</span>
+
+<span class="va">eudist</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span><span class="op">)</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span> <span class="op">(</span><span class="fu">as_unit_vec</span><span class="op">(</span><span class="va">x1</span><span class="op">)</span> <span class="op">-</span> <span class="fu">as_unit_vec</span><span class="op">(</span><span class="va">x2</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">)</span> <span class="op">)</span>
+
+<span class="va">as_unit_vec</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Normalize vector length</span></code></pre></div>
+<div class="sourceCode" id="cb395"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">eudist</span><span class="op">(</span><span class="va">dtm</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, <span class="va">dtm</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span><span class="op">)</span>
+<span class="fu">eudist</span><span class="op">(</span><span class="va">dtm</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, <span class="va">dtm</span><span class="op">[</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span>
+<span class="fu">eudist</span><span class="op">(</span><span class="va">dtm</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span>, <span class="va">dtm</span><span class="op">[</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 0.8164966
+#&gt; [1] 1
+#&gt; [1] 1</code></pre>
+<div class="sourceCode" id="cb397"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cossim</span><span class="op">(</span><span class="va">dtm</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, <span class="va">dtm</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span><span class="op">)</span>
+<span class="fu">cossim</span><span class="op">(</span><span class="va">dtm</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, <span class="va">dtm</span><span class="op">[</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span>
+<span class="fu">cossim</span><span class="op">(</span><span class="va">dtm</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span>, <span class="va">dtm</span><span class="op">[</span><span class="fl">3</span>, <span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 0.6666667
+#&gt; [1] 0.5
+#&gt; [1] 0.5</code></pre>
+</div>
+<div id="creating-document-term-matrix-with-quanteda" class="section level3" number="9.1.2">
+<h3>
+<span class="header-section-number">9.1.2</span> Creating Document-Term Matrix with quanteda<a class="anchor" aria-label="anchor" href="#creating-document-term-matrix-with-quanteda"><i class="fas fa-link"></i></a>
+</h3>
+<p>在上方的例子，我們是自己透過手刻的方式去製作 document-term matrix。<code>quanteda</code> 則提供了將 <code>tokens</code> object 轉換成 document-term matrix 的函數：</p>
+<div class="sourceCode" id="cb399"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io">quanteda</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io">quanteda.textstats</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/quanteda/quanteda.textmodels">quanteda.textmodels</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"functions.R"</span><span class="op">)</span>
+
+<span class="co"># Document data frame</span>
+<span class="va">docs_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="st">"samesex_marriage.rds"</span><span class="op">)</span>
+
+<span class="co"># Token object</span>
+<span class="va">q_tokens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/corpus.html">corpus</a></span><span class="op">(</span><span class="va">docs_df</span>, docid_field <span class="op">=</span> <span class="st">"id"</span>, text_field <span class="op">=</span> <span class="st">"content"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">tokenizers</span><span class="fu">::</span><span class="fu"><a href="https://lincolnmullen.com/software/tokenizers/reference/basic-tokenizers.html">tokenize_regex</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"\u3000"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="co"># Document-term matrix (feature selection)</span>
+<span class="va">q_dfm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span><span class="op">(</span><span class="va">q_tokens</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_select.html">dfm_remove</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span><span class="op">(</span><span class="st">"stopwords.txt"</span><span class="op">)</span>, valuetype <span class="op">=</span> <span class="st">"fixed"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_select.html">dfm_select</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"[\u4E00-\u9FFF]"</span>, valuetype <span class="op">=</span> <span class="st">"regex"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html">dfm_trim</a></span><span class="op">(</span>min_termfreq <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_tfidf.html">dfm_tfidf</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">q_dfm</span></code></pre></div>
+<pre><code>#&gt; Document-feature matrix of: 300 documents, 4,781 features (95.54% sparse) and 0 docvars.
+#&gt;               features
+#&gt; docs               去年   全國性      是否      同意     民法      婚姻
+#&gt;   anti_1.txt   1.457866 1.273001 0.4240428 3.2552323 4.300816 1.6543448
+#&gt;   anti_10.txt  0        0        0         0         0        0        
+#&gt;   anti_100.txt 0        0        2.1202141 0.6510465 0        2.7572413
+#&gt;   anti_101.txt 0        0        0.4240428 0         0        0        
+#&gt;   anti_102.txt 0        0        0.4240428 1.9531394 1.075204 0.5514483
+#&gt;   anti_103.txt 0        0        0         0         0        0        
+#&gt;               features
+#&gt; docs                規定        應     限定  一男一女
+#&gt;   anti_1.txt   3.9804537 1.4183996 4.704365 3.7921393
+#&gt;   anti_10.txt  0         0         0        0        
+#&gt;   anti_100.txt 0         0.9455998 0        0.6320232
+#&gt;   anti_101.txt 0         0         0        0        
+#&gt;   anti_102.txt 0.5686362 0.4727999 0        0        
+#&gt;   anti_103.txt 0         1.8911995 0        0        
+#&gt; [ reached max_ndoc ... 294 more documents, reached max_nfeat ... 4,771 more features ]</code></pre>
+</div>
+<div id="pairwise-document-similarity-by-raw-document-term-matrix" class="section level3" number="9.1.3">
+<h3>
+<span class="header-section-number">9.1.3</span> Pairwise Document Similarity by raw Document-Term Matrix<a class="anchor" aria-label="anchor" href="#pairwise-document-similarity-by-raw-document-term-matrix"><i class="fas fa-link"></i></a>
+</h3>
+<p><code><a href="https://quanteda.io/reference/textstat_simil.html">quanteda.textstats::textstat_simil()</a></code> 能夠計算 document-term matrix 內文本間的兩兩相似度。如此我們便可透過回傳的矩陣去取得與某篇文章 (e.g., <code>anti_1.txt</code>) 最相似的幾篇文章：</p>
+<div class="sourceCode" id="cb401"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">doc_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/textstat_simil.html">textstat_simil</a></span><span class="op">(</span><span class="va">q_dfm</span>, method <span class="op">=</span> <span class="st">"cosine"</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">doc_sim</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 300 300</code></pre>
+<div class="sourceCode" id="cb403"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="va">doc_sim</span><span class="op">[</span><span class="st">"anti_1.txt"</span>, <span class="op">]</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt;   anti_1.txt  anti_95.txt anti_122.txt   pro_18.txt  anti_54.txt  anti_55.txt 
+#&gt;    1.0000000    0.3846162    0.2652598    0.2584759    0.2577859    0.2548753 
+#&gt; anti_132.txt anti_106.txt 
+#&gt;    0.2422925    0.2371465</code></pre>
+<div id="clustering-using-pairwise-similarity" class="section level4" number="9.1.3.1">
+<h4>
+<span class="header-section-number">9.1.3.1</span> Clustering Using Pairwise Similarity<a class="anchor" aria-label="anchor" href="#clustering-using-pairwise-similarity"><i class="fas fa-link"></i></a>
+</h4>
+<p><code><a href="https://quanteda.io/reference/textstat_simil.html">quanteda.textstats::textstat_simil()</a></code> 所回傳的相似度矩陣也可作為分群演算法的輸入：</p>
+<div class="sourceCode" id="cb405"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">doc_name</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">name</span>, <span class="va">end</span> <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">name</span>, <span class="st">'\n'</span>, <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">lookup</span><span class="op">[</span><span class="va">name</span><span class="op">]</span>, <span class="fl">1</span>, <span class="va">end</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">151</span><span class="op">:</span><span class="fl">160</span><span class="op">)</span>
+<span class="va">lookup</span> <span class="op">&lt;-</span> <span class="va">docs_df</span><span class="op">$</span><span class="va">title</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">lookup</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">docs_df</span><span class="op">$</span><span class="va">id</span>
+
+<span class="va">doc_sim2</span> <span class="op">&lt;-</span> <span class="va">doc_sim</span><span class="op">[</span><span class="va">idx</span>, <span class="va">idx</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">doc_sim2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">doc_name</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">doc_sim2</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">doc_sim2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">doc_name</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">doc_sim2</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co">## create hclust</span>
+<span class="va">clust</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">doc_sim2</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="va">as.dist</span> <span class="op">%&gt;%</span> <span class="va">hclust</span>
+
+<span class="co">## plot dendrogram</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">clust</span>, main <span class="op">=</span> <span class="st">"20 Selected Posts"</span>, cex <span class="op">=</span> <span class="fl">0.7</span>,
+     xlab<span class="op">=</span><span class="st">""</span>, sub<span class="op">=</span><span class="st">""</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-160-1.png" width="100%" style="display: block; margin: auto;"></div>
+</div>
+<div id="network-plot-using-pairwise-similarity" class="section level4" number="9.1.3.2">
+<h4>
+<span class="header-section-number">9.1.3.2</span> Network Plot Using Pairwise Similarity<a class="anchor" aria-label="anchor" href="#network-plot-using-pairwise-similarity"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb406"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">quanteda.textplots</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/quanteda.textplots/man/textplot_network.html">textplot_network</a></span><span class="op">(</span><span class="fu"><a href="https://quanteda.io/reference/as.dfm.html">as.dfm</a></span><span class="op">(</span><span class="va">doc_sim2</span><span class="op">)</span>,
+                 vertex_labelsize <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="rlads2021LabSession_files/figure-html/unnamed-chunk-161-1.png" width="100%" style="display: block; margin: auto;"></div>
+</div>
+</div>
+<div id="latent-semantic-anlysis-dimensionality-reduction" class="section level3" number="9.1.4">
+<h3>
+<span class="header-section-number">9.1.4</span> Latent Semantic Anlysis (Dimensionality Reduction)<a class="anchor" aria-label="anchor" href="#latent-semantic-anlysis-dimensionality-reduction"><i class="fas fa-link"></i></a>
+</h3>
+<p>由於 document-term matrix 通常很稀疏 (i.e., 很多值是 0)，使文本向量可能無法抓到某些文本之間的語意關聯。例如，在下圖的例子中，<code>doc2</code> 與 <code>doc4</code> 雖然語意相近，但此二文本的向量的相似度 (cosine similarity) 為零，因為這兩篇文本並未使用到相同的詞彙。</p>
+<div class="inline-figure"><img src="assets/img/semantic_simil.png" width="75%" style="display: block; margin: auto;"></div>
+<p>面對這種情形，我們可以將高維的 document-term matrix 透過數學方式轉換成維度比較小的矩陣。在這個過程中，document-term matrix 中一些語意相近的詞彙會被壓縮到某個或是某些維度中，讓這個維度比較小的矩陣反而比較能表徵文本之間的語意關聯。這種方式稱為 Latent Semantic Analysis (LSA)，而用來將矩陣分解降維的數學方法稱為 Singular Value Decomposition (SVD)。</p>
+<div class="sourceCode" id="cb407"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">lsa_model</span> <span class="op">&lt;-</span> <span class="fu">quanteda.textmodels</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/quanteda.textmodels/man/textmodel_lsa.html">textmodel_lsa</a></span><span class="op">(</span><span class="va">q_dfm</span>, nd <span class="op">=</span> <span class="fl">15</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">lsa_model</span><span class="op">$</span><span class="va">docs</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 300  15</code></pre>
+<div class="sourceCode" id="cb409"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Document similarity</span>
+<span class="va">doc_sim2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://quanteda.io/reference/textstat_simil.html">textstat_simil</a></span><span class="op">(</span><span class="fu"><a href="https://quanteda.io/reference/as.dfm.html">as.dfm</a></span><span class="op">(</span><span class="va">lsa_model</span><span class="op">$</span><span class="va">docs</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"cosine"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="va">doc_sim2</span><span class="op">[</span><span class="st">"anti_1.txt"</span>, <span class="op">]</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></code></pre></div>
+<pre><code>#&gt;   anti_1.txt    pro_2.txt anti_102.txt anti_146.txt   pro_94.txt   pro_84.txt 
+#&gt;    1.0000000    0.9963039    0.9959590    0.9936474    0.9933724    0.9933206 
+#&gt;  anti_94.txt  pro_133.txt 
+#&gt;    0.9923490    0.9921601</code></pre>
+</div>
+<div id="converting-unseen-documents-to-vectors" class="section level3" number="9.1.5">
+<h3>
+<span class="header-section-number">9.1.5</span> Converting unseen documents to vectors<a class="anchor" aria-label="anchor" href="#converting-unseen-documents-to-vectors"><i class="fas fa-link"></i></a>
+</h3>
+<p>現在我們已經知道如何將一個語料庫內的所有文本轉換成向量表徵。現在要處理的是<strong>新的資料</strong>：若今天有一篇新的文本，我們要如何將此篇文本轉換成向量，好讓我們可以去將這篇文本與語料庫中的其它文本進行比較？</p>
+<div class="inline-figure"><img src="assets/img/encoding_text.png" width="100%" style="display: block; margin: auto;"></div>
+<p>要達成這件事，在將新文本轉換成 document-term matrix 時，需要讓新文本的 document-term matrix 在維度上 (詞彙種類以及其在矩陣中順序) 能夠與語料庫的 document-term matrix 對應起來。這可以透過 <code><a href="https://quanteda.io/reference/dfm_match.html">quanteda::dfm_match()</a></code> 達成。確保了 document-term matrix 的維度相同之後，接著就可以將這個 document-term matrix 餵到 LSA 模型，讓它為這個 document-term matrix 進行降維，進而得到新文本的向量表徵：</p>
+<div class="sourceCode" id="cb411"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#### Converting new texts to vector representation ####</span>
+
+<span class="co"># New document</span>
+<span class="va">doc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span><span class="op">(</span><span class="st">"sample_post.txt"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span>collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span>
+
+<span class="co"># Convert raw text to document term matrix</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/qinwf/jiebaR/">jiebaR</a></span><span class="op">)</span>
+<span class="va">seg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/worker.html">worker</a></span><span class="op">(</span>user <span class="op">=</span> <span class="st">"user_dict.txt"</span><span class="op">)</span>
+<span class="va">new_doc_dtm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/jiebaR/man/segment.html">segment</a></span><span class="op">(</span><span class="va">doc</span>, <span class="va">seg</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/tokens.html">tokens</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm.html">dfm</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://quanteda.io/reference/dfm_match.html">dfm_match</a></span><span class="op">(</span>features <span class="op">=</span> <span class="fu"><a href="https://quanteda.io/reference/featnames.html">featnames</a></span><span class="op">(</span><span class="va">q_dfm</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Dimensionality reduction with LSA</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">lsa_model</span>, newdata <span class="op">=</span> <span class="va">new_doc_dtm</span><span class="op">)</span>
+<span class="va">doc_vec_lsa</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">$</span><span class="va">docs_newspace</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>
+<span class="va">doc_vec_lsa</span></code></pre></div>
+<pre><code>#&gt;  [1]  0.010810124 -0.005191709  0.019227536  0.021340089 -0.012736252
+#&gt;  [6]  0.017679038  0.030646133  0.025211666 -0.010762389 -0.005173429
+#&gt; [11] -0.034176683  0.005167776 -0.015351990 -0.007155702  0.002363518</code></pre>
+<p>如此，我們便可使用這個新文本的向量去和語料庫中的其它文本進行比較：</p>
+<div class="sourceCode" id="cb413"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cossim</span><span class="op">(</span><span class="va">doc_vec_lsa</span>, <span class="va">lsa_model</span><span class="op">$</span><span class="va">docs</span><span class="op">[</span><span class="st">"pro_18.txt"</span>, <span class="op">]</span><span class="op">)</span>
+<span class="fu">cossim</span><span class="op">(</span><span class="va">doc_vec_lsa</span>, <span class="va">lsa_model</span><span class="op">$</span><span class="va">docs</span><span class="op">[</span><span class="st">"anti_18.txt"</span>, <span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 0.7647369
+#&gt; [1] -0.1012756</code></pre>
+</div>
+</div>
+<div id="using-word-vectors" class="section level2" number="9.2">
+<h2>
+<span class="header-section-number">9.2</span> Using Word Vectors<a class="anchor" aria-label="anchor" href="#using-word-vectors"><i class="fas fa-link"></i></a>
+</h2>
+<p>詞彙與文本類似，一樣可以透過數值性的向量去表徵。在近幾年表徵詞彙的詞向量技術進展相當快速，且能抓到一些相當細微的語意。但這些詞向量通常需要透過相對大量的資料訓練，其表現才會相對穩定。通常我們也不必自行蒐集語料訓練這些詞向量，因為網路上已有相當多公開的詞向量資源，可直接下載使用。</p>
+<p>下方的例子即是使用預先訓練好的詞向量 (儲存於 <code>ppmi_embeddings_50dim.txt</code>)。這份詞向量<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;&lt;a href="https://github.com/liao961120/PPMI" class="uri"&gt;https://github.com/liao961120/PPMI&lt;/a&gt;&lt;/p&gt;'><sup>23</sup></a>是透過中研院平衡語料庫訓練而來的，可以透過 <code>functions.R</code> 中的 <code>read_ppmi()</code> 以 <code>matrix</code> 的格式讀進 R 裡：</p>
+<div class="sourceCode" id="cb415"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"functions.R"</span><span class="op">)</span>
+<span class="va">wv</span> <span class="op">&lt;-</span> <span class="fu">read_ppmi</span><span class="op">(</span><span class="st">"ppmi_embeddings_50dim.txt"</span><span class="op">)</span></code></pre></div>
+<p>讀進來後，就可以透過 <code>wv["{詞彙}", ]</code> 去取得詞向量 (length == 50 的 numeric vector)：</p>
+<div class="sourceCode" id="cb416"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">wv</span><span class="op">[</span><span class="st">"爸爸"</span>, <span class="op">]</span></code></pre></div>
+<pre><code>#&gt;  [1] -0.046565545  0.460913664 -0.053094442 -0.057553476 -0.024442142
+#&gt;  [6]  0.001117499 -0.179143899 -0.213770824 -0.087744568  0.044913735
+#&gt; [11] -0.011217009  0.081547154  0.127092145  0.067408753  0.036906909
+#&gt; [16]  0.085890520  0.102822128 -0.199562705  0.040325577  0.150103819
+#&gt; [21]  0.232702185  0.007350324  0.131141177  0.146634070 -0.049885084
+#&gt; [26] -0.192042121  0.027501879 -0.238921004  0.113918191  0.001545429
+#&gt; [31] -0.027848669 -0.098988912 -0.079275493  0.074673585  0.113090980
+#&gt; [36]  0.222950818  0.096059215 -0.089295350 -0.157370032 -0.089475721
+#&gt; [41]  0.025158373  0.236198917 -0.023956936  0.169465113  0.228609064
+#&gt; [46]  0.038412816  0.037344191  0.184070583  0.224648376 -0.131128332</code></pre>
+<p>並可以套用 cosine similarity 的公式去計算兩個詞彙間的相似度：</p>
+<div class="sourceCode" id="cb418"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cossim</span><span class="op">(</span><span class="va">wv</span><span class="op">[</span><span class="st">"媽媽"</span>, <span class="op">]</span>, <span class="va">wv</span><span class="op">[</span><span class="st">"爸爸"</span>, <span class="op">]</span><span class="op">)</span>
+<span class="fu">cossim</span><span class="op">(</span><span class="va">wv</span><span class="op">[</span><span class="st">"老師"</span>, <span class="op">]</span>, <span class="va">wv</span><span class="op">[</span><span class="st">"爸爸"</span>, <span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] 0.9721566
+#&gt; [1] 0.3958473</code></pre>
+<div id="finding-most-similar-words" class="section level3" number="9.2.1">
+<h3>
+<span class="header-section-number">9.2.1</span> Finding Most Similar Words<a class="anchor" aria-label="anchor" href="#finding-most-similar-words"><i class="fas fa-link"></i></a>
+</h3>
+<p>由於詞向量的檔案通常非常大 (因為詞彙的種類通常遠比文本的數量多很多)，我們無法透過 <code><a href="https://quanteda.io/reference/textstat_simil.html">quanteda.textstats::textstat_simil()</a></code> 去計算詞彙間的兩兩相似度 (運算時間太長)。因此，若想找出與某個特定詞彙 (e.g., <code>媽媽</code>) 語意最相似的詞彙，我們可以透過 base R 的 <code><a href="https://rdrr.io/r/base/apply.html">apply()</a></code> 去將 <code>媽媽</code> 的詞向量去跟所有的詞向量算出相似度之後再進行排序：</p>
+<div class="sourceCode" id="cb420"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">most_simil</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">word_vec</span>, <span class="va">topn</span> <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">siml</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">wv</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">row</span><span class="op">)</span> <span class="fu">cossim</span><span class="op">(</span><span class="va">row</span>, <span class="va">word_vec</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="va">siml</span>, decreasing <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">topn</span><span class="op">]</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu">most_simil</span><span class="op">(</span><span class="va">wv</span><span class="op">[</span><span class="st">"媽媽"</span>, <span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt;      媽媽      爸爸        跟      妹妹      哥哥      小孩      高興        找 
+#&gt; 1.0000000 0.9721566 0.8923738 0.8704723 0.8639341 0.8603998 0.8585911 0.8542571 
+#&gt;      弟弟      孩子 
+#&gt; 0.8536466 0.8528005</code></pre>
+</div>
+<div id="word-analogy" class="section level3" number="9.2.2">
+<h3>
+<span class="header-section-number">9.2.2</span> Word Analogy<a class="anchor" aria-label="anchor" href="#word-analogy"><i class="fas fa-link"></i></a>
+</h3>
+<p>近幾年的詞向量技術令人驚奇的其中一個地方來自它們抓到詞彙語意上類比關係的能力。透過詞向量的運算，我們可以要電腦為我們找出類似這種問題的答案：</p>
+<blockquote>
+<p><strong>父親</strong>之於<strong>兒子</strong>相當於<strong>母親</strong>之於？<br><strong>弟弟</strong>之於<strong>哥哥</strong>相當於<strong>妹妹</strong>之於？</p>
+</blockquote>
+<pre><code>父親 : 兒子 == 母親 :  ？
+弟弟 : 哥哥 == 妹妹 :  ？
+v1  -  v2   =  v3  -  v4
+v4  =  v3   -  v1  +  v2</code></pre>
+<div class="sourceCode" id="cb423"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">v1</span> <span class="op">&lt;-</span> <span class="va">wv</span><span class="op">[</span><span class="st">"父親"</span>, <span class="op">]</span>
+<span class="va">v2</span> <span class="op">&lt;-</span> <span class="va">wv</span><span class="op">[</span><span class="st">"兒子"</span>, <span class="op">]</span>
+<span class="va">v3</span> <span class="op">&lt;-</span> <span class="va">wv</span><span class="op">[</span><span class="st">"母親"</span>, <span class="op">]</span>
+<span class="va">v4</span> <span class="op">&lt;-</span> <span class="va">v3</span> <span class="op">-</span> <span class="va">v1</span> <span class="op">+</span> <span class="va">v2</span>
+<span class="fu">most_simil</span><span class="op">(</span><span class="va">v4</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt;      兒子      母親      女兒      小孩      父母      父親      孩子      丈夫 
+#&gt; 0.9487272 0.9425165 0.9305924 0.8863384 0.8806144 0.8620591 0.8385362 0.8338454 
+#&gt;      長大      媽媽 
+#&gt; 0.8174763 0.8096411</code></pre>
+<div class="sourceCode" id="cb425"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">v1</span> <span class="op">&lt;-</span> <span class="va">wv</span><span class="op">[</span><span class="st">"弟弟"</span>, <span class="op">]</span>
+<span class="va">v2</span> <span class="op">&lt;-</span> <span class="va">wv</span><span class="op">[</span><span class="st">"哥哥"</span>, <span class="op">]</span>
+<span class="va">v3</span> <span class="op">&lt;-</span> <span class="va">wv</span><span class="op">[</span><span class="st">"妹妹"</span>, <span class="op">]</span>
+<span class="va">v4</span> <span class="op">&lt;-</span> <span class="va">v3</span> <span class="op">-</span> <span class="va">v1</span> <span class="op">+</span> <span class="va">v2</span>
+<span class="fu">most_simil</span><span class="op">(</span><span class="va">v4</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt;      哥哥      妹妹      爸爸      弟弟      回去      姊姊      媽媽      回家 
+#&gt; 0.9663716 0.9476825 0.8894544 0.8650535 0.8603728 0.8535357 0.8396181 0.8242290 
+#&gt;      高興        媽 
+#&gt; 0.8238468 0.8158779</code></pre>
+
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="ch08.html"><span class="header-section-number">8</span> 中文文本資料處理</a></div>
+<div class="empty"></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ch09"><span class="header-section-number">9</span> 文本與詞彙的向量表徵</a></li>
+<li>
+<a class="nav-link" href="#representing-documents"><span class="header-section-number">9.1</span> Representing Documents</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#document-term-matrix-a-toy-example"><span class="header-section-number">9.1.1</span> Document-Term Matrix: A Toy Example</a></li>
+<li><a class="nav-link" href="#creating-document-term-matrix-with-quanteda"><span class="header-section-number">9.1.2</span> Creating Document-Term Matrix with quanteda</a></li>
+<li><a class="nav-link" href="#pairwise-document-similarity-by-raw-document-term-matrix"><span class="header-section-number">9.1.3</span> Pairwise Document Similarity by raw Document-Term Matrix</a></li>
+<li><a class="nav-link" href="#latent-semantic-anlysis-dimensionality-reduction"><span class="header-section-number">9.1.4</span> Latent Semantic Anlysis (Dimensionality Reduction)</a></li>
+<li><a class="nav-link" href="#converting-unseen-documents-to-vectors"><span class="header-section-number">9.1.5</span> Converting unseen documents to vectors</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#using-word-vectors"><span class="header-section-number">9.2</span> Using Word Vectors</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#finding-most-similar-words"><span class="header-section-number">9.2.1</span> Finding Most Similar Words</a></li>
+<li><a class="nav-link" href="#word-analogy"><span class="header-section-number">9.2.2</span> Word Analogy</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/rlads2021/LabBook/blob/master/09-vector_representation.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/rlads2021/LabBook/edit/master/09-vector_representation.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 10, 2021</span>.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+</html>

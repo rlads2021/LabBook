@@ -6,10 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Chapter 4 Data Frame 處理：dplyr | RLads Lab</title>
 <meta name="author" content="Yongfu Liao">
-<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7.3/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
-<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
 <script src="libs/str_view-binding-1.4.0/str_view.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
 </head>
 <body data-spy="scroll" data-target="#toc">
@@ -41,6 +41,7 @@
 <li><a class="" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
 <li><a class="" href="ch07.html"><span class="header-section-number">7</span> 字串處理</a></li>
 <li><a class="" href="ch08.html"><span class="header-section-number">8</span> 中文文本資料處理</a></li>
+<li><a class="" href="ch09.html"><span class="header-section-number">9</span> 文本與詞彙的向量表徵</a></li>
 </ul>
 
         <div class="book-extra">
@@ -138,7 +139,7 @@
 </h2>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-68"></span>
-<img src="assets/img/select.png" alt="篩選出 `babynames` 中的 `name` 與 `prop` 變項。" width="70%"><p class="caption">
+<img src="assets/img/select.png" alt="篩選出 `babynames` 中的 `name` 與 `prop` 變項。" width="75%"><p class="caption">
 Figure 4.1: 篩選出 <code>babynames</code> 中的 <code>name</code> 與 <code>prop</code> 變項。
 </p>
 </div>
@@ -275,7 +276,7 @@ Figure 4.1: 篩選出 <code>babynames</code> 中的 <code>name</code> 與 <code>
 </h2>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-72"></span>
-<img src="assets/img/filter.png" alt='篩選出 `babynames` 中的 `name` 為 "Garrett" 的觀察值。' width="70%"><p class="caption">
+<img src="assets/img/filter.png" alt='篩選出 `babynames` 中的 `name` 為 "Garrett" 的觀察值。' width="75%"><p class="caption">
 Figure 4.2: 篩選出 <code>babynames</code> 中的 <code>name</code> 為 “Garrett” 的觀察值。
 </p>
 </div>
@@ -325,7 +326,7 @@ Figure 4.2: 篩選出 <code>babynames</code> 中的 <code>name</code> 為 “Gar
 </h2>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-74"></span>
-<img src="assets/img/arrange.png" alt="依據變項 `n` 的大小由小至大排序 `babynames` 中的觀察值。" width="70%"><p class="caption">
+<img src="assets/img/arrange.png" alt="依據變項 `n` 的大小由小至大排序 `babynames` 中的觀察值。" width="75%"><p class="caption">
 Figure 4.3: 依據變項 <code>n</code> 的大小由小至大排序 <code>babynames</code> 中的觀察值。
 </p>
 </div>
@@ -523,7 +524,7 @@ Figure 4.3: 依據變項 <code>n</code> 的大小由小至大排序 <code>babyna
 </h2>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-79"></span>
-<img src="assets/img/mutate.png" alt="依據變項 `prop` 製造新變項 `percent`。" width="70%"><p class="caption">
+<img src="assets/img/mutate.png" alt="依據變項 `prop` 製造新變項 `percent`。" width="75%"><p class="caption">
 Figure 4.4: 依據變項 <code>prop</code> 製造新變項 <code>percent</code>。
 </p>
 </div>
@@ -570,7 +571,7 @@ Figure 4.4: 依據變項 <code>prop</code> 製造新變項 <code>percent</code>�
 </h2>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-81"></span>
-<img src="assets/img/summarise.png" alt="對變項 `n` 進行摘要 (計算總和與最大值)，並將摘要的結果儲存於兩個新變項 `total` 與 `max`。" width="70%"><p class="caption">
+<img src="assets/img/summarise.png" alt="對變項 `n` 進行摘要 (計算總和與最大值)，並將摘要的結果儲存於兩個新變項 `total` 與 `max`。" width="75%"><p class="caption">
 Figure 4.5: 對變項 <code>n</code> 進行摘要 (計算總和與最大值)，並將摘要的結果儲存於兩個新變項 <code>total</code> 與 <code>max</code>。
 </p>
 </div>
@@ -624,7 +625,7 @@ Figure 4.5: 對變項 <code>n</code> 進行摘要 (計算總和與最大值)，�
 #&gt; 3 New York  18.5    37     2</code></pre>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-84"></span>
-<img src="assets/img/group_by.png" alt="先將 `pollution` 的觀察值依據變項 `city` 分成 3 組，再各自對 3 組進行摘要 (計算污染量平均與總和) 求得之摘要表。" width="70%"><p class="caption">
+<img src="assets/img/group_by.png" alt="先將 `pollution` 的觀察值依據變項 `city` 分成 3 組，再各自對 3 組進行摘要 (計算污染量平均與總和) 求得之摘要表。" width="75%"><p class="caption">
 Figure 4.6: 先將 <code>pollution</code> 的觀察值依據變項 <code>city</code> 分成 3 組，再各自對 3 組進行摘要 (計算污染量平均與總和) 求得之摘要表。
 </p>
 </div>
@@ -696,7 +697,7 @@ Figure 4.6: 先將 <code>pollution</code> 的觀察值依據變項 <code>city</c
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 1, 2021</span>.</p>
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 10, 2021</span>.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

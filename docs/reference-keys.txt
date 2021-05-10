@@ -111,7 +111,7 @@ dont-be-a-control-freak
 simulating-collider
 explaining-collider
 ch07
-regular-expression-️
+regular-expression
 basics-.-escape
 repetition
 character-classes
@@ -130,3 +130,15 @@ tidytext-framework
 詞頻表
 視覺化
 quanteda-framework
+ch09
+representing-documents
+document-term-matrix-a-toy-example
+creating-document-term-matrix-with-quanteda
+pairwise-document-similarity-by-raw-document-term-matrix
+clustering-using-pairwise-similarity
+network-plot-using-pairwise-similarity
+latent-semantic-anlysis-dimensionality-reduction
+converting-unseen-documents-to-vectors
+using-word-vectors
+finding-most-similar-words
+word-analogy
