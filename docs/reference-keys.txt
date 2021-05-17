@@ -22,6 +22,10 @@ fig:unnamed-chunk-96
 fig:confound-scatter
 fig:confounder
 fig:collider
+fig:unnamed-chunk-173
+fig:unnamed-chunk-174
+fig:unnamed-chunk-175
+fig:unnamed-chunk-176
 ch01
 路徑-工作目錄
 目錄結構-directory-structure
@@ -111,7 +115,7 @@ dont-be-a-control-freak
 simulating-collider
 explaining-collider
 ch07
-regular-expression
+regular-expression-️
 basics-.-escape
 repetition
 character-classes
@@ -142,3 +146,10 @@ converting-unseen-documents-to-vectors
 using-word-vectors
 finding-most-similar-words
 word-analogy
+ch10
+http
+url-structure
+httr
+http-request-methods
+json
+format
