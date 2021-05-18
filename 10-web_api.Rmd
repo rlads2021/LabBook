@@ -2,7 +2,7 @@
 =============================
 
 [([投影片](https://docs.google.com/presentation/d/1XKEXj64xnDtOHVy_INhI__Zqgf38SvpaisBLWaIxM_c) /
-[程式碼](https://rlads2021.github.io/lab/src/webapi.zip))
+[程式碼](https://rlads2021.github.io/lab/src/webapi.R))
 <!-- / [影片](https://youtu.be/UViBpa82nks) -->
 ]{.course-resource}
 
