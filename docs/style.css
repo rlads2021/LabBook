@@ -30,3 +30,7 @@
 p.caption {
   text-align: center;
 }
+
+pre > code {
+  padding: .125rem 0;
+}
