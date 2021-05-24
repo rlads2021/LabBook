@@ -2,7 +2,7 @@ Base R (I) & 輔助工具 {#ch02}
 ==================================
 
 [
-([投影片](https://docs.google.com/presentation/d/1b01Vx-uTr2DQ1t2FKFFDiPzw7LlI-srYMqXIPWKQC_Q) /
+([投影片](https://docs.google.com/presentation/d/1Do7n_G7A30ZkDe0zzD6dbUG8nMS2QnIB4FdKwQy8o_8) /
 [影片](https://youtu.be/WV18389Op8s))
 ]{.course-resource}
 

@@ -1,8 +1,8 @@
 字串處理 {#ch07}
 ===============
 
-[([投影片](https://docs.google.com/presentation/d/1O7w7mARctARCCkHGd6lNM5gbwfkK5_MBRymktdrryYg) /
-[程式碼](https://rlads2021.github.io/lab/src/09.zip) /
+[([投影片](https://docs.google.com/presentation/d/1ZBlZp-u9aSnSRzBzK3SYbrw8u38Q7CJ0IgmEjDNclR4) /
+[程式碼](https://rlads2021.github.io/archives/src/Lab07.zip) /
 [影片](https://youtu.be/dQXIitYRNQ4))
 ]{.course-resource}
 

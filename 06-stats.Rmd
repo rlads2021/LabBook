@@ -1,8 +1,8 @@
 Simulating Data with R {#ch06}
 ===============================
 
-[([投影片](https://docs.google.com/presentation/d/1WVRMb8ygiXlkc797hEYQVocupW2LOajVf_MM4xUpbtk) /
-[程式碼](https://rlads2021.github.io/lab/src/08.zip) /
+[([投影片](https://docs.google.com/presentation/d/1DCQSGMJm9NviwEA08d4mIZ_Oo2uKdp61tKh7JrYwmIk) /
+[程式碼](https://rlads2021.github.io/archives/src/Lab06.zip) /
 [影片](https://youtu.be/VTO14Zm6HYY))
 ]{.course-resource}
 

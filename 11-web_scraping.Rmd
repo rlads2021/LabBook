@@ -1,0 +1,188 @@
+擷取網路資料：網頁剖析 {#ch11}
+==============================
+
+[([投影片](https://docs.google.com/presentation/d/1gmbFQ2X0G34q7Dni4OuCLxVLFLQaPcOxTaQaCsoKc7A) /
+[程式碼](https://rlads2021.github.io/archives/src/Lab11.zip))
+<!-- / [影片](https://youtu.be/idQUlVBUKbE) -->
+]{.course-resource}
+
+
+## HTML
+
+上次實習課介紹過，透過 HTTP request/response，瀏覽器可以將接收到的 HTML 文字格式轉換成漂亮的網頁。但這並不精確，因為現在的網頁絕大多數**不只**是用 HTML 寫成的，藏在 HTML 裡面的，尚包含 **CSS** 與 **JavaScript**。在瀏覽器看到的漂亮的網頁裡，HTML 只貢獻了一部分的視覺呈現，許多的其它效果是 CSS 以及 JavaScript 的貢獻。這週實習課，我們介紹的主題是 HTML 和 CSS。
+
+```{r echo=F, fig.cap="Hypertext Transfer Protocol (HTTP)", out.width="60%"}
+img("HTTP.png")
+```
+
+- 基本上，HTML 的功能是用來定義一個網頁的**結構**，而 CSS 則是用來**裝飾** HTML。
+
+
+### HTML 結構
+
+- HTML 是純文字的格式，因此只要使用文字編輯器編輯檔案，並將檔案的附檔名命名為 `.html`，即可製作出一份 HTML 檔。
+
+- HTML 文件的一開頭的 `<!DOCTYPE html>`，目的在告訴瀏覽器這份 HTML 文件是使用 HTML5 的版本。
+
+- HTML 是由一個個**標籤 (tag)** 所組成。一個 tag 通常會有「開頭」和「結尾」的標記 (例如 `p` tag 以 `<p>` 開頭，以 `</p>` 結尾)，開頭 (start tag) 與結尾 (end tag) 之間，可以放入其它資料 (例如文字或其它的 HTML tag)。一個 HTML tag 裡面，有時可以放入特定的**屬性 (attribute)** (依據 tag 的種類而定)，這些屬性的目的是提供額外的資訊，告訴瀏覽器如何呈現網頁。
+
+- 常見的 HTML tag^[直接取自：<https://cs50.harvard.edu/web/notes/0/#html>]
+    - `<html></html>`: contents of web page
+        - `<head></head>`: metadata about the web page
+            - `<title></title>`: title of the page
+        - `<body></body>`: body of the page
+          - `<h1></h1>`: header (h1 is the largest header, h6 is the smallest header)
+          - `<ul></ul>`: unordered list
+          - `<ol></ol>`: ordered list
+              - `<li></li>` : list item (must be inside either `<ul></ul>` or `<ol></ol>`)
+          - `<a href="path/to/other/page/or/url"></a>`: Link
+          - `<img src="path/to/img.jpg" height="200" width="300">`: image stored at `src` attribute, whcih can also be a URL
+              - no end tag
+              - `height`, `width` are optional
+          - `<table></table>`: table
+              - `<th></th>`: table header
+              - `<tr></tr>`: table row
+              - `<td></td>`: table data (cell)
+
+### Document Object Model
+
+```{r echo=F, fig.cap="Document Object Model (DOM)"}
+img("DOM.png")
+```
+
+
+## CSS
+
+- HTML 定義的是一個網頁的**結構**，它就像是網頁的骨架。但若要讓網頁變得好看，我們需要在這定義好的骨架之上再添加一些裝飾。這就是 CSS 的功能。
+
+- 有三種方式可以為 HTML 元素增添 CSS 樣式
+    1. 直接在 HTML 元素中添加 `style` 屬性：`<h1 style="color:blue;text-align:center;"></h1>`
+    1. 在 HTML 文件中的 `<style></style>` 內定義 CSS
+    1. 在外部文字檔中定義 CSS，並在 HTML 文件中透過 `<link rel="stylesheet" href="path/to/styles.css">` 匯入 HTML
+    
+    由於直接將 CSS 直接寫在 HTML 元素中的 `style` 屬性會造成大量的重複，我們通常偏好使用方法 2 或方法 3
+
+### id & class
+
+- 為了讓 HTML 與 CSS 盡量各司其職 (HTML 負責**結構**，CSS 負責**樣式**)，我們一般不喜歡將 CSS 樣式直接定義在 HTML 元素內。這時，我們會透過 [CSS selector](https://www.w3schools.com/cssref/css_selectors.asp) 找出想要添加裝飾的 HTML 元素。例如，下方的 `<style></style>` 中，使用 `h1` 作為 CSS selector 可以讓**所有**的 `<h1></h1>` 元素內的文字變成紅色
+
+    ```html
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>My Web Page!</title>
+            <style>
+                h1 {
+                    color: red;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Welcome to My Web Page!</h1>
+            <h1>Here is a second headline!</h1>
+            <h2>This will not be styled!</h2>
+        </body>
+    </html>
+    ```
+    
+    ```{r echo=F}
+    img("css_selector.png")
+    ```
+
+- 若在 HTML 元素內加入 `id` 或 `class` 屬性 (或其它任意屬性)，我們就可以很方便地使用這兩個屬性作為 CSS selector：
+
+    ```html
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>My Web Page!</title>
+            <style>
+                #top {
+                    font-size: 36px;
+                    color: red;
+                }
+                #middle {
+                    font-size: 24px;
+                }
+                #bottom {
+                    font-size: 12px;
+                }
+                .name {
+                    font-weight: bold;
+                    color: blue;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="top">
+                This is the <span class="name">top</span> of my web page.
+            </div>
+            <div id="middle">
+                This is the <span class="name">middle</span> of my web page.
+            </div>
+            <div id="bottom">
+                This is the <span class="name">bottom</span> of my web page.
+            </div>
+        </body>
+    </html>
+    ```
+    
+    ```{r echo=F}
+    img("css_selector2.png")
+    ```
+
+
+## Web Scraping with rvest
+
+了解 HTML 的結構以及 CSS selector 的使用之後，我們就可以運用這些知識進行網頁剖析。
+
+首先，我們以[模仿學院](https://rlads2021.github.io/11/imt.html)的網站進行示範。我們可以運用 `httr::GET()` 去將網頁下載到 R 裡並轉換成 html 物件：
+
+```{r}
+library(httr)
+
+# https://rlads2021.github.io/11/imt.html
+resp <- GET("https://rlads2021.github.io", path = c("11", "imt.html"))
+resp$status_code
+resp$url
+
+html <- content(resp)
+html
+```
+
+接著就可以使用 `rvest` 提供的函數進行網頁剖析。`rvest::html_nodes("<SELECTOR>")` 可以讓我們使用 CSS selector 去抓取出 `html` 中的特定 HTML 標籤。例如，下方的程式碼即從 `html` 內抓出 `<head>` 以及 `<title>` 標籤：
+
+```{r}
+library(rvest)
+
+html %>% html_nodes("head")
+html %>% html_nodes("head") %>% html_nodes("title")
+```
+
+`html_nodes()` 回傳的是 `rvest` 定義的 `xml_nodeset` 物件。但我們想要的 (通常) 是這些 HTML 節點內的_文字_，因此我們需把 `xml_nodeset` 物件再傳入 `html_text()` 以取出其內的文字：
+
+```{r}
+html %>% 
+  html_nodes("head") %>% 
+  html_nodes("title") %>%
+  html_text()
+```
+
+有時候我們需要的不是 HTML 標籤內 (starting & ending tags 之間) 的內容，而是這些 HTML 標籤的**屬性** (HTML attribute)，這時我們可以將 `html_nodes()` 回傳的結果再傳入 `html_attr("<ATTRIBUTE>")`。例如，下方的程式碼即可從 `<img>` 標籤內取得 `src` 屬性 (圖片來源)：
+
+```{r}
+html %>% html_nodes(".institute > img")
+
+html %>% 
+  html_nodes(".institute > img") %>% 
+  html_attr("src")
+```
+
+### Web developer tools
+
+我們可以善用瀏覽器提供的開發者工具幫助我們找出網頁上 HTML 元素的位置，藉此快速找出能夠抓取這些元素的 CSS selector：
+
+```{r echo=F, fig.cap="Chrome 開發者工具", out.width="100%"}
+img("devtools.png")
+```
+

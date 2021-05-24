@@ -26,6 +26,9 @@ fig:unnamed-chunk-173
 fig:unnamed-chunk-174
 fig:unnamed-chunk-175
 fig:unnamed-chunk-176
+fig:unnamed-chunk-183
+fig:unnamed-chunk-184
+fig:unnamed-chunk-191
 ch01
 路徑-工作目錄
 目錄結構-directory-structure
@@ -153,3 +156,11 @@ httr
 http-request-methods
 json
 format
+ch11
+html
+html-結構
+document-object-model
+css
+id-class
+web-scraping-with-rvest
+web-developer-tools

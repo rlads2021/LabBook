@@ -1,8 +1,8 @@
 中文文本資料處理 {#ch08}
 ========================
 
-[([投影片](https://docs.google.com/presentation/d/1WruOFF0Jpj1Sw6q8o0oVZCho26DTFwq4Q5qQUDm5vzY) /
-[程式碼](https://rlads2021.github.io/lab/src/10.zip) /
+[([投影片](https://docs.google.com/presentation/d/1S7kse79vi-C4tKPQQ-1K-Dj4Mx8hs18GTG6VJgOCIRI) /
+[程式碼](https://rlads2021.github.io/archives/src/Lab08.zip) /
 [影片](https://youtu.be/3QPpVGxNjkY))
 ]{.course-resource}
 

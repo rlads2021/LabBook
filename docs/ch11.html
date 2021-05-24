@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 11 擷取網路資料：網頁剖析 | RLads Lab</title>
+<meta name="author" content="Yongfu Liao">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.7.3/header-attrs.js"></script><script src="libs/jquery-3.5.1/jquery-3.5.1.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.5.3/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.5.3/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.4/tabs.js"></script><script src="libs/bs3compat-0.2.4/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script><link href="libs/str_view-0.1.0/str_view.css" rel="stylesheet">
+<script src="libs/str_view-binding-1.4.0/str_view.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS --><link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">RLads Lab</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">關於</a></li>
+<li><a class="" href="ch01.html"><span class="header-section-number">1</span> 掌握你的電腦</a></li>
+<li><a class="" href="ch02.html"><span class="header-section-number">2</span> Base R (I) &amp; 輔助工具</a></li>
+<li><a class="" href="ch03.html"><span class="header-section-number">3</span> Base R (II)</a></li>
+<li><a class="" href="ch04.html"><span class="header-section-number">4</span> Data Frame 處理：dplyr</a></li>
+<li><a class="" href="ch05.html"><span class="header-section-number">5</span> 視覺化：ggplot2</a></li>
+<li><a class="" href="ch06.html"><span class="header-section-number">6</span> Simulating Data with R</a></li>
+<li><a class="" href="ch07.html"><span class="header-section-number">7</span> 字串處理</a></li>
+<li><a class="" href="ch08.html"><span class="header-section-number">8</span> 中文文本資料處理</a></li>
+<li><a class="" href="ch09.html"><span class="header-section-number">9</span> 文本與詞彙的向量表徵</a></li>
+<li><a class="" href="ch10.html"><span class="header-section-number">10</span> 擷取網路資料：Web API</a></li>
+<li><a class="active" href="ch11.html"><span class="header-section-number">11</span> 擷取網路資料：網頁剖析</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/rlads2021/LabBook">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ch11" class="section level1" number="11">
+<h1>
+<span class="header-section-number">11</span> 擷取網路資料：網頁剖析<a class="anchor" aria-label="anchor" href="#ch11"><i class="fas fa-link"></i></a>
+</h1>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1gmbFQ2X0G34q7Dni4OuCLxVLFLQaPcOxTaQaCsoKc7A">投影片</a> /
+<a href="https://rlads2021.github.io/archives/src/Lab11.zip">程式碼</a>)
+<!-- / [影片](https://youtu.be/idQUlVBUKbE) --></span></p>
+<div id="html" class="section level2" number="11.1">
+<h2>
+<span class="header-section-number">11.1</span> HTML<a class="anchor" aria-label="anchor" href="#html"><i class="fas fa-link"></i></a>
+</h2>
+<p>上次實習課介紹過，透過 HTTP request/response，瀏覽器可以將接收到的 HTML 文字格式轉換成漂亮的網頁。但這並不精確，因為現在的網頁絕大多數<strong>不只</strong>是用 HTML 寫成的，藏在 HTML 裡面的，尚包含 <strong>CSS</strong> 與 <strong>JavaScript</strong>。在瀏覽器看到的漂亮的網頁裡，HTML 只貢獻了一部分的視覺呈現，許多的其它效果是 CSS 以及 JavaScript 的貢獻。這週實習課，我們介紹的主題是 HTML 和 CSS。</p>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-183"></span>
+<img src="assets/img/HTTP.png" alt="Hypertext Transfer Protocol (HTTP)" width="60%"><p class="caption">
+Figure 11.1: Hypertext Transfer Protocol (HTTP)
+</p>
+</div>
+<ul>
+<li>基本上，HTML 的功能是用來定義一個網頁的<strong>結構</strong>，而 CSS 則是用來<strong>裝飾</strong> HTML。</li>
+</ul>
+<div id="html-結構" class="section level3" number="11.1.1">
+<h3>
+<span class="header-section-number">11.1.1</span> HTML 結構<a class="anchor" aria-label="anchor" href="#html-%E7%B5%90%E6%A7%8B"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><p>HTML 是純文字的格式，因此只要使用文字編輯器編輯檔案，並將檔案的附檔名命名為 <code>.html</code>，即可製作出一份 HTML 檔。</p></li>
+<li><p>HTML 文件的一開頭的 <code>&lt;!DOCTYPE html&gt;</code>，目的在告訴瀏覽器這份 HTML 文件是使用 HTML5 的版本。</p></li>
+<li><p>HTML 是由一個個<strong>標籤 (tag)</strong> 所組成。一個 tag 通常會有「開頭」和「結尾」的標記 (例如 <code>p</code> tag 以 <code>&lt;p&gt;</code> 開頭，以 <code>&lt;/p&gt;</code> 結尾)，開頭 (start tag) 與結尾 (end tag) 之間，可以放入其它資料 (例如文字或其它的 HTML tag)。一個 HTML tag 裡面，有時可以放入特定的<strong>屬性 (attribute)</strong> (依據 tag 的種類而定)，這些屬性的目的是提供額外的資訊，告訴瀏覽器如何呈現網頁。</p></li>
+<li>
+<p>常見的 HTML tag<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;直接取自：&lt;a href="https://cs50.harvard.edu/web/notes/0/#html" class="uri"&gt;https://cs50.harvard.edu/web/notes/0/#html&lt;/a&gt;&lt;/p&gt;'><sup>25</sup></a></p>
+<ul>
+<li>
+<code>&lt;html&gt;&lt;/html&gt;</code>: contents of web page
+<ul>
+<li>
+<code>&lt;head&gt;&lt;/head&gt;</code>: metadata about the web page
+<ul>
+<li>
+<code>&lt;title&gt;&lt;/title&gt;</code>: title of the page</li>
+</ul>
+</li>
+<li>
+<code>&lt;body&gt;&lt;/body&gt;</code>: body of the page
+<ul>
+<li>
+<code>&lt;h1&gt;&lt;/h1&gt;</code>: header (h1 is the largest header, h6 is the smallest header)</li>
+<li>
+<code>&lt;ul&gt;&lt;/ul&gt;</code>: unordered list</li>
+<li>
+<code>&lt;ol&gt;&lt;/ol&gt;</code>: ordered list
+<ul>
+<li>
+<code>&lt;li&gt;&lt;/li&gt;</code> : list item (must be inside either <code>&lt;ul&gt;&lt;/ul&gt;</code> or <code>&lt;ol&gt;&lt;/ol&gt;</code>)</li>
+</ul>
+</li>
+<li>
+<code>&lt;a href="path/to/other/page/or/url"&gt;&lt;/a&gt;</code>: Link</li>
+<li>
+<code>&lt;img src="path/to/img.jpg" height="200" width="300"&gt;</code>: image stored at <code>src</code> attribute, whcih can also be a URL
+<ul>
+<li>no end tag</li>
+<li>
+<code>height</code>, <code>width</code> are optional</li>
+</ul>
+</li>
+<li>
+<code>&lt;table&gt;&lt;/table&gt;</code>: table
+<ul>
+<li>
+<code>&lt;th&gt;&lt;/th&gt;</code>: table header</li>
+<li>
+<code>&lt;tr&gt;&lt;/tr&gt;</code>: table row</li>
+<li>
+<code>&lt;td&gt;&lt;/td&gt;</code>: table data (cell)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="document-object-model" class="section level3" number="11.1.2">
+<h3>
+<span class="header-section-number">11.1.2</span> Document Object Model<a class="anchor" aria-label="anchor" href="#document-object-model"><i class="fas fa-link"></i></a>
+</h3>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-184"></span>
+<img src="assets/img/DOM.png" alt="Document Object Model (DOM)" width="75%"><p class="caption">
+Figure 11.2: Document Object Model (DOM)
+</p>
+</div>
+</div>
+</div>
+<div id="css" class="section level2" number="11.2">
+<h2>
+<span class="header-section-number">11.2</span> CSS<a class="anchor" aria-label="anchor" href="#css"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><p>HTML 定義的是一個網頁的<strong>結構</strong>，它就像是網頁的骨架。但若要讓網頁變得好看，我們需要在這定義好的骨架之上再添加一些裝飾。這就是 CSS 的功能。</p></li>
+<li>
+<p>有三種方式可以為 HTML 元素增添 CSS 樣式</p>
+<ol style="list-style-type: decimal">
+<li>直接在 HTML 元素中添加 <code>style</code> 屬性：<code>&lt;h1 style="color:blue;text-align:center;"&gt;&lt;/h1&gt;</code>
+</li>
+<li>在 HTML 文件中的 <code>&lt;style&gt;&lt;/style&gt;</code> 內定義 CSS</li>
+<li>在外部文字檔中定義 CSS，並在 HTML 文件中透過 <code>&lt;link rel="stylesheet" href="path/to/styles.css"&gt;</code> 匯入 HTML</li>
+</ol>
+<p>由於直接將 CSS 直接寫在 HTML 元素中的 <code>style</code> 屬性會造成大量的重複，我們通常偏好使用方法 2 或方法 3</p>
+</li>
+</ul>
+<div id="id-class" class="section level3" number="11.2.1">
+<h3>
+<span class="header-section-number">11.2.1</span> id &amp; class<a class="anchor" aria-label="anchor" href="#id-class"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li>
+<p>為了讓 HTML 與 CSS 盡量各司其職 (HTML 負責<strong>結構</strong>，CSS 負責<strong>樣式</strong>)，我們一般不喜歡將 CSS 樣式直接定義在 HTML 元素內。這時，我們會透過 <a href="https://www.w3schools.com/cssref/css_selectors.asp">CSS selector</a> 找出想要添加裝飾的 HTML 元素。例如，下方的 <code>&lt;style&gt;&lt;/style&gt;</code> 中，使用 <code>h1</code> 作為 CSS selector 可以讓<strong>所有</strong>的 <code>&lt;h1&gt;&lt;/h1&gt;</code> 元素內的文字變成紅色</p>
+<div class="sourceCode" id="cb439"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb439-1"><a href="ch11.html#cb439-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb439-2"><a href="ch11.html#cb439-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb439-3"><a href="ch11.html#cb439-3" aria-hidden="true"></a>    <span class="kw">&lt;head&gt;</span></span>
+<span id="cb439-4"><a href="ch11.html#cb439-4" aria-hidden="true"></a>        <span class="kw">&lt;title&gt;</span>My Web Page!<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb439-5"><a href="ch11.html#cb439-5" aria-hidden="true"></a>        <span class="kw">&lt;style&gt;</span></span>
+<span id="cb439-6"><a href="ch11.html#cb439-6" aria-hidden="true"></a>            h1 {</span>
+<span id="cb439-7"><a href="ch11.html#cb439-7" aria-hidden="true"></a>                <span class="kw">color</span>: <span class="cn">red</span><span class="op">;</span></span>
+<span id="cb439-8"><a href="ch11.html#cb439-8" aria-hidden="true"></a>            }</span>
+<span id="cb439-9"><a href="ch11.html#cb439-9" aria-hidden="true"></a>        <span class="kw">&lt;/style&gt;</span></span>
+<span id="cb439-10"><a href="ch11.html#cb439-10" aria-hidden="true"></a>    <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb439-11"><a href="ch11.html#cb439-11" aria-hidden="true"></a>    <span class="kw">&lt;body&gt;</span></span>
+<span id="cb439-12"><a href="ch11.html#cb439-12" aria-hidden="true"></a>        <span class="kw">&lt;h1&gt;</span>Welcome to My Web Page!<span class="kw">&lt;/h1&gt;</span></span>
+<span id="cb439-13"><a href="ch11.html#cb439-13" aria-hidden="true"></a>        <span class="kw">&lt;h1&gt;</span>Here is a second headline!<span class="kw">&lt;/h1&gt;</span></span>
+<span id="cb439-14"><a href="ch11.html#cb439-14" aria-hidden="true"></a>        <span class="kw">&lt;h2&gt;</span>This will not be styled!<span class="kw">&lt;/h2&gt;</span></span>
+<span id="cb439-15"><a href="ch11.html#cb439-15" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb439-16"><a href="ch11.html#cb439-16" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="inline-figure"><img src="assets/img/css_selector.png" width="75%" style="display: block; margin: auto;"></div>
+</li>
+<li>
+<p>若在 HTML 元素內加入 <code>id</code> 或 <code>class</code> 屬性 (或其它任意屬性)，我們就可以很方便地使用這兩個屬性作為 CSS selector：</p>
+<div class="sourceCode" id="cb440"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb440-1"><a href="ch11.html#cb440-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb440-2"><a href="ch11.html#cb440-2" aria-hidden="true"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb440-3"><a href="ch11.html#cb440-3" aria-hidden="true"></a>    <span class="kw">&lt;head&gt;</span></span>
+<span id="cb440-4"><a href="ch11.html#cb440-4" aria-hidden="true"></a>        <span class="kw">&lt;title&gt;</span>My Web Page!<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb440-5"><a href="ch11.html#cb440-5" aria-hidden="true"></a>        <span class="kw">&lt;style&gt;</span></span>
+<span id="cb440-6"><a href="ch11.html#cb440-6" aria-hidden="true"></a>            <span class="pp">#top</span> {</span>
+<span id="cb440-7"><a href="ch11.html#cb440-7" aria-hidden="true"></a>                <span class="kw">font-size</span>: <span class="dv">36</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb440-8"><a href="ch11.html#cb440-8" aria-hidden="true"></a>                <span class="kw">color</span>: <span class="cn">red</span><span class="op">;</span></span>
+<span id="cb440-9"><a href="ch11.html#cb440-9" aria-hidden="true"></a>            }</span>
+<span id="cb440-10"><a href="ch11.html#cb440-10" aria-hidden="true"></a>            <span class="pp">#middle</span> {</span>
+<span id="cb440-11"><a href="ch11.html#cb440-11" aria-hidden="true"></a>                <span class="kw">font-size</span>: <span class="dv">24</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb440-12"><a href="ch11.html#cb440-12" aria-hidden="true"></a>            }</span>
+<span id="cb440-13"><a href="ch11.html#cb440-13" aria-hidden="true"></a>            <span class="pp">#bottom</span> {</span>
+<span id="cb440-14"><a href="ch11.html#cb440-14" aria-hidden="true"></a>                <span class="kw">font-size</span>: <span class="dv">12</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb440-15"><a href="ch11.html#cb440-15" aria-hidden="true"></a>            }</span>
+<span id="cb440-16"><a href="ch11.html#cb440-16" aria-hidden="true"></a>            <span class="fu">.name</span> {</span>
+<span id="cb440-17"><a href="ch11.html#cb440-17" aria-hidden="true"></a>                <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
+<span id="cb440-18"><a href="ch11.html#cb440-18" aria-hidden="true"></a>                <span class="kw">color</span>: <span class="cn">blue</span><span class="op">;</span></span>
+<span id="cb440-19"><a href="ch11.html#cb440-19" aria-hidden="true"></a>            }</span>
+<span id="cb440-20"><a href="ch11.html#cb440-20" aria-hidden="true"></a>        <span class="kw">&lt;/style&gt;</span></span>
+<span id="cb440-21"><a href="ch11.html#cb440-21" aria-hidden="true"></a>    <span class="kw">&lt;/head&gt;</span></span>
+<span id="cb440-22"><a href="ch11.html#cb440-22" aria-hidden="true"></a>    <span class="kw">&lt;body&gt;</span></span>
+<span id="cb440-23"><a href="ch11.html#cb440-23" aria-hidden="true"></a>        <span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">"top"</span><span class="kw">&gt;</span></span>
+<span id="cb440-24"><a href="ch11.html#cb440-24" aria-hidden="true"></a>            This is the <span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">"name"</span><span class="kw">&gt;</span>top<span class="kw">&lt;/span&gt;</span> of my web page.</span>
+<span id="cb440-25"><a href="ch11.html#cb440-25" aria-hidden="true"></a>        <span class="kw">&lt;/div&gt;</span></span>
+<span id="cb440-26"><a href="ch11.html#cb440-26" aria-hidden="true"></a>        <span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">"middle"</span><span class="kw">&gt;</span></span>
+<span id="cb440-27"><a href="ch11.html#cb440-27" aria-hidden="true"></a>            This is the <span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">"name"</span><span class="kw">&gt;</span>middle<span class="kw">&lt;/span&gt;</span> of my web page.</span>
+<span id="cb440-28"><a href="ch11.html#cb440-28" aria-hidden="true"></a>        <span class="kw">&lt;/div&gt;</span></span>
+<span id="cb440-29"><a href="ch11.html#cb440-29" aria-hidden="true"></a>        <span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">"bottom"</span><span class="kw">&gt;</span></span>
+<span id="cb440-30"><a href="ch11.html#cb440-30" aria-hidden="true"></a>            This is the <span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">"name"</span><span class="kw">&gt;</span>bottom<span class="kw">&lt;/span&gt;</span> of my web page.</span>
+<span id="cb440-31"><a href="ch11.html#cb440-31" aria-hidden="true"></a>        <span class="kw">&lt;/div&gt;</span></span>
+<span id="cb440-32"><a href="ch11.html#cb440-32" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
+<span id="cb440-33"><a href="ch11.html#cb440-33" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<div class="inline-figure"><img src="assets/img/css_selector2.png" width="75%" style="display: block; margin: auto;"></div>
+</li>
+</ul>
+</div>
+</div>
+<div id="web-scraping-with-rvest" class="section level2" number="11.3">
+<h2>
+<span class="header-section-number">11.3</span> Web Scraping with rvest<a class="anchor" aria-label="anchor" href="#web-scraping-with-rvest"><i class="fas fa-link"></i></a>
+</h2>
+<p>了解 HTML 的結構以及 CSS selector 的使用之後，我們就可以運用這些知識進行網頁剖析。</p>
+<p>首先，我們以<a href="https://rlads2021.github.io/11/imt.html">模仿學院</a>的網站進行示範。我們可以運用 <code><a href="https://httr.r-lib.org/reference/GET.html">httr::GET()</a></code> 去將網頁下載到 R 裡並轉換成 html 物件：</p>
+<div class="sourceCode" id="cb441"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://httr.r-lib.org/">httr</a></span><span class="op">)</span>
+
+<span class="co"># https://rlads2021.github.io/11/imt.html</span>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html">GET</a></span><span class="op">(</span><span class="st">"https://rlads2021.github.io"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"11"</span>, <span class="st">"imt.html"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">resp</span><span class="op">$</span><span class="va">status_code</span></code></pre></div>
+<pre><code>#&gt; [1] 200</code></pre>
+<div class="sourceCode" id="cb443"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">resp</span><span class="op">$</span><span class="va">url</span></code></pre></div>
+<pre><code>#&gt; [1] "https://rlads2021.github.io/11/imt.html"</code></pre>
+<div class="sourceCode" id="cb445"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/content.html">content</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span>
+<span class="va">html</span></code></pre></div>
+<pre><code>#&gt; {html_document}
+#&gt; &lt;html&gt;
+#&gt; [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8" ...
+#&gt; [2] &lt;body&gt;\n        &lt;div class="institute"&gt;\n            &lt;img src="https://li ...</code></pre>
+<p>接著就可以使用 <code>rvest</code> 提供的函數進行網頁剖析。<code><a href="https://rvest.tidyverse.org/reference/html_nodes.html">rvest::html_nodes("&lt;SELECTOR&gt;")</a></code> 可以讓我們使用 CSS selector 去抓取出 <code>html</code> 中的特定 HTML 標籤。例如，下方的程式碼即從 <code>html</code> 內抓出 <code>&lt;head&gt;</code> 以及 <code>&lt;title&gt;</code> 標籤：</p>
+<div class="sourceCode" id="cb447"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://rvest.tidyverse.org/">rvest</a></span><span class="op">)</span>
+
+<span class="va">html</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">"head"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; {xml_nodeset (1)}
+#&gt; [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8" ...</code></pre>
+<div class="sourceCode" id="cb449"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">html</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">"head"</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">"title"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; {xml_nodeset (1)}
+#&gt; [1] &lt;title&gt;模仿學院&lt;/title&gt;\n</code></pre>
+<p><code><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes()</a></code> 回傳的是 <code>rvest</code> 定義的 <code>xml_nodeset</code> 物件。但我們想要的 (通常) 是這些 HTML 節點內的_文字_，因此我們需把 <code>xml_nodeset</code> 物件再傳入 <code><a href="https://rvest.tidyverse.org/reference/html_text.html">html_text()</a></code> 以取出其內的文字：</p>
+<div class="sourceCode" id="cb451"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">html</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">"head"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">"title"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_text.html">html_text</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "模仿學院"</code></pre>
+<p>有時候我們需要的不是 HTML 標籤內 (starting &amp; ending tags 之間) 的內容，而是這些 HTML 標籤的<strong>屬性</strong> (HTML attribute)，這時我們可以將 <code><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes()</a></code> 回傳的結果再傳入 <code><a href="https://rvest.tidyverse.org/reference/html_text.html">html_attr("&lt;ATTRIBUTE&gt;")</a></code>。例如，下方的程式碼即可從 <code>&lt;img&gt;</code> 標籤內取得 <code>src</code> 屬性 (圖片來源)：</p>
+<div class="sourceCode" id="cb453"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">html</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">".institute &gt; img"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; {xml_nodeset (1)}
+#&gt; [1] &lt;img src="https://linguistics.ntu.edu.tw/static/media/gil_logo.c593c5b8.p ...</code></pre>
+<div class="sourceCode" id="cb455"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">html</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">".institute &gt; img"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_text.html">html_attr</a></span><span class="op">(</span><span class="st">"src"</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; [1] "https://linguistics.ntu.edu.tw/static/media/gil_logo.c593c5b8.png"</code></pre>
+<div id="web-developer-tools" class="section level3" number="11.3.1">
+<h3>
+<span class="header-section-number">11.3.1</span> Web developer tools<a class="anchor" aria-label="anchor" href="#web-developer-tools"><i class="fas fa-link"></i></a>
+</h3>
+<p>我們可以善用瀏覽器提供的開發者工具幫助我們找出網頁上 HTML 元素的位置，藉此快速找出能夠抓取這些元素的 CSS selector：</p>
+<div class="figure" style="text-align: center">
+<span id="fig:unnamed-chunk-191"></span>
+<img src="assets/img/devtools.png" alt="Chrome 開發者工具" width="100%"><p class="caption">
+Figure 11.3: Chrome 開發者工具
+</p>
+</div>
+
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="ch10.html"><span class="header-section-number">10</span> 擷取網路資料：Web API</a></div>
+<div class="empty"></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ch11"><span class="header-section-number">11</span> 擷取網路資料：網頁剖析</a></li>
+<li>
+<a class="nav-link" href="#html"><span class="header-section-number">11.1</span> HTML</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#html-%E7%B5%90%E6%A7%8B"><span class="header-section-number">11.1.1</span> HTML 結構</a></li>
+<li><a class="nav-link" href="#document-object-model"><span class="header-section-number">11.1.2</span> Document Object Model</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#css"><span class="header-section-number">11.2</span> CSS</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#id-class"><span class="header-section-number">11.2.1</span> id &amp; class</a></li></ul>
+</li>
+<li>
+<a class="nav-link" href="#web-scraping-with-rvest"><span class="header-section-number">11.3</span> Web Scraping with rvest</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#web-developer-tools"><span class="header-section-number">11.3.1</span> Web developer tools</a></li></ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/rlads2021/LabBook/blob/master/11-web_scraping.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/rlads2021/LabBook/edit/master/11-web_scraping.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 24, 2021</span>.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+</html>

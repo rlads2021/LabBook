@@ -1,9 +1,9 @@
 擷取網路資料：Web API {#ch10}
 =============================
 
-[([投影片](https://docs.google.com/presentation/d/1XKEXj64xnDtOHVy_INhI__Zqgf38SvpaisBLWaIxM_c) /
-[程式碼](https://rlads2021.github.io/lab/src/webapi.R))
-<!-- / [影片](https://youtu.be/UViBpa82nks) -->
+[([投影片](https://docs.google.com/presentation/d/1KGSxf3x-xc_qwVmqEKsv9VJ_UFKc_dL-jbPfzbLJReo) /
+[程式碼](https://rlads2021.github.io/archives/src/Lab10.zip))
+<!-- / [影片](https://youtu.be/IAiEqB-cd1Q) -->
 ]{.course-resource}
 
 
@@ -15,7 +15,7 @@
 img("HTTP.png")
 ```
 
-- 通常，我們輸入網址後所收到的內容是 HTML 格式，因此我們在瀏覽器解讀 HTML 後，會在螢幕呈現出一個 (漂亮的) 網頁。但不一定所有網址都會回傳 HTML 的格式，有時候會是其它格式，例如 JSON 格式 (<https://api.ratesapi.io/api/latest>) 或是 `text/plain` (<https://rlads2019.github.io/hw8/idioms.txt>)。這時，瀏覽器上就會呈現出純文字的樣子:
+- 通常，我們輸入網址後所收到的內容是 HTML 格式，因此我們在瀏覽器解讀 HTML 後，會在螢幕呈現出一個 (漂亮的) 網頁。但不一定所有網址都會回傳 HTML 的格式，有時候會是其它格式，例如 JSON 格式 (<https://lopentu.github.io/CwnWeb/cwn_web/cwn-pos-label.json>) 或是 `text/plain` (<https://rlads2019.github.io/hw8/idioms.txt>)。這時，瀏覽器上就會呈現出純文字的樣子:
 
 ```{r echo=F, fig.cap="JSON shown on Browser", out.width="100%"}
 img("json_on_browser.png")
@@ -28,9 +28,9 @@ img("json_on_browser.png")
 ## URL 結構 {#url-structure}
 
 - Web API 的設計常是透過讓使用者在 URL 加上一些訊息 (query string)，藉此得知使用者想取得哪些資料。
-    - 例如，[Foreign exchange rates API](https://ratesapi.io) 透過使用者在 URL 之後加上的 `base=<貨幣>`，判斷回傳的資料以何種貨幣作為匯率計算的基準: `https://api.ratesapi.io/api/latest?base=USD`
+    - 例如，[anime quotes API](https://animechan.vercel.app) 透過使用者在 URL 之後加上的 `title=<動畫>`，判斷要回傳哪個動畫中的語錄: `https://animechan.vercel.app/api/quotes/anime?title=naruto`
 
-- URL 當中的 query string 具有一些特殊的結構。query string 讓使用者可以提供一或多個 key-value pairs (需看 API 說明文件)。例如，上方例子中的 `base` 即為 key-value pairs 中的 key，在 key 與 value 之間則用 `=` 分隔。詳見下圖的 URL 結構。
+- URL 當中的 query string 具有一些特殊的結構。query string 讓使用者可以提供一或多個 key-value pairs (需看 API 說明文件)。例如，上方例子中的 `title` 即為 key-value pairs 中的 key，在 key 與 value 之間則用 `=` 分隔。詳見下圖的 URL 結構。
 
 ```{r echo=F, fig.cap="URL 結構", out.width="100%"}
 img("url_structure.png")
@@ -45,16 +45,16 @@ img("http_with_r.png")
 
 - 我們通常是透過瀏覽器與網路上的其它電腦 (伺服器) 互動 (i.e. 透過瀏覽器發出/接收 HTTP request/response)。但我們也可以透過 R 做到這件事 --- 套件 `httr` 即提供一些函數方便在 R 裡面處理 HTTP request/response。
 
-- 下方，我們使用 `httr::GET()` 向 `https://api.ratesapi.io/api/latest?base=USD&symbols=JPY` 發出 HTTP request，以取得最新的匯率資料:
+- 下方，我們使用 `httr::GET()` 向 `https://animechan.vercel.app/api/quotes/anime?title=naruto&page=2` 發出 HTTP request，以取得最新的匯率資料:
 
     ```{r}
     library(httr)
     library(magrittr)
     
-    # https://api.ratesapi.io/api/latest?base=USD&symbols=JPY
-    resp <- GET('https://api.ratesapi.io/',
-                path = 'api/latest',
-                query = list(base = "USD", symbols = "JPY"))
+    # https://animechan.vercel.app/api/quotes/anime?title=naruto&page=2
+    resp <- GET('https://animechan.vercel.app/',
+                path = 'api/quotes/anime',
+                query = list(title = "naruto", page = "2"))
     ```
     
     - 雖然我們可以將**整個 URL** 以字串的形式寫在 `httr::GET()` 的第一個 argument，但我們通常會將 URL 拆開成 **base URL**, **path** 以及 **query string** 這三個部份 (見上 [URL 結構](#url-structure))，再透過 `httr::GET()` 所提供的一些 argument 組出完整的 URL[^separate-url]:
@@ -66,7 +66,6 @@ img("http_with_r.png")
       - `url` (first arg.): URL 中的 base URL，即上圖綠色部份 `https://api.ratesapi.io/`
       - `path`: URL 中的 path，即上圖紫色部份 `api/latest`
       - `query`: URL 中的 query string。在 `httr::GET()` 中，query 是以 `list` 的資料結構提供。上方的 URL 因為有兩個 key-value pairs，所以 `query` 這個 argument 也由兩個元素 (皆有 name) 組成。
-    
 
 - `httr::GET()` 會將 HTTP request 以及接收到的 HTTP response 轉換成 R 的物件。例如，`resp$url` 可以取得 HTTP request 目的地 URL，`resp$status_code` 則可以看到 [request 是否成功](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) (2** 代表 request 成功，4** 代表失敗)：
 
@@ -80,7 +79,6 @@ img("http_with_r.png")
     content(resp)
     content(resp, as = "text") %>% cat()
     ```
-
 
 [^separate-url]: 有時候，我們會需要系統性改變 URL 的某部份 (e.g., 想取得**每年** 1/1 至 2/1 的資料) 以取得所需資料。這時，若不使用 `httr::GET()` 所提供的 `path` 與 `query` 等 argument，就需自己另外以 `paste0()` 等函數製造 URL。這會造成程式變得比較龐大且複雜。
 

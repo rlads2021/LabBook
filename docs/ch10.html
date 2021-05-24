@@ -43,6 +43,7 @@
 <li><a class="" href="ch08.html"><span class="header-section-number">8</span> 中文文本資料處理</a></li>
 <li><a class="" href="ch09.html"><span class="header-section-number">9</span> 文本與詞彙的向量表徵</a></li>
 <li><a class="active" href="ch10.html"><span class="header-section-number">10</span> 擷取網路資料：Web API</a></li>
+<li><a class="" href="ch11.html"><span class="header-section-number">11</span> 擷取網路資料：網頁剖析</a></li>
 </ul>
 
         <div class="book-extra">
@@ -54,9 +55,9 @@
 <h1>
 <span class="header-section-number">10</span> 擷取網路資料：Web API<a class="anchor" aria-label="anchor" href="#ch10"><i class="fas fa-link"></i></a>
 </h1>
-<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1XKEXj64xnDtOHVy_INhI__Zqgf38SvpaisBLWaIxM_c">投影片</a> /
-<a href="https://rlads2021.github.io/lab/src/webapi.R">程式碼</a>)
-<!-- / [影片](https://youtu.be/UViBpa82nks) --></span></p>
+<p><span class="course-resource">(<a href="https://docs.google.com/presentation/d/1KGSxf3x-xc_qwVmqEKsv9VJ_UFKc_dL-jbPfzbLJReo">投影片</a> /
+<a href="https://rlads2021.github.io/archives/src/Lab10.zip">程式碼</a>)
+<!-- / [影片](https://youtu.be/IAiEqB-cd1Q) --></span></p>
 <div id="http" class="section level2" number="10.1">
 <h2>
 <span class="header-section-number">10.1</span> HTTP<a class="anchor" aria-label="anchor" href="#http"><i class="fas fa-link"></i></a>
@@ -71,7 +72,7 @@ Figure 10.1: Hypertext Transfer Protocol (HTTP)
 </p>
 </div>
 <ul>
-<li>通常，我們輸入網址後所收到的內容是 HTML 格式，因此我們在瀏覽器解讀 HTML 後，會在螢幕呈現出一個 (漂亮的) 網頁。但不一定所有網址都會回傳 HTML 的格式，有時候會是其它格式，例如 JSON 格式 (<a href="https://api.ratesapi.io/api/latest" class="uri">https://api.ratesapi.io/api/latest</a>) 或是 <code>text/plain</code> (<a href="https://rlads2019.github.io/hw8/idioms.txt" class="uri">https://rlads2019.github.io/hw8/idioms.txt</a>)。這時，瀏覽器上就會呈現出純文字的樣子:</li>
+<li>通常，我們輸入網址後所收到的內容是 HTML 格式，因此我們在瀏覽器解讀 HTML 後，會在螢幕呈現出一個 (漂亮的) 網頁。但不一定所有網址都會回傳 HTML 的格式，有時候會是其它格式，例如 JSON 格式 (<a href="https://lopentu.github.io/CwnWeb/cwn_web/cwn-pos-label.json" class="uri">https://lopentu.github.io/CwnWeb/cwn_web/cwn-pos-label.json</a>) 或是 <code>text/plain</code> (<a href="https://rlads2019.github.io/hw8/idioms.txt" class="uri">https://rlads2019.github.io/hw8/idioms.txt</a>)。這時，瀏覽器上就會呈現出純文字的樣子:</li>
 </ul>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-174"></span>
@@ -90,11 +91,11 @@ Figure 10.2: JSON shown on Browser
 <ul>
 <li>Web API 的設計常是透過讓使用者在 URL 加上一些訊息 (query string)，藉此得知使用者想取得哪些資料。
 <ul>
-<li>例如，<a href="https://ratesapi.io">Foreign exchange rates API</a> 透過使用者在 URL 之後加上的 <code>base=&lt;貨幣&gt;</code>，判斷回傳的資料以何種貨幣作為匯率計算的基準: <code>https://api.ratesapi.io/api/latest?base=USD</code>
+<li>例如，<a href="https://animechan.vercel.app">anime quotes API</a> 透過使用者在 URL 之後加上的 <code>title=&lt;動畫&gt;</code>，判斷要回傳哪個動畫中的語錄: <code>https://animechan.vercel.app/api/quotes/anime?title=naruto</code>
 </li>
 </ul>
 </li>
-<li>URL 當中的 query string 具有一些特殊的結構。query string 讓使用者可以提供一或多個 key-value pairs (需看 API 說明文件)。例如，上方例子中的 <code>base</code> 即為 key-value pairs 中的 key，在 key 與 value 之間則用 <code><a href="https://rdrr.io/r/base/assignOps.html">=</a></code> 分隔。詳見下圖的 URL 結構。</li>
+<li>URL 當中的 query string 具有一些特殊的結構。query string 讓使用者可以提供一或多個 key-value pairs (需看 API 說明文件)。例如，上方例子中的 <code>title</code> 即為 key-value pairs 中的 key，在 key 與 value 之間則用 <code><a href="https://rdrr.io/r/base/assignOps.html">=</a></code> 分隔。詳見下圖的 URL 結構。</li>
 </ul>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-175"></span>
@@ -116,15 +117,15 @@ Figure 10.4: HTTP with R
 <ul>
 <li><p>我們通常是透過瀏覽器與網路上的其它電腦 (伺服器) 互動 (i.e. 透過瀏覽器發出/接收 HTTP request/response)。但我們也可以透過 R 做到這件事 — 套件 <code>httr</code> 即提供一些函數方便在 R 裡面處理 HTTP request/response。</p></li>
 <li>
-<p>下方，我們使用 <code><a href="https://httr.r-lib.org/reference/GET.html">httr::GET()</a></code> 向 <code>https://api.ratesapi.io/api/latest?base=USD&amp;symbols=JPY</code> 發出 HTTP request，以取得最新的匯率資料:</p>
+<p>下方，我們使用 <code><a href="https://httr.r-lib.org/reference/GET.html">httr::GET()</a></code> 向 <code>https://animechan.vercel.app/api/quotes/anime?title=naruto&amp;page=2</code> 發出 HTTP request，以取得最新的匯率資料:</p>
 <div class="sourceCode" id="cb427"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://httr.r-lib.org/">httr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span>
 
-<span class="co"># https://api.ratesapi.io/api/latest?base=USD&amp;symbols=JPY</span>
-<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html">GET</a></span><span class="op">(</span><span class="st">'https://api.ratesapi.io/'</span>,
-            path <span class="op">=</span> <span class="st">'api/latest'</span>,
-            query <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"USD"</span>, symbols <span class="op">=</span> <span class="st">"JPY"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="co"># https://animechan.vercel.app/api/quotes/anime?title=naruto&amp;page=2</span>
+<span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html">GET</a></span><span class="op">(</span><span class="st">'https://animechan.vercel.app/'</span>,
+            path <span class="op">=</span> <span class="st">'api/quotes/anime'</span>,
+            query <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"naruto"</span>, page <span class="op">=</span> <span class="st">"2"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <ul>
 <li>
 <p>雖然我們可以將<strong>整個 URL</strong> 以字串的形式寫在 <code><a href="https://httr.r-lib.org/reference/GET.html">httr::GET()</a></code> 的第一個 argument，但我們通常會將 URL 拆開成 <strong>base URL</strong>, <strong>path</strong> 以及 <strong>query string</strong> 這三個部份 (見上 <a href="ch10.html#url-structure">URL 結構</a>)，再透過 <code><a href="https://httr.r-lib.org/reference/GET.html">httr::GET()</a></code> 所提供的一些 argument 組出完整的 URL<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;有時候，我們會需要系統性改變 URL 的某部份 (e.g., 想取得&lt;strong&gt;每年&lt;/strong&gt; 1/1 至 2/1 的資料) 以取得所需資料。這時，若不使用 &lt;code&gt;httr::GET()&lt;/code&gt; 所提供的 &lt;code&gt;path&lt;/code&gt; 與 &lt;code&gt;query&lt;/code&gt; 等 argument，就需自己另外以 &lt;code&gt;paste0()&lt;/code&gt; 等函數製造 URL。這會造成程式變得比較龐大且複雜。&lt;/p&gt;"><sup>24</sup></a>:</p>
@@ -254,39 +255,9 @@ Figure 10.4: HTTP with R
 </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <div class="chapter-nav">
 <div class="prev"><a href="ch09.html"><span class="header-section-number">9</span> 文本與詞彙的向量表徵</a></div>
-<div class="empty"></div>
+<div class="next"><a href="ch11.html"><span class="header-section-number">11</span> 擷取網路資料：網頁剖析</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav">
@@ -316,7 +287,7 @@ Figure 10.4: HTTP with R
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 18, 2021</span>.</p>
+    <p>"<strong>RLads Lab</strong>" was written by Yongfu Liao. It was last built on <span class="date">May 24, 2021</span>.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

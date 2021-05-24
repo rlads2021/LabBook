@@ -1,7 +1,7 @@
 視覺化：ggplot2 {#ch05}
 =======================================
 
-[([投影片](https://docs.google.com/presentation/d/1sI3UEopvklXWhjCSCcNtOdHNe8EcfkiQwYKlysfBzws) /
+[([投影片](https://docs.google.com/presentation/d/1sLEjDnnJ9odpFuK6b42HVoatOQnwhokSDeLg25PiZVU) /
 [影片](https://youtu.be/lLoOTHNap34))
 ]{.course-resource}  
 [Some of the material is based on [Garrett Grolemund's introduction to ggplot2](https://github.com/rstudio-education/welcome-to-the-tidyverse/tree/master/02-Visualize)]{.additional-notes}

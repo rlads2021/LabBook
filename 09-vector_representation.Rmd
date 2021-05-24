@@ -1,8 +1,8 @@
 文本與詞彙的向量表徵 {#ch09}
 ============================
 
-[([投影片](https://docs.google.com/presentation/d/1NXWSy1tQV7R1FQY4qvkcBsbQKsB9d54dfrU6Lj07QAE) /
-[程式碼](https://rlads2021.github.io/lab/src/11.zip) /
+[([投影片](https://docs.google.com/presentation/d/1pBa7YoygQwyb2P9WRcNwq9FFlOym4TlbHvygdKKu3LM) /
+[程式碼](https://rlads2021.github.io/archives/src/Lab09.zip) /
 [影片](https://youtu.be/UViBpa82nks))
 ]{.course-resource}
 
