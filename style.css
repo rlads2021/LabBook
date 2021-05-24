@@ -14,16 +14,9 @@
   padding: 0.5em 1em;
 }
 
-footer span.date {
-  display: inline-block;
-}
-
 .additional-notes, .course-resource {
   padding-left: 0.35em;
   font-size:0.85em;
-}
-.additional-notes > a, .course-resource > a {
-  /*color: #ff6d6d;*/
 }
 .additional-notes > a:hover, .course-resource > a:hover {
   color: #ff6d6d;

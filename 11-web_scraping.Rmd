@@ -46,7 +46,7 @@ img("HTTP.png")
 
 ### Document Object Model
 
-```{r echo=F, fig.cap="Document Object Model (DOM)"}
+```{r echo=F, fig.cap="Document Object Model (DOM)", out.width="100%"}
 img("DOM.png")
 ```
 
@@ -85,7 +85,7 @@ img("DOM.png")
     </html>
     ```
     
-    ```{r echo=F}
+    ```{r echo=F, out.width="100%"}
     img("css_selector.png")
     ```
 
@@ -127,7 +127,7 @@ img("DOM.png")
     </html>
     ```
     
-    ```{r echo=F}
+    ```{r echo=F, out.width="100%"}
     img("css_selector2.png")
     ```
 
@@ -138,9 +138,8 @@ img("DOM.png")
 
 首先，我們以[模仿學院](https://rlads2021.github.io/11/imt.html)的網站進行示範。我們可以運用 `httr::GET()` 去將網頁下載到 R 裡並轉換成 html 物件：
 
-```{r}
+```{r cache=F}
 library(httr)
-
 # https://rlads2021.github.io/11/imt.html
 resp <- GET("https://rlads2021.github.io", path = c("11", "imt.html"))
 resp$status_code
@@ -154,7 +153,6 @@ html
 
 ```{r}
 library(rvest)
-
 html %>% html_nodes("head")
 html %>% html_nodes("head") %>% html_nodes("title")
 ```

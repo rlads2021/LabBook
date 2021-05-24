@@ -326,10 +326,10 @@ Figure 5.3: <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html
 #&gt;   cut       count
 #&gt;   &lt;ord&gt;     &lt;int&gt;
 #&gt; 1 Fair         41
-#&gt; 2 Good        128
-#&gt; 3 Very Good   386
-#&gt; 4 Premium     363
-#&gt; 5 Ideal       582</code></pre>
+#&gt; 2 Good        139
+#&gt; 3 Very Good   366
+#&gt; 4 Premium     390
+#&gt; 5 Ideal       564</code></pre>
 </li>
 <li><p>如果想使用 <code>sum_data</code> 之中的變項<strong>直接</strong>去畫出長條圖，就需要覆寫 「<code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 自動從 <code>x</code> 計算出次數」的預設行為。這個行為可由 <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 的 <code>stat</code> 參數進行設定。</p></li>
 <li><p><code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 的 <code>stat</code> 預設值是 <code>"count"</code>，讓 <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code> 可以從「對應至 <code>x</code> 的變項」計算出此變項裡各類別的次數。</p></li>

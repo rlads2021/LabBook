@@ -147,7 +147,7 @@ Figure 10.4: HTTP with R
 <p><code><a href="https://httr.r-lib.org/reference/GET.html">httr::GET()</a></code> 會將 HTTP request 以及接收到的 HTTP response 轉換成 R 的物件。例如，<code>resp$url</code> 可以取得 HTTP request 目的地 URL，<code>resp$status_code</code> 則可以看到 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">request 是否成功</a> (2** 代表 request 成功，4** 代表失敗)：</p>
 <div class="sourceCode" id="cb428"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">resp</span><span class="op">$</span><span class="va">url</span></code></pre></div>
-<pre><code>#&gt; [1] "https://api.ratesapi.io/api/latest?base=USD&amp;symbols=JPY"</code></pre>
+<pre><code>#&gt; [1] "https://animechan.vercel.app/api/quotes/anime?title=naruto&amp;page=2"</code></pre>
 <div class="sourceCode" id="cb430"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">resp</span><span class="op">$</span><span class="va">status_code</span></code></pre></div>
 <pre><code>#&gt; [1] 200</code></pre>
@@ -156,19 +156,117 @@ Figure 10.4: HTTP with R
 <p>若要取得 HTTP response 的內容，可使用 <code><a href="https://httr.r-lib.org/reference/content.html">httr::content()</a></code>。若 response 的內容格式是 JSON，XML 或 HTML，<code><a href="https://httr.r-lib.org/reference/content.html">httr::content()</a></code> 會自動將其轉換成 R 的物件，若不想自動進行這件事，可加入 <code>as = "text"</code> 這個 argument：</p>
 <div class="sourceCode" id="cb432"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://httr.r-lib.org/reference/content.html">content</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; $base
-#&gt; [1] "USD"
+<pre><code>#&gt; [[1]]
+#&gt; [[1]]$anime
+#&gt; [1] "Naruto"
 #&gt; 
-#&gt; $rates
-#&gt; $rates$JPY
-#&gt; [1] 109.2881
+#&gt; [[1]]$character
+#&gt; [1] "Yashamaru"
+#&gt; 
+#&gt; [[1]]$quote
+#&gt; [1] "Physical wounds will definitely bleed and may look painful \nbut over time they heal by themselves and if you apply medicine, \nthey will heal faster. What's troublesome are wounds of the heart. Nothing is harder to heal. They're a bit different from physical injuries. You can't apply medicine for one thing and sometimes, they never heal. There's only one cure for a wound of the heart. \nIt's a bit bothersome and you can only receive it from someone else. What is it? Love."
 #&gt; 
 #&gt; 
-#&gt; $date
-#&gt; [1] "2021-05-14"</code></pre>
+#&gt; [[2]]
+#&gt; [[2]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[2]]$character
+#&gt; [1] "Shino Aburame"
+#&gt; 
+#&gt; [[2]]$quote
+#&gt; [1] "Trying to improve by learning from others that is what calls friendship."
+#&gt; 
+#&gt; 
+#&gt; [[3]]
+#&gt; [[3]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[3]]$character
+#&gt; [1] "Itachi Uchiha"
+#&gt; 
+#&gt; [[3]]$quote
+#&gt; [1] "Those who forgive themselves, and are able to accept their true nature... They are the strong ones!"
+#&gt; 
+#&gt; 
+#&gt; [[4]]
+#&gt; [[4]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[4]]$character
+#&gt; [1] "Rock Lee"
+#&gt; 
+#&gt; [[4]]$quote
+#&gt; [1] "Stop it! How dare you disrespect an opponent that fought you with all he had!?"
+#&gt; 
+#&gt; 
+#&gt; [[5]]
+#&gt; [[5]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[5]]$character
+#&gt; [1] "Genma Shiranui"
+#&gt; 
+#&gt; [[5]]$quote
+#&gt; [1] "When captured birds grow wiser, they try to open the cage with their beaks. They don't give up, because they want to fly again."
+#&gt; 
+#&gt; 
+#&gt; [[6]]
+#&gt; [[6]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[6]]$character
+#&gt; [1] "Gaara"
+#&gt; 
+#&gt; [[6]]$quote
+#&gt; [1] "Just because someone is important to you, it doesn't necessarily mean that, that person is good. Even if you knew that person was evil... People cannot win against their loneliness."
+#&gt; 
+#&gt; 
+#&gt; [[7]]
+#&gt; [[7]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[7]]$character
+#&gt; [1] "Pain"
+#&gt; 
+#&gt; [[7]]$quote
+#&gt; [1] "Even the most ignorant, innocent child will eventually grow up as they learn what true pain is. It affects what they say, what they think… and they become real people."
+#&gt; 
+#&gt; 
+#&gt; [[8]]
+#&gt; [[8]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[8]]$character
+#&gt; [1] "Neji Hyuuga"
+#&gt; 
+#&gt; [[8]]$quote
+#&gt; [1] "Fear. That is what we live with. And we live it everyday. Only in death are we free of it."
+#&gt; 
+#&gt; 
+#&gt; [[9]]
+#&gt; [[9]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[9]]$character
+#&gt; [1] "Itachi Uchiha"
+#&gt; 
+#&gt; [[9]]$quote
+#&gt; [1] "Even the strongest of opponents always has a weakness."
+#&gt; 
+#&gt; 
+#&gt; [[10]]
+#&gt; [[10]]$anime
+#&gt; [1] "Naruto"
+#&gt; 
+#&gt; [[10]]$character
+#&gt; [1] "Gaara"
+#&gt; 
+#&gt; [[10]]$quote
+#&gt; [1] "We have walked through the darkness of this world, that’s why we are able to see even a sliver of light."</code></pre>
 <div class="sourceCode" id="cb434"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://httr.r-lib.org/reference/content.html">content</a></span><span class="op">(</span><span class="va">resp</span>, as <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; {"base":"USD","rates":{"JPY":109.2881300008},"date":"2021-05-14"}</code></pre>
+<pre><code>#&gt; [{"anime":"Naruto","character":"Yashamaru","quote":"Physical wounds will definitely bleed and may look painful \nbut over time they heal by themselves and if you apply medicine, \nthey will heal faster. What's troublesome are wounds of the heart. Nothing is harder to heal. They're a bit different from physical injuries. You can't apply medicine for one thing and sometimes, they never heal. There's only one cure for a wound of the heart. \nIt's a bit bothersome and you can only receive it from someone else. What is it? Love."},{"anime":"Naruto","character":"Shino Aburame","quote":"Trying to improve by learning from others that is what calls friendship."},{"anime":"Naruto","character":"Itachi Uchiha","quote":"Those who forgive themselves, and are able to accept their true nature... They are the strong ones!"},{"anime":"Naruto","character":"Rock Lee","quote":"Stop it! How dare you disrespect an opponent that fought you with all he had!?"},{"anime":"Naruto","character":"Genma Shiranui","quote":"When captured birds grow wiser, they try to open the cage with their beaks. They don't give up, because they want to fly again."},{"anime":"Naruto","character":"Gaara","quote":"Just because someone is important to you, it doesn't necessarily mean that, that person is good. Even if you knew that person was evil... People cannot win against their loneliness."},{"anime":"Naruto","character":"Pain","quote":"Even the most ignorant, innocent child will eventually grow up as they learn what true pain is. It affects what they say, what they think… and they become real people."},{"anime":"Naruto","character":"Neji Hyuuga","quote":"Fear. That is what we live with. And we live it everyday. Only in death are we free of it."},{"anime":"Naruto","character":"Itachi Uchiha","quote":"Even the strongest of opponents always has a weakness."},{"anime":"Naruto","character":"Gaara","quote":"We have walked through the darkness of this world, that’s why we are able to see even a sliver of light."}]</code></pre>
 </li>
 </ul>
 <div id="http-request-methods" class="section level3" number="10.3.1">
@@ -247,7 +345,7 @@ Figure 10.4: HTTP with R
 <div class="sourceCode" id="cb438"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb438-1"><a href="ch10.html#cb438-1" aria-hidden="true"></a><span class="fu">{</span></span>
 <span id="cb438-2"><a href="ch10.html#cb438-2" aria-hidden="true"></a>  <span class="dt">"id"</span><span class="fu">:</span> <span class="st">"rlads2019"</span><span class="fu">,</span></span>
 <span id="cb438-3"><a href="ch10.html#cb438-3" aria-hidden="true"></a>  <span class="dt">"array1"</span><span class="fu">:</span> <span class="ot">[</span><span class="fl">1.1</span><span class="ot">,</span> <span class="st">"a string"</span><span class="ot">,</span> <span class="kw">false</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb438-4"><a href="ch10.html#cb438-4" aria-hidden="true"></a>  <span class="dt">"array2"</span><span class="fu">:</span> <span class="ot">[</span><span class="dv">2</span><span class="ot">,</span> <span class="fu">{</span><span class="dt">"id"</span><span class="fu">:</span><span class="dv">1234</span><span class="fu">}</span><span class="ot">,</span> <span class="kw">null</span><span class="ot">]</span></span>
+<span id="cb438-4"><a href="ch10.html#cb438-4" aria-hidden="true"></a>  <span class="dt">"array2"</span><span class="fu">:</span> <span class="ot">[</span><span class="dv">2</span><span class="ot">,</span> <span class="fu">{</span><span class="dt">"id"</span><span class="fu">:</span> <span class="dv">1234</span><span class="fu">}</span><span class="ot">,</span> <span class="kw">null</span><span class="ot">]</span></span>
 <span id="cb438-5"><a href="ch10.html#cb438-5" aria-hidden="true"></a><span class="fu">}</span></span></code></pre></div>
 </li>
 </ul>

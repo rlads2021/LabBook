@@ -142,7 +142,7 @@ Figure 11.1: Hypertext Transfer Protocol (HTTP)
 </h3>
 <div class="figure" style="text-align: center">
 <span id="fig:unnamed-chunk-184"></span>
-<img src="assets/img/DOM.png" alt="Document Object Model (DOM)" width="75%"><p class="caption">
+<img src="assets/img/DOM.png" alt="Document Object Model (DOM)" width="100%"><p class="caption">
 Figure 11.2: Document Object Model (DOM)
 </p>
 </div>
@@ -188,7 +188,7 @@ Figure 11.2: Document Object Model (DOM)
 <span id="cb439-14"><a href="ch11.html#cb439-14" aria-hidden="true"></a>        <span class="kw">&lt;h2&gt;</span>This will not be styled!<span class="kw">&lt;/h2&gt;</span></span>
 <span id="cb439-15"><a href="ch11.html#cb439-15" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
 <span id="cb439-16"><a href="ch11.html#cb439-16" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
-<div class="inline-figure"><img src="assets/img/css_selector.png" width="75%" style="display: block; margin: auto;"></div>
+<div class="inline-figure"><img src="assets/img/css_selector.png" width="100%" style="display: block; margin: auto;"></div>
 </li>
 <li>
 <p>若在 HTML 元素內加入 <code>id</code> 或 <code>class</code> 屬性 (或其它任意屬性)，我們就可以很方便地使用這兩個屬性作為 CSS selector：</p>
@@ -225,7 +225,7 @@ Figure 11.2: Document Object Model (DOM)
 <span id="cb440-31"><a href="ch11.html#cb440-31" aria-hidden="true"></a>        <span class="kw">&lt;/div&gt;</span></span>
 <span id="cb440-32"><a href="ch11.html#cb440-32" aria-hidden="true"></a>    <span class="kw">&lt;/body&gt;</span></span>
 <span id="cb440-33"><a href="ch11.html#cb440-33" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
-<div class="inline-figure"><img src="assets/img/css_selector2.png" width="75%" style="display: block; margin: auto;"></div>
+<div class="inline-figure"><img src="assets/img/css_selector2.png" width="100%" style="display: block; margin: auto;"></div>
 </li>
 </ul>
 </div>
@@ -238,7 +238,6 @@ Figure 11.2: Document Object Model (DOM)
 <p>首先，我們以<a href="https://rlads2021.github.io/11/imt.html">模仿學院</a>的網站進行示範。我們可以運用 <code><a href="https://httr.r-lib.org/reference/GET.html">httr::GET()</a></code> 去將網頁下載到 R 裡並轉換成 html 物件：</p>
 <div class="sourceCode" id="cb441"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://httr.r-lib.org/">httr</a></span><span class="op">)</span>
-
 <span class="co"># https://rlads2021.github.io/11/imt.html</span>
 <span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html">GET</a></span><span class="op">(</span><span class="st">"https://rlads2021.github.io"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"11"</span>, <span class="st">"imt.html"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">resp</span><span class="op">$</span><span class="va">status_code</span></code></pre></div>
@@ -256,7 +255,6 @@ Figure 11.2: Document Object Model (DOM)
 <p>接著就可以使用 <code>rvest</code> 提供的函數進行網頁剖析。<code><a href="https://rvest.tidyverse.org/reference/html_nodes.html">rvest::html_nodes("&lt;SELECTOR&gt;")</a></code> 可以讓我們使用 CSS selector 去抓取出 <code>html</code> 中的特定 HTML 標籤。例如，下方的程式碼即從 <code>html</code> 內抓出 <code>&lt;head&gt;</code> 以及 <code>&lt;title&gt;</code> 標籤：</p>
 <div class="sourceCode" id="cb447"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://rvest.tidyverse.org/">rvest</a></span><span class="op">)</span>
-
 <span class="va">html</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rvest.tidyverse.org/reference/html_nodes.html">html_nodes</a></span><span class="op">(</span><span class="st">"head"</span><span class="op">)</span></code></pre></div>
 <pre><code>#&gt; {xml_nodeset (1)}
 #&gt; [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8" ...</code></pre>

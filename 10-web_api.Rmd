@@ -47,7 +47,7 @@ img("http_with_r.png")
 
 - 下方，我們使用 `httr::GET()` 向 `https://animechan.vercel.app/api/quotes/anime?title=naruto&page=2` 發出 HTTP request，以取得最新的匯率資料:
 
-    ```{r}
+    ```{r cache=F}
     library(httr)
     library(magrittr)
     
@@ -69,13 +69,13 @@ img("http_with_r.png")
 
 - `httr::GET()` 會將 HTTP request 以及接收到的 HTTP response 轉換成 R 的物件。例如，`resp$url` 可以取得 HTTP request 目的地 URL，`resp$status_code` 則可以看到 [request 是否成功](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) (2** 代表 request 成功，4** 代表失敗)：
 
-    ```{r}
+    ```{r cache=F}
     resp$url
     resp$status_code
     ```
 
 - 若要取得 HTTP response 的內容，可使用 `httr::content()`。若 response 的內容格式是 JSON，XML 或 HTML，`httr::content()` 會自動將其轉換成 R 的物件，若不想自動進行這件事，可加入 `as = "text"` 這個 argument：
-    ```{r}
+    ```{r cache=F}
     content(resp)
     content(resp, as = "text") %>% cat()
     ```
@@ -126,6 +126,6 @@ HTTP request 有許多不同的「種類」，稱為 [request methods](https://d
     {
       "id": "rlads2019",
       "array1": [1.1, "a string", false],
-      "array2": [2, {"id":1234}, null]
+      "array2": [2, {"id": 1234}, null]
     }
     ```
