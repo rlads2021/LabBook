@@ -34,3 +34,20 @@ p.caption {
 pre > code {
   padding: .125rem 0;
 }
+
+pre .copy button { 
+  display: none;
+} 
+
+pre.sourceCode .copy button {
+  display: inline-block;
+  background-color: transparent;
+  color: #1995a54b;
+  border-color: transparent;
+}
+
+pre.sourceCode .copy button:hover{
+  color:#fff;
+  background-color:#3D818A;
+  border-color:#3D818A
+}
