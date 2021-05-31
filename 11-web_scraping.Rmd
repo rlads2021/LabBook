@@ -2,8 +2,8 @@
 ==============================
 
 [([投影片](https://docs.google.com/presentation/d/1gmbFQ2X0G34q7Dni4OuCLxVLFLQaPcOxTaQaCsoKc7A) /
-[程式碼](https://rlads2021.github.io/archives/src/Lab11.zip))
-<!-- / [影片](https://youtu.be/idQUlVBUKbE) -->
+[程式碼](https://rlads2021.github.io/archives/src/Lab11.zip)
+/ [影片](https://youtu.be/idQUlVBUKbE))
 ]{.course-resource}
 
 
