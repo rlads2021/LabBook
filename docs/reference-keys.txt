@@ -164,3 +164,6 @@ css
 id-class
 web-scraping-with-rvest
 web-developer-tools
+ch12
+github-pages
+shiny
