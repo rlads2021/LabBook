@@ -3,7 +3,7 @@
 
 [([投影片](https://docs.google.com/presentation/d/1uGa-0wclc1jXzqEAmgEcUGBBmaxKGpZf7NoGKhnAH1g) /
 [程式碼](https://rlads2021.github.io/archives/src/Lab12.zip)
-/ [影片](#))
+/ [影片](https://youtu.be/zNCZaOBCUxM))
 <!-- https://youtu.be/zNCZaOBCUxM -->
 ]{.course-resource}
 
